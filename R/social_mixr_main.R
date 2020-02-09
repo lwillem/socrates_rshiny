@@ -19,7 +19,7 @@ library('socialmixr')
 opt_gender   <- list("all","female","male")
 opt_day_type <- list("all days", "weekday","weekend")
 opt_period   <- list("regular and holiday","holiday period","regular period") 
-opt_location <- list("all locations","home", "work", "school","leisure","transport","other","multiple","missing")
+#opt_location <- list("all locations","home", "work", "school","leisure","transport","other","multiple","missing")
 opt_touch    <- list("all contacts", "physical contacts","non-physical contacts")
 opt_duration <- list("all contacts","less than 5 minutes", "less than 15 minutes","more than 15 minutes","more than 1 hour","more than 4 hours")
 opt_country  <- as.list(levels(unique(polymod$participants$country)))
@@ -28,12 +28,12 @@ opt_country  <- as.list(levels(unique(polymod$participants$country)))
 names(opt_gender)   <- unlist(opt_gender)
 names(opt_day_type) <- unlist(opt_day_type)
 names(opt_period)   <- unlist(opt_period)
-names(opt_location) <- unlist(opt_location)
-names(opt_intimicy) <- unlist(opt_intimicy)
+#names(opt_location) <- unlist(opt_location)
+names(opt_touch)    <- unlist(opt_touch)
 names(opt_duration) <- unlist(opt_duration)
 names(opt_country)  <- unlist(opt_country)
 
-# ?contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
+#?contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
 
 country      <- opt_country[[1]]
 sel_weekday  <- opt_day_type[[2]]
@@ -65,12 +65,25 @@ get_survey_object <- function(country,sel_weekday,sel_touch,sel_duration,
     print(opt_day_type[[3]])
   }
   
-  # select duration
+  # # select duration
+  # if(sel_duration != opt_duration[[1]]){
+  #   duration_code <- which(opt_duration == sel_duration)-1
+  #   bool_duration <- !is.na(data_cnt$duration_multi) & data_cnt$duration_multi == duration_code
+  #   data_cnt      <- data_cnt[bool_duration,]
+  #   print(sel_duration)
+  # }
   if(sel_duration != opt_duration[[1]]){
-    duration_code <- which(opt_duration == sel_duration)-1
-    bool_duration <- !is.na(data_cnt$duration_multi) & data_cnt$duration_multi == duration_code
-    data_cnt      <- data_cnt[bool_duration,]
     print(sel_duration)
+  
+    duration_code <- which(opt_duration == sel_duration)-1
+    
+    if(sel_duration %in% names(opt_duration[2:3]) ){
+      bool_duration <- !is.na(data_cnt$duration_multi)  & data_cnt$duration_multi <= duration_code
+      data_cnt      <- data_cnt[bool_duration,]
+    } else{
+      bool_duration <- !is.na(data_cnt$duration_multi)  & data_cnt$duration_multi >= duration_code
+      data_cnt      <- data_cnt[bool_duration,]
+    }
   }
   
   # select touching

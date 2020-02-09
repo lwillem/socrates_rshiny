@@ -125,4 +125,46 @@ get_survey_object <- function(country,sel_weekday,sel_touch,sel_duration,
   
 }
 
+mij <- contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))$matrix
+# plot_title <- 'dummy'
+plot_cnt_matrix_raster <- function(mij)
+{
+  # set maximum (and apply to mij)
+  z_max      <- 8
+  mij[mij>z_max] <- z_max
+  
+  #setup ranges, colors and margins
+  z_lim      <- c(0,z_max)
+  num_breaks <- 9
+  z_col      <- rev(RColorBrewer::brewer.pal(num_breaks,'YlOrRd'))
+  par(mar=c(5,5,0,10))
+  
+  # plot matrix
+  image(mij,
+        zlim=z_lim,
+        col=z_col,
+        xaxt='n',yaxt='n',
+        xlab='\nAge participant (years)',
+        ylab='\nAge contact (years)\n')
+  
+  # add axis labels
+  tick_step <- seq(0,1,length=nrow(mij))
+  axis(1,tick_step,rownames(mij),tick = F)
+  axis(2,tick_step,rownames(mij),tick = F,las=2)
+  
+  # add legend
+  par(xpd=TRUE)
+  legend_text <- paste(rev(round(seq(0,z_max,length=num_breaks))))
+  legend_text[1] <- paste0(legend_text[1],'+')
+  legend('right',
+         inset=c(-0.2,0),
+         legend_text,
+         fill=rev(z_col),
+         title="Mean number\nof contacts\nper day",
+         ncol=1,
+         box.lwd = 0,
+         box.col = 0)
+  par(xpd=FALSE)
+}
+
 

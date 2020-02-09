@@ -2,11 +2,11 @@
 # clear workspace
 rm(list=ls(all=TRUE))
 
-######Automatically set working directory###
-if(require(rstudioapi) && isAvailable()){
-  current_path <- getActiveDocumentContext()$path 
-  setwd(dirname(current_path ))
-}
+# ######Automatically set working directory###
+# if(require(rstudioapi) && isAvailable()){
+#   current_path <- getActiveDocumentContext()$path 
+#   #setwd(dirname(current_path ))
+# }
 
 # load shiny libraary
 library(shiny)

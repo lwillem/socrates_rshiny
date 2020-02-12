@@ -20,6 +20,9 @@ contact_matrix <- function(...){
   dimnames(matrix_out$matrix)[[1]] <- dimnames(matrix_out$matrix)[[2]]
   names(dimnames(matrix_out$matrix))[1] <- 'age.group'
   
+  # remove population (for now)
+  matrix_out$demography <- NULL
+  
   # return
   matrix_out
 }

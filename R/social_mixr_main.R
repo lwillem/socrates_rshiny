@@ -11,6 +11,7 @@
 # load 'socialmixr' package
 #suppressPackageStartupMessages(library('socialmixr'))
 library('socialmixr')
+library('countrycode')
 source('R/contact_matrix_fix.R')
 
 # example

@@ -57,9 +57,8 @@ shinyUI(pageWithSidebar(
     checkboxInput("cnt_other",  "Contacts at OTHER places?", TRUE),
     checkboxInput("cnt_unknown",  "Contact location UNKNOWN?", TRUE),
     
-    # issue with social mixr pacakge... #TODO
-    checkboxInput("symmetric", "Symmetric", FALSE)
-    
+    checkboxInput("symmetric", "Reciprocal contacts?", FALSE)
+
     #submit button
     #submitButton("Update View")
     
@@ -68,7 +67,7 @@ shinyUI(pageWithSidebar(
   # Show the caption and plot of the requested variable against mpg
   mainPanel(
     
-    plotOutput('plot_matrix_raster'),
+    plotOutput('plot_matrix'),
     
     verbatimTextOutput("cnt_matrix")
   )

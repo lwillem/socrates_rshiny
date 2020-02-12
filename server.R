@@ -8,6 +8,8 @@
 
 library(shiny)
 source('R/social_mixr_main.R')
+source('R/plot_social_contact_matrix.R')
+
 
 # Define server logic required to plot various output
 shinyServer(function(input, output) {
@@ -51,10 +53,9 @@ shinyServer(function(input, output) {
   })
   
   # plot social contact matrix
-  output$plot_matrix_raster <- renderPlot({
-    plot_cnt_matrix_raster(cnt_matrix_out()$matrix)
+  output$plot_matrix <- renderPlot({
+    plot_cnt_matrix(cnt_matrix_out()$matrix)
   })
-  
   
   
 })

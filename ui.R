@@ -36,13 +36,13 @@ shinyUI(pageWithSidebar(
                 opt_country),
     
     textInput(inputId="age_breaks_text",
-              label="age breaks (comma delimited)",
+              label="Age breaks (comma delimited)",
               value="0,18,45,65"),
     
-    selectInput("daytype", "weekdays/weekends?",
+    selectInput("daytype", "Weekdays/weekends?",
                 opt_day_type),
     
-    selectInput("period", "regular/holiday period?",
+    selectInput("period", "Period? (regular/holiday)",
                 opt_period),
     
     selectInput("duration", "Contact duration?",
@@ -57,7 +57,10 @@ shinyUI(pageWithSidebar(
     checkboxInput("cnt_other",  "Contacts at OTHER places?", TRUE),
     checkboxInput("cnt_unknown",  "Contact location UNKNOWN?", TRUE),
     
-    checkboxInput("symmetric", "Reciprocal contacts?", FALSE)
+    checkboxInput("symmetric", "Reciprocal contacts?", FALSE),
+  
+    helpText("Reactive strategies"),
+    checkboxInput("bool_schools_closed","Close all schools")
 
     #submit button
     #submitButton("Update View")
@@ -67,8 +70,11 @@ shinyUI(pageWithSidebar(
   # Show the caption and plot of the requested variable against mpg
   mainPanel(
     
-    plotOutput('plot_matrix'),
+    plotOutput('plot_cnt_matrix'),
     
-    verbatimTextOutput("cnt_matrix")
+    verbatimTextOutput("print_cnt_matrix"),
+    
+    verbatimTextOutput("print_cnt_matrix_control")
+    
   )
 ))

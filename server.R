@@ -8,54 +8,62 @@
 
 library(shiny)
 source('R/social_mixr_main.R')
-source('R/plot_social_contact_matrix.R')
-
 
 # Define server logic required to plot various output
 shinyServer(function(input, output) {
   
   # calculate social contact matrix
-  cnt_matrix_out<- reactive({
-    
-    # set age intervals
-    age_breaks_num <- as.numeric(unlist(strsplit(input$age_breaks_text,",")))
-    
-    # make sure the ages are increasing 
-    age_breaks_num <- sort(age_breaks_num)
-    
-    # get specific social_mixr survey object
-    survey_object <- get_survey_object(country      = input$country,
-                                       daytype      = input$daytype,
-                                       period       = input$period,
-                                       touch        = input$touch,
-                                       duration     = input$duration,
-                                       cnt_home     = input$cnt_home,
-                                       cnt_school   = input$cnt_school,
-                                       cnt_work     = input$cnt_work,
-                                       cnt_other    = input$cnt_other,
-                                       cnt_unknown  = input$cnt_unknown)
-    
-    # symmetric?
-    symmetric <- input$symmetric
+  cnt_matrix_reference<- reactive({
 
-    # run social_mixr function
-    matrix_out <- contact_matrix(survey     = survey_object, 
-                                 age.limits = age_breaks_num,
-                                 symmetric  = symmetric,
-                                 quiet      = TRUE)
-    # return
-    matrix_out
+        get_contact_matrix(country      = input$country,
+                           daytype      = input$daytype,
+                           period       = input$period,
+                           touch        = input$touch,
+                           duration     = input$duration,
+                           cnt_home     = input$cnt_home,
+                           cnt_school   = input$cnt_school,
+                           cnt_work     = input$cnt_work,
+                           cnt_other    = input$cnt_other,
+                           cnt_unknown  = input$cnt_unknown,
+                           symmetric    = input$symmetric,
+                           age_breaks_text = input$age_breaks_text,
+                           bool_schools_closed = FALSE)
+  })
+  
+  cnt_matrix_control<- reactive({
+    
+    get_contact_matrix(country      = input$country,
+                       daytype      = input$daytype,
+                       period       = input$period,
+                       touch        = input$touch,
+                       duration     = input$duration,
+                       cnt_home     = input$cnt_home,
+                       cnt_school   = input$cnt_school,
+                       cnt_work     = input$cnt_work,
+                       cnt_other    = input$cnt_other,
+                       cnt_unknown  = input$cnt_unknown,
+                       symmetric    = input$symmetric,
+                       age_breaks_text = input$age_breaks_text,
+                       bool_schools_closed = input$bool_schools_closed)
   })
   
   # print social contact matrix
-  output$cnt_matrix <- renderPrint({
-    cnt_matrix_out()
+  output$print_cnt_matrix <- renderPrint({
+    cnt_matrix_reference()
   })
   
   # plot social contact matrix
-  output$plot_matrix <- renderPlot({
-    plot_cnt_matrix(cnt_matrix_out()$matrix)
+  output$plot_cnt_matrix <- renderPlot({
+    plot_cnt_matrix(cnt_matrix_reference()$matrix)
   })
   
+  # print social contact matrix
+  output$print_cnt_matrix_control <- renderPrint({
+    #cnt_matrix_out()
+    if(input$bool_schools_closed){
+      print("schools closed")
+      cnt_matrix_control()
+    }
+  })
   
 })

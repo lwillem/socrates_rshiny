@@ -1,3 +1,10 @@
+#___________________________________________________________________________
+# This file is part of the SOcial Contact RATES (SOCRATES) modelling project
+# 
+# => MAIN SCRIPT FOR THE R-SHINY USER INTERFACE
+#
+#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#___________________________________________________________________________
 
 # clear workspace
 rm(list=ls(all=TRUE))
@@ -12,7 +19,9 @@ rm(list=ls(all=TRUE))
 library(shiny)
 
 # load social contact functions
+source('R/sidebarPanel_config.R')
 source('R/social_mixr_main.R')
+
 
 # Define UI for social contact application
 shinyUI(pageWithSidebar(
@@ -33,8 +42,8 @@ shinyUI(pageWithSidebar(
     selectInput("daytype", "weekdays/weekends?",
                 opt_day_type),
     
-    # selectInput("period", "regular/holiday period?",
-    #             opt_period),
+    selectInput("period", "regular/holiday period?",
+                opt_period),
     
     selectInput("duration", "Contact duration?",
                 opt_duration),
@@ -46,10 +55,10 @@ shinyUI(pageWithSidebar(
     checkboxInput("cnt_school", "Contacts at SCHOOL?", TRUE),
     checkboxInput("cnt_work",   "Contacts at WORK?", TRUE),
     checkboxInput("cnt_other",  "Contacts at OTHER places?", TRUE),
-    checkboxInput("cnt_unknown",  "Contact location UNKNOWN?", TRUE)
+    checkboxInput("cnt_unknown",  "Contact location UNKNOWN?", TRUE),
     
     # issue with social mixr pacakge... #TODO
-    #checkboxInput("symmetric", "Symmetric", FALSE)
+    checkboxInput("symmetric", "Symmetric", FALSE)
     
     #submit button
     #submitButton("Update View")

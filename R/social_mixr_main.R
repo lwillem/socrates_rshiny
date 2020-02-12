@@ -1,83 +1,77 @@
+#___________________________________________________________________________
+# This file is part of the SOcial Contact RATES (SOCRATES) modelling project
+# 
+# => LOAD AND SELECT SOCIAL CONTACT SURVEY DATA
+#
+#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#___________________________________________________________________________
 
-
-
-##########################
-##  DATA AND METHODS    ##
-##########################
-
-#install.packages('socialmixr')
+# install.packages('socialmixr')
 
 # load 'socialmixr' package
 #suppressPackageStartupMessages(library('socialmixr'))
 library('socialmixr')
+source('R/contact_matrix_fix.R')
 
+# example
 #contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
-#list_surveys()
 
-# set all options
-# note: the first is the default
-opt_gender   <- list("all","female","male")
-opt_day_type <- list("all days", "weekday","weekend")
-opt_period   <- list("regular and holiday","holiday period","regular period") 
-#opt_location <- list("all locations","home", "work", "school","leisure","transport","other","multiple","missing")
-opt_touch    <- list("all contacts", "physical contacts","non-physical contacts")
-opt_duration <- list("all contacts","less than 5 minutes", "less than 15 minutes","more than 15 minutes","more than 1 hour","more than 4 hours")
-opt_country  <- as.list(levels(unique(polymod$participants$country)))
 
-# make named lists
-names(opt_gender)   <- unlist(opt_gender)
-names(opt_day_type) <- unlist(opt_day_type)
-names(opt_period)   <- unlist(opt_period)
-#names(opt_location) <- unlist(opt_location)
-names(opt_touch)    <- unlist(opt_touch)
-names(opt_duration) <- unlist(opt_duration)
-names(opt_country)  <- unlist(opt_country)
-
-#?contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
-
-country      <- opt_country[[1]]
-sel_weekday  <- opt_day_type[[2]]
-sel_touch    <- opt_touch[[2]]
-sel_duration <- opt_duration[[4]]
-cnt_home <- TRUE
-get_survey_object <- function(country,sel_weekday,sel_touch,sel_duration,
+get_survey_object <- function(country,daytype,period,touch,duration,
                               cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown){
   
   # get original polymod data
   data_part <- polymod$participants
   data_cnt  <- polymod$contacts
   
-  #select country
+  # select country
   print(country)
   bool_country <- (data_part$country == country)
   data_part    <- data_part[bool_country,]
   
   # select type of day
   bool_dayofweek <- data_part$dayofweek >= 0 # all
-  if(sel_weekday == opt_day_type[[2]]){ # weekday
+  if(daytype == opt_day_type[[2]]){ # weekday
     bool_dayofweek <- data_part$dayofweek %in% 1:5
     data_part      <- data_part[bool_dayofweek,]
     print(opt_day_type[[2]])
   }
-  if(sel_weekday == opt_day_type[[3]]){ # weekend
+  if(daytype == opt_day_type[[3]]){ # weekend
     bool_dayofweek <- data_part$dayofweek %in% c(0,6)
     data_part      <- data_part[bool_dayofweek,]
     print(opt_day_type[[3]])
   }
   
-  # # select duration
-  # if(sel_duration != opt_duration[[1]]){
-  #   duration_code <- which(opt_duration == sel_duration)-1
-  #   bool_duration <- !is.na(data_cnt$duration_multi) & data_cnt$duration_multi == duration_code
-  #   data_cnt      <- data_cnt[bool_duration,]
-  #   print(sel_duration)
-  # }
-  if(sel_duration != opt_duration[[1]]){
-    print(sel_duration)
+  # select period
+  if(period != opt_period[[1]]){
+    load('data/holiday_all.RData')
+    country_iso3 <- countrycode(unlist(country), 'country.name', 'iso3c')
+    country_holiday_data <- holiday_all[holiday_all$iso3 == country_iso3,]
+    data_part$date <- as.Date(paste(data_part$day,
+                                    data_part$month,
+                                    data_part$year,
+                                    sep='/')
+                              ,'%d/%m/%Y')
+    data_part$is_holiday <- data_part$date %in% country_holiday_data$date
+
+    if(period == opt_period[[2]]){
+      if(!any(data_part$is_holiday)){ # if no holiday period data
+        print("NO HOLIDAY DATA... USE REGULAR PERIOD DATA")
+      } else{ # select holiday period data
+        data_part <- data_part[data_part$is_holiday,]
+      }
+    } else{ # select regular period data
+      data_part <- data_part[!data_part$is_holiday,]
+    }
+  }
   
-    duration_code <- which(opt_duration == sel_duration)-1
+  # select contact duration
+  if(duration != opt_duration[[1]]){
+    print(duration)
+  
+    duration_code <- which(opt_duration == duration)-1
     
-    if(sel_duration %in% names(opt_duration[2:3]) ){
+    if(duration %in% names(opt_duration[2:3]) ){
       bool_duration <- !is.na(data_cnt$duration_multi)  & data_cnt$duration_multi <= duration_code
       data_cnt      <- data_cnt[bool_duration,]
     } else{
@@ -87,35 +81,33 @@ get_survey_object <- function(country,sel_weekday,sel_touch,sel_duration,
   }
   
   # select touching
-  if(sel_touch != opt_touch[[1]]){
-    touch_code    <- which(opt_touch == sel_touch)-1
+  if(touch != opt_touch[[1]]){
+    touch_code    <- which(opt_touch == touch)-1
     bool_touching <- !is.na(data_cnt$phys_contact) & data_cnt$phys_contact == touch_code
     data_cnt      <- data_cnt[bool_touching,]
-    print(sel_touch)
+    print(touch)
   }
   
-  # contact location
-  # add temporary category for 'other locations'
-  data_cnt$cnt_other <- data_cnt$cnt_transport == 1 |
-                        data_cnt$cnt_leisure == 1 |
-                        data_cnt$cnt_otherplace == 1
-  
-  # add temporary category for 'location unknown'
-  data_cnt$loc_unknown <- data_cnt$cnt_home == 0 &
-                          data_cnt$cnt_school == 0 &
-                          data_cnt$cnt_work == 0 &
-                          data_cnt$cnt_other == 0 
-    
   # select contact location
   bool_cnt <- data_cnt$cnt_home == -1
   if(cnt_home)   { bool_cnt <- bool_cnt | data_cnt$cnt_home}
   if(cnt_school) { bool_cnt <- bool_cnt | data_cnt$cnt_school}
   if(cnt_work)   { bool_cnt <- bool_cnt | data_cnt$cnt_work}
-  if(cnt_other)  { bool_cnt <- bool_cnt | data_cnt$cnt_other}
-  if(cnt_unknown){ bool_cnt <- bool_cnt | data_cnt$loc_unknown}
+  if(cnt_other){ 
+    cnt_other <- data_cnt$cnt_transport  == 1 |
+                 data_cnt$cnt_leisure    == 1 |
+                 data_cnt$cnt_otherplace == 1
+    bool_cnt <- bool_cnt | data_cnt$cnt_other
+    }
+  if(cnt_unknown){ 
+    # create temporary category for 'location unknown'
+    loc_unknown <- data_cnt$cnt_home   == 0 &
+                   data_cnt$cnt_school == 0 &
+                   data_cnt$cnt_work   == 0 &
+                   data_cnt$cnt_other  == 0 
+    bool_cnt    <- bool_cnt | loc_unknown
+    }
   data_cnt <- data_cnt[bool_cnt,]
-  
-  
   
   # create new survey object
   mixr_survey <- survey(data_part, data_cnt)

@@ -1,4 +1,13 @@
+#___________________________________________________________________________
+# This file is part of the SOcial Contact RATES (SOCRATES) modelling project
+# 
+# => MAIN SCRIPT FOR THE R-SHINY SERVER
+#
+#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#___________________________________________________________________________
+
 library(shiny)
+source('R/social_mixr_main.R')
 
 # Define server logic required to plot various output
 shinyServer(function(input, output) {
@@ -9,14 +18,15 @@ shinyServer(function(input, output) {
     # set age intervals
     age_breaks_num <- as.numeric(unlist(strsplit(input$age_breaks_text,",")))
     
-    # check if increasing... 
+    # make sure the ages are increasing 
     age_breaks_num <- sort(age_breaks_num)
     
     # get specific social_mixr survey object
     survey_object <- get_survey_object(country      = input$country,
-                                       sel_weekday  = input$daytype,
-                                       sel_touch    = input$touch,
-                                       sel_duration = input$duration,
+                                       daytype      = input$daytype,
+                                       period       = input$period,
+                                       touch        = input$touch,
+                                       duration     = input$duration,
                                        cnt_home     = input$cnt_home,
                                        cnt_school   = input$cnt_school,
                                        cnt_work     = input$cnt_work,
@@ -24,14 +34,15 @@ shinyServer(function(input, output) {
                                        cnt_unknown  = input$cnt_unknown)
     
     # symmetric?
-    #bool_symmetric <- input$symmetric
-    bool_symmetric <- FALSE
-    
+    symmetric <- input$symmetric
+
     # run social_mixr function
-    contact_matrix(survey_object, 
-                   age.limits = age_breaks_num,
-                   symmetric  = bool_symmetric,
-                   quiet      = TRUE)
+    matrix_out <- contact_matrix(survey     = survey_object, 
+                                 age.limits = age_breaks_num,
+                                 symmetric  = symmetric,
+                                 quiet      = TRUE)
+    # return
+    matrix_out
   })
   
   # print social contact matrix

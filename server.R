@@ -7,6 +7,7 @@
 #___________________________________________________________________________
 
 library(shiny)
+library('socialmixr')
 source('R/social_mixr_main.R')
 
 # Define server logic required to plot various output
@@ -128,5 +129,7 @@ shinyServer(function(input, output, session) {
   observe({
       updateSliderInput(session, "telework_target", min = input$telework_reference)
   })
+  
+
   
 })

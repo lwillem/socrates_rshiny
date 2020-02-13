@@ -8,7 +8,7 @@
 
 # clear workspace
 rm(list=ls(all=TRUE))
-source('R/social_mixr_main.R')
+library('socialmixr')
 
 # ######Automatically set working directory###
 # if(require(rstudioapi) && isAvailable()){
@@ -18,6 +18,7 @@ source('R/social_mixr_main.R')
 
 # load shiny libraary
 library(shiny)
+library(shinyjs)
 
 # load social contact functions
 source('R/sidebarPanel_config.R')
@@ -65,9 +66,6 @@ shinyUI(pageWithSidebar(
     
     sliderInput("telework_reference","Observed % telework",min=0,max=99,value=16),
     sliderInput("telework_target","Target % telework",min=0,max=99,value=16)
-    
-    #submit button
-    #submitButton("Update View")
 
   ),
   

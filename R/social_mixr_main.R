@@ -22,7 +22,7 @@ source('R/plot_social_contact_matrix.R')
 get_contact_matrix <- function(country,daytype,period,touch,duration,
                                cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
                                symmetric,age_breaks_text,
-                               bool_schools_closed){
+                               bool_schools_closed,bool_exclusive){
   
   # REACTIVE STRATEGY: SCHOOL CLOSURE
   if(bool_schools_closed){
@@ -45,7 +45,8 @@ get_contact_matrix <- function(country,daytype,period,touch,duration,
                                      cnt_school   = cnt_school,
                                      cnt_work     = cnt_work,
                                      cnt_other    = cnt_other,
-                                     cnt_unknown  = cnt_unknown)
+                                     cnt_unknown  = cnt_unknown,
+                                     bool_exclusive   = bool_exclusive)  # remove contacts at multiple loations
  
   # run social_mixr function
   matrix_out <- contact_matrix(survey     = survey_object, 
@@ -58,7 +59,8 @@ get_contact_matrix <- function(country,daytype,period,touch,duration,
 
 ## GET SURVEY DATA ####
 get_survey_object <- function(country,daytype,period,touch,duration,
-                              cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown){
+                              cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
+                              bool_exclusive){
   
   # get original polymod data
   data_part <- polymod$participants
@@ -128,17 +130,17 @@ get_survey_object <- function(country,daytype,period,touch,duration,
     print(touch)
   }
   
+  # create temporary category for "other"
+  bool_cnt_other <- data_cnt$cnt_transport  == 1 |
+                data_cnt$cnt_leisure    == 1 |
+                data_cnt$cnt_otherplace == 1
+  
   # select contact location
-  bool_cnt <- data_cnt$cnt_home == -1
+  bool_cnt    <- rep(FALSE,nrow(data_cnt))
   if(cnt_home)   { bool_cnt <- bool_cnt | data_cnt$cnt_home}
   if(cnt_school) { bool_cnt <- bool_cnt | data_cnt$cnt_school}
   if(cnt_work)   { bool_cnt <- bool_cnt | data_cnt$cnt_work}
-  if(cnt_other){ 
-    cnt_other <- data_cnt$cnt_transport  == 1 |
-                 data_cnt$cnt_leisure    == 1 |
-                 data_cnt$cnt_otherplace == 1
-    bool_cnt <- bool_cnt | data_cnt$cnt_other
-    }
+  if(cnt_other)  { bool_cnt <- bool_cnt | bool_cnt_other  }
   if(cnt_unknown){ 
     # create temporary category for 'location unknown'
     loc_unknown <- data_cnt$cnt_home   == 0 &
@@ -146,8 +148,22 @@ get_survey_object <- function(country,daytype,period,touch,duration,
                    data_cnt$cnt_work   == 0 &
                    data_cnt$cnt_other  == 0 
     bool_cnt    <- bool_cnt | loc_unknown
-    }
-  data_cnt <- data_cnt[bool_cnt,]
+  }
+  
+  if(bool_exclusive){
+    loc_single <- ((data_cnt$cnt_home   == 1) +
+                     (data_cnt$cnt_school == 1) +
+                     (data_cnt$cnt_work   == 1) +
+                     (data_cnt$cnt_other  == 1) ) <= 1
+    bool_cnt   <- bool_cnt & loc_single
+  }
+  
+  # select... if any contact left
+  if(any(bool_cnt)){
+    data_cnt <- data_cnt[bool_cnt,]
+  } else{
+    print("NO LOCATION BASED SELECTION POSSIBLE... NO CONTACTS LEFT")
+  }
   
   # create new survey object
   mixr_survey <- survey(data_part, data_cnt)

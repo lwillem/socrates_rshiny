@@ -61,7 +61,10 @@ shinyUI(pageWithSidebar(
     checkboxInput("symmetric", "Reciprocal contacts?", FALSE),
   
     helpText("Reactive strategies"),
-    checkboxInput("bool_schools_closed","Close all schools")
+    checkboxInput("bool_schools_closed","Close all schools"),
+    
+    sliderInput("telework_reference","Observed % telework",0,0.99,0.16),
+    sliderInput("telework_target","Target % telework",0,0.99,0.16)
 
     #submit button
     #submitButton("Update View")
@@ -73,7 +76,9 @@ shinyUI(pageWithSidebar(
     
     plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
     
-    verbatimTextOutput("print_cnt_matrix")
+    verbatimTextOutput("print_cnt_matrix_comparison"),
+    
+    verbatimTextOutput("print_cnt_matrix_telework")
     
   )
 ))

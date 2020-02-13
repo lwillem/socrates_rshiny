@@ -8,6 +8,7 @@
 
 # clear workspace
 rm(list=ls(all=TRUE))
+source('R/social_mixr_main.R')
 
 # ######Automatically set working directory###
 # if(require(rstudioapi) && isAvailable()){
@@ -70,11 +71,9 @@ shinyUI(pageWithSidebar(
   # Show the caption and plot of the requested variable against mpg
   mainPanel(
     
-    plotOutput('plot_cnt_matrix'),
+    plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
     
-    verbatimTextOutput("print_cnt_matrix"),
-    
-    verbatimTextOutput("print_cnt_matrix_control")
+    verbatimTextOutput("print_cnt_matrix")
     
   )
 ))

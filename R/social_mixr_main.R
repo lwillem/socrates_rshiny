@@ -158,3 +158,17 @@ get_survey_object <- function(country,daytype,period,touch,duration,
 }
 
 
+# mija <- contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))$matrix
+# mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 1, 5, 15))$matrix
+
+compare_contact_matrices <- function(mija,mijb){
+  R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)
+  mij_ratio     <- mija/mijb
+  RIa           <- standardize_RI(eigen(mija)$vectors[,1])
+  RIb           <- standardize_RI(eigen(mijb)$vectors[,1])
+  RI_ratio      <- RIa/RIb
+  return(list(R0_ratio=R0_ratio,mij_ratio=mij_ratio,RI_ratio=RI_ratio))
+}
+
+# help function to standardize the relative incidence
+standardize_RI<-function(vec){return(vec/sum(vec))}

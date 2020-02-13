@@ -30,7 +30,7 @@ shinyServer(function(input, output) {
                            bool_schools_closed = FALSE)
   })
   
-  cnt_matrix_control<- reactive({
+  cnt_matrix_ui<- reactive({
     
     get_contact_matrix(country      = input$country,
                        daytype      = input$daytype,
@@ -47,22 +47,25 @@ shinyServer(function(input, output) {
                        bool_schools_closed = input$bool_schools_closed)
   })
   
-  # print social contact matrix
-  output$print_cnt_matrix <- renderPrint({
-    cnt_matrix_reference()
-  })
-  
   # plot social contact matrix
   output$plot_cnt_matrix <- renderPlot({
-    plot_cnt_matrix(cnt_matrix_reference()$matrix)
+    plot_cnt_matrix(cnt_matrix_control()$matrix)
   })
   
   # print social contact matrix
-  output$print_cnt_matrix_control <- renderPrint({
-    #cnt_matrix_out()
+  output$print_cnt_matrix_comparison <- renderPrint({
+    
+    cnt_matrix_ui <- cnt_matrix_ui()
+    
+    # CLI
+    print(cnt_matrix_ui)
+
     if(input$bool_schools_closed){
       print("schools closed")
-      cnt_matrix_control()
+      cnt_matrix_ref <- cnt_matrix_reference()
+      
+      print("ratio = with control / without control")
+      compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix)
     }
   })
   

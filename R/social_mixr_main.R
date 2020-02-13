@@ -67,7 +67,7 @@ get_survey_object <- function(country,daytype,period,touch,duration,
   data_cnt  <- polymod$contacts
   
   # select country
-  print(country)
+  #print(country)
   bool_country <- (data_part$country == country)
   data_part    <- data_part[bool_country,]
   

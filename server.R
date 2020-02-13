@@ -10,8 +10,9 @@ library(shiny)
 source('R/social_mixr_main.R')
 
 # Define server logic required to plot various output
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   
+ 
   # calculate social contact matrix
   cnt_matrix_reference<- reactive({
 
@@ -75,51 +76,57 @@ shinyServer(function(input, output) {
   # print social contact matrix
   output$print_cnt_matrix_comparison <- renderPrint({
     
+    # get social contact matrix, using all features
     cnt_matrix_ui <- cnt_matrix_ui()
     
     # CLI
     print(cnt_matrix_ui)
 
-    if(input$bool_schools_closed){
-      print("schools closed")
+    # include telework features?
+    bool_telework <- input$telework_target > input$telework_reference
+
+    if(input$bool_schools_closed | bool_telework){
+      
+      if(input$bool_schools_closed) {
+        print(list(intervention = "All schools are closed"))
+        }
+      
+      # get reference social contact matrix (no intervention)
       cnt_matrix_ref <- cnt_matrix_reference()
       
-      print("ratio = with control / without control")
-      compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix)
-    }
-  })
-  
-  # print social contact matrix
-  output$print_cnt_matrix_telework <- renderPrint({
-    
-    cnt_matrix_ui <- cnt_matrix_ui()
-    
-    # CLI
-    print(cnt_matrix_ui)
-    
-    if(input$telework_reference != input$telework_target){
-      print("telework increased")
+      if(bool_telework){
+        print(list(intervention = paste0("Increased telework (",
+                     input$telework_target,'% instead of ',
+                     input$telework_reference,'%)')))
       
-      # get contact matrix with work-contacts (exclusive)
-      if(input$cnt_work){
-        cnt_matrix_work_excl <- cnt_matrix_work_excl()$matrix
-      } else{
-        cnt_matrix_work_excl <- cnt_matrix_ui$matrix * 0
+        # get contact matrix with work-contacts (exclusive)
+        if(input$cnt_work){
+          cnt_matrix_work_excl <- cnt_matrix_work_excl()$matrix
+        } else{
+          cnt_matrix_work_excl <- cnt_matrix_ui$matrix * 0
+        }
+        
+        # apply reduction
+        telework_increase  <- input$telework_target/100 - input$telework_reference/100
+        telework_reduction <- telework_increase / (1-input$telework_reference/100)
+        cnt_matrix_work_reduction <- cnt_matrix_work_excl * telework_reduction
+
+        # calculate final matrix
+        cnt_matrix_ui$matrix <- cnt_matrix_ui$matrix - cnt_matrix_work_reduction
       }
       
-      # apply reduction
-      telework_increase  <- input$telework_target - input$telework_reference
-      telework_reduction <- telework_increase / (1-input$telework_reference)
-      cnt_matrix_work_reduction <- cnt_matrix_work_excl * telework_reduction
-      print(telework_reduction)
-      print(cnt_matrix_work_reduction)
+      model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix)
+      print(model_comparison)
       
-      # calculate final matrix
-      cnt_matrix_telework <- cnt_matrix_ui$matrix - cnt_matrix_work_reduction
-      
-      print("ratio = with control / without control")
-      compare_contact_matrices(cnt_matrix_telework,cnt_matrix_ui$matrix)
-    }
+      # add note
+      print("note: ratio = with intervention / without intervention")
+      }
+    
+  })
+  
+  # Update the minimum "telework target" (at least the observed value)
+  observe({
+      updateSliderInput(session, "telework_target", min = input$telework_reference)
   })
   
 })

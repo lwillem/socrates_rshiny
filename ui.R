@@ -63,12 +63,12 @@ shinyUI(pageWithSidebar(
     helpText("Reactive strategies"),
     checkboxInput("bool_schools_closed","Close all schools"),
     
-    sliderInput("telework_reference","Observed % telework",0,0.99,0.16),
-    sliderInput("telework_target","Target % telework",0,0.99,0.16)
-
+    sliderInput("telework_reference","Observed % telework",min=0,max=99,value=16),
+    sliderInput("telework_target","Target % telework",min=0,max=99,value=16)
+    
     #submit button
     #submitButton("Update View")
-    
+
   ),
   
   # Show the caption and plot of the requested variable against mpg
@@ -76,9 +76,9 @@ shinyUI(pageWithSidebar(
     
     plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
     
-    verbatimTextOutput("print_cnt_matrix_comparison"),
+    verbatimTextOutput("print_cnt_matrix_comparison")
     
-    verbatimTextOutput("print_cnt_matrix_telework")
+    #verbatimTextOutput("print_cnt_matrix_telework")
     
   )
 ))

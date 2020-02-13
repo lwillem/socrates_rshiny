@@ -11,7 +11,7 @@
 contact_matrix <- function(...){
 
   # print statement
-  print("Use modified contact_matrix() function")
+  #print("Use modified contact_matrix() function")
   
   # run social_mixr function
   matrix_out <- socialmixr::contact_matrix(...)

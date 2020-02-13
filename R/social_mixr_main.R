@@ -53,6 +53,7 @@ get_contact_matrix <- function(country,daytype,period,touch,duration,
                                age.limits = age_breaks_num,
                                symmetric  = symmetric,
                                quiet      = TRUE)
+  
   # return
   matrix_out
 }
@@ -180,9 +181,13 @@ get_survey_object <- function(country,daytype,period,touch,duration,
 compare_contact_matrices <- function(mija,mijb){
   R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)
   mij_ratio     <- mija/mijb
-  RIa           <- standardize_RI(eigen(mija)$vectors[,1])
-  RIb           <- standardize_RI(eigen(mijb)$vectors[,1])
-  RI_ratio      <- RIa/RIb
+  
+  # relative incidence 
+  RIa             <- standardize_RI(eigen(mija)$vectors[,1])
+  RIb             <- standardize_RI(eigen(mijb)$vectors[,1])
+  RI_ratio        <- RIa/RIb
+  names(RI_ratio) <- colnames(mija)
+  
   return(list(R0_ratio=R0_ratio,mij_ratio=mij_ratio,RI_ratio=RI_ratio))
 }
 

@@ -10,10 +10,12 @@ library(shiny)
 library('socialmixr')
 source('R/social_mixr_main.R')
 
+# controls the number of digits to print when printing numeric values
+options(digits = 3)
+
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {
   
- 
   # calculate social contact matrix
   cnt_matrix_reference<- reactive({
 

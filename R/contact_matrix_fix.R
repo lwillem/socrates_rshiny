@@ -23,6 +23,11 @@ contact_matrix <- function(...){
   # remove population (for now)
   matrix_out$demography <- NULL
   
+  # # set age.groups as rownames instead of a column
+  age.groups <- matrix_out$participants$age.group
+  matrix_out$participants <- data.frame(as.matrix(matrix_out$participants[,-1]))
+  row.names(matrix_out$participants) <- age.groups
+  
   # return
   matrix_out
 }

@@ -23,7 +23,7 @@ plot_cnt_matrix <- function(mij){
              cex.main=1.2, 
              las=0.1,
              col=redc, 
-             main="Average number of contacts", 
+             main="Average number of contacts / day", 
              xaxt="n", 
              yaxt="n")
   # set axis 

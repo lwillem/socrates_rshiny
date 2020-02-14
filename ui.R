@@ -28,11 +28,11 @@ source('R/social_mixr_main.R')
 shinyUI(pageWithSidebar(
   
   # Application title
-  headerPanel("Social contact matrix"),
+  headerPanel("Social Contact Rates (Socrates) Data Tool"),
   
   # Sidebar with controls
   sidebarPanel(
-    
+   
     selectInput("country", "Country?",
                 opt_country),
     

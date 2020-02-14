@@ -16,25 +16,29 @@ options(digits = 3)
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {
   
-  output$social_contact_analysis <- renderPrint({
+  app_social_contact_analysis <- reactive({
     
     out <- run_social_contact_analysis(country      = input$country,
-                                 daytype      = input$daytype,
-                                 period       = input$period,
-                                 touch        = input$touch,
-                                 duration     = input$duration,
-                                 cnt_home     = input$cnt_home,
-                                 cnt_school   = input$cnt_school,
-                                 cnt_work     = input$cnt_work,
-                                 cnt_other    = input$cnt_other,
-                                 cnt_unknown  = input$cnt_unknown,
-                                 symmetric    = input$symmetric,
-                                 age_breaks_text     = input$age_breaks_text,
-                                 bool_schools_closed = input$bool_schools_closed,
-                                 telework_reference  = input$telework_reference,
-                                 telework_target     = input$telework_target)
+                                       daytype      = input$daytype,
+                                       period       = input$period,
+                                       touch        = input$touch,
+                                       duration     = input$duration,
+                                       cnt_home     = input$cnt_home,
+                                       cnt_school   = input$cnt_school,
+                                       cnt_work     = input$cnt_work,
+                                       cnt_other    = input$cnt_other,
+                                       cnt_unknown  = input$cnt_unknown,
+                                       symmetric    = input$symmetric,
+                                       age_breaks_text     = input$age_breaks_text,
+                                       bool_schools_closed = input$bool_schools_closed,
+                                       telework_reference  = input$telework_reference,
+                                       telework_target     = input$telework_target)
     
-    print(out)
+    out
+  })
+  
+  output$social_contact_analysis <- renderPrint({
+    app_social_contact_analysis()
   })
   
   cnt_matrix_ui<- reactive({
@@ -65,4 +69,31 @@ shinyServer(function(input, output, session) {
       updateSliderInput(session, "telework_target", min = input$telework_reference)
   })
   
+  output$download_matrix <- downloadHandler(
+    filename = function(file) {
+      paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_matrix.csv")
+    },
+    content = function(file) {
+      
+      out <- cnt_matrix_ui()
+      
+      cnt_matrix           <- unlist(out$matrix)
+      colnames(cnt_matrix) <- paste0('contact_',colnames(cnt_matrix))
+      cnt_matrix           <- cbind(age_group=row.names(out$matrix),cnt_matrix)
+      
+      #write.table(social_contact_analysis(), file,sep=',')
+      write.table(cnt_matrix, file,sep=',',row.names=F)
+    }
+  )
+  
+  output$download_all <- downloadHandler(
+    filename = function(file) {
+      paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_analysis.RData")
+    },
+    content = function(file) {
+      out <- app_social_contact_analysis()
+      saveRDS(object = out, file)
+    }
+  )
+
 })

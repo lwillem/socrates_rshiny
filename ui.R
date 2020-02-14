@@ -64,11 +64,13 @@ shinyUI(pageWithSidebar(
     checkboxInput("bool_schools_closed","Close all schools"),
     
     sliderInput("telework_reference","Observed % telework",min=0,max=99,value=16),
-    sliderInput("telework_target","Target % telework",min=0,max=99,value=16)
+    sliderInput("telework_target","Target % telework",min=0,max=99,value=16),
+    
+    downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),
+    downloadButton('download_all',"Download all results (.RData)",style = "width:99%;")
 
   ),
   
-  # Show the caption and plot of the requested variable against mpg
   mainPanel(
     
     plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),

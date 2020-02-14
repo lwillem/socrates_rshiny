@@ -15,8 +15,81 @@ library('socialmixr')
 #contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
 
 library('countrycode')
+library('rlist')
 source('R/contact_matrix_fix.R')
 source('R/plot_social_contact_matrix.R')
+
+run_social_contact_analysis <- function(country,daytype,period,touch,duration,
+                                         cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
+                                         symmetric,age_breaks_text,
+                                         bool_schools_closed,telework_reference,telework_target){
+  
+  # get social contact matrix, using all features
+  cnt_matrix_ui <- get_contact_matrix(country,daytype,period,touch,duration,
+                                      cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
+                                      symmetric,age_breaks_text,
+                                      bool_schools_closed,
+                                      bool_exclusive = FALSE)
+  
+  # CLI
+  fct_out <- cnt_matrix_ui
+  
+  # include telework features?
+  bool_telework <- telework_target > telework_reference
+  
+  if(bool_schools_closed | bool_telework){
+    
+    if(bool_schools_closed) {
+      fct_out <- c(fct_out,list(intervention = "All schools are closed"))
+    }
+    
+    # get reference social contact matrix (no intervention)
+    cnt_matrix_ref <- get_contact_matrix(country,daytype,period,touch,duration,
+                                         cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
+                                         symmetric,age_breaks_text,
+                                         bool_schools_closed = FALSE,
+                                         bool_exclusive = FALSE)
+    
+    if(bool_telework){
+      fct_out <- c(fct_out,list(intervention = paste0("Increased telework (",
+                                       telework_target,'% instead of ',
+                                       telework_reference,'%)')))
+      
+      # get contact matrix with work-contacts (exclusive)
+      if(cnt_work){
+        cnt_matrix_work_excl <- get_contact_matrix(country,daytype,period,touch,duration,
+                                                      cnt_home = FALSE,
+                                                      cnt_school = FALSE,
+                                                      cnt_work,
+                                                      cnt_other = FALSE,
+                                                      cnt_unknown = FALSE,
+                                                      symmetric,age_breaks_text,
+                                                      bool_schools_closed = FALSE,
+                                                      bool_exclusive = FALSE)$matrix
+      } else{
+        cnt_matrix_work_excl <- cnt_matrix_ui$matrix * 0
+      }
+      
+      # apply reduction
+      telework_increase  <- telework_target/100 - telework_reference/100
+      telework_reduction <- telework_increase / (1-telework_reference/100)
+      cnt_matrix_work_reduction <- cnt_matrix_work_excl * telework_reduction
+      
+      # calculate final matrix
+      cnt_matrix_ui$matrix <- cnt_matrix_ui$matrix - cnt_matrix_work_reduction
+    }
+    
+    model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix)
+    #print(model_comparison)
+    
+    fct_out <- c(cnt_matrix_ui,model_comparison)
+    
+    
+    # add note
+    fct_out <- c(fct_out,note="ratio = with intervention / without intervention")
+  }
+   return(fct_out)
+}
 
 ## MAIN FUNCTION ####
 get_contact_matrix <- function(country,daytype,period,touch,duration,
@@ -175,8 +248,8 @@ get_survey_object <- function(country,daytype,period,touch,duration,
 }
 
 
-# mija <- contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))$matrix
-# mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 1, 5, 15))$matrix
+#mija <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45,65))$matrix*c(1,0.5,0.6,1)
+#mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45, 65))$matrix
 
 compare_contact_matrices <- function(mija,mijb){
   R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)

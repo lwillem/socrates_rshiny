@@ -18,7 +18,6 @@ library('socialmixr')
 
 # load shiny libraary
 library(shiny)
-library(shinyjs)
 
 # load social contact functions
 source('R/sidebarPanel_config.R')
@@ -73,10 +72,8 @@ shinyUI(pageWithSidebar(
   mainPanel(
     
     plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
-    
-    verbatimTextOutput("print_cnt_matrix_comparison")
-    
-    #verbatimTextOutput("print_cnt_matrix_telework")
+ 
+    verbatimTextOutput("social_contact_analysis")
     
   )
 ))

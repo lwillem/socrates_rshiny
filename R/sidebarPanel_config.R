@@ -27,9 +27,6 @@ opt_country  <- as.list(levels(unique(polymod$participants$country)))
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)
 names(opt_day_type) <- unlist(opt_day_type)
-names(opt_period)   <- unlist(opt_period)
-names(opt_day_type_period)   <- unlist(opt_day_type_period)
-
 names(opt_touch)    <- unlist(opt_touch)
 names(opt_duration) <- unlist(opt_duration)
 names(opt_country)  <- unlist(opt_country)

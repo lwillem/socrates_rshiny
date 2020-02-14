@@ -53,9 +53,8 @@ shinyUI(pageWithSidebar(
     checkboxInput("cnt_school", "Contacts at SCHOOL?", TRUE),
     checkboxInput("cnt_work",   "Contacts at WORK?", TRUE),
     checkboxInput("cnt_other",  "Contacts at OTHER places?", TRUE),
-    checkboxInput("cnt_unknown",  "Contact location UNKNOWN?", TRUE),
-    
-    checkboxInput("symmetric", "Reciprocal contacts?", FALSE),
+
+    checkboxInput("symmetric", "Reciprocal contacts?", TRUE),
   
     helpText("Reactive strategies"),
     checkboxInput("bool_schools_closed","Close all schools"),

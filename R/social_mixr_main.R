@@ -19,14 +19,14 @@ library('rlist')
 source('R/contact_matrix_fix.R')
 source('R/plot_social_contact_matrix.R')
 
-run_social_contact_analysis <- function(country,daytype_period,touch,duration,
-                                         cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
+run_social_contact_analysis <- function(country,daytype,touch,duration,
+                                         cnt_home,cnt_school,cnt_work,cnt_other,
                                          symmetric,age_breaks_text,
                                          bool_schools_closed,telework_reference,telework_target){
   
   # get social contact matrix, using all features
-  cnt_matrix_ui <- get_contact_matrix(country,daytype_period,touch,duration,
-                                      cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
+  cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,
+                                      cnt_home,cnt_school,cnt_work,cnt_other,
                                       symmetric,age_breaks_text,
                                       bool_schools_closed,
                                       bool_exclusive = FALSE)
@@ -44,8 +44,8 @@ run_social_contact_analysis <- function(country,daytype_period,touch,duration,
     }
     
     # get reference social contact matrix (no intervention)
-    cnt_matrix_ref <- get_contact_matrix(country,daytype,period,touch,duration,
-                                         cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
+    cnt_matrix_ref <- get_contact_matrix(country,daytype,touch,duration,
+                                         cnt_home,cnt_school,cnt_work,cnt_other,
                                          symmetric,age_breaks_text,
                                          bool_schools_closed = FALSE,
                                          bool_exclusive = FALSE)
@@ -57,12 +57,11 @@ run_social_contact_analysis <- function(country,daytype_period,touch,duration,
       
       # get contact matrix with work-contacts (exclusive)
       if(cnt_work){
-        cnt_matrix_work_excl <- get_contact_matrix(country,daytype,period,touch,duration,
+        cnt_matrix_work_excl <- get_contact_matrix(country,daytype,touch,duration,
                                                       cnt_home = FALSE,
                                                       cnt_school = FALSE,
                                                       cnt_work,
                                                       cnt_other = FALSE,
-                                                      cnt_unknown = FALSE,
                                                       symmetric,age_breaks_text,
                                                       bool_schools_closed = FALSE,
                                                       bool_exclusive = FALSE)$matrix
@@ -92,8 +91,8 @@ run_social_contact_analysis <- function(country,daytype_period,touch,duration,
 }
 
 ## MAIN FUNCTION ####
-get_contact_matrix <- function(country,daytype_period,touch,duration,
-                               cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
+get_contact_matrix <- function(country,daytype,touch,duration,
+                               cnt_home,cnt_school,cnt_work,cnt_other,
                                symmetric,age_breaks_text,
                                bool_schools_closed,bool_exclusive){
   
@@ -110,15 +109,13 @@ get_contact_matrix <- function(country,daytype_period,touch,duration,
   
   # get specific social_mixr survey object
   survey_object <- get_survey_object(country      = country,
-                                     daytype_period      = daytype_period,
-                                     #period       = period,
+                                     daytype      = daytype,
                                      touch        = touch,
                                      duration     = duration,
                                      cnt_home     = cnt_home,
                                      cnt_school   = cnt_school,
                                      cnt_work     = cnt_work,
                                      cnt_other    = cnt_other,
-                                     cnt_unknown  = cnt_unknown,
                                      bool_exclusive   = bool_exclusive)  # remove contacts at multiple loations
  
   # run social_mixr function
@@ -132,8 +129,8 @@ get_contact_matrix <- function(country,daytype_period,touch,duration,
 }
 
 ## GET SURVEY DATA ####
-get_survey_object <- function(country,daytype_period,touch,duration,
-                              cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
+get_survey_object <- function(country,daytype,touch,duration,
+                              cnt_home,cnt_school,cnt_work,cnt_other,
                               bool_exclusive){
   
   # get original polymod data
@@ -146,9 +143,9 @@ get_survey_object <- function(country,daytype_period,touch,duration,
   data_part    <- data_part[bool_country,]
   
   # select type of day
-  if(daytype_period != opt_day_type_period[[1]]){
+  if(daytype != opt_day_type[[1]]){
     bool_dayofweek <- data_part$dayofweek >= 0 # all
-    if(daytype_period == opt_day_type_period[[3]]){ # weekend
+    if(daytype == opt_day_type[[3]]){ # weekend
       bool_dayofweek <- data_part$dayofweek %in% c(0,6)
       data_part      <- data_part[bool_dayofweek,]
     } else{
@@ -158,7 +155,7 @@ get_survey_object <- function(country,daytype_period,touch,duration,
   }
   
   # select period
-  if(daytype_period %in% names(opt_day_type_period[4:5])){
+  if(daytype %in% names(opt_day_type[4:5])){
     load('data/holiday_all.RData')
     country_iso3 <- countrycode(unlist(country), 'country.name', 'iso3c')
     country_holiday_data <- holiday_all[holiday_all$iso3 == country_iso3,]
@@ -169,7 +166,7 @@ get_survey_object <- function(country,daytype_period,touch,duration,
                               ,'%d/%m/%Y')
     data_part$is_holiday <- data_part$date %in% country_holiday_data$date
 
-    if(daytype_period == opt_day_type_period[[4]]){
+    if(daytype == opt_day_type[[4]]){
       if(!any(data_part$is_holiday)){ # if no holiday period data
         print("NO HOLIDAY DATA... USE REGULAR PERIOD DATA")
       } else{ # select holiday period data
@@ -205,23 +202,21 @@ get_survey_object <- function(country,daytype_period,touch,duration,
   
   # create temporary category for "other"
   bool_cnt_other <- data_cnt$cnt_transport  == 1 |
-                data_cnt$cnt_leisure    == 1 |
-                data_cnt$cnt_otherplace == 1
+                    data_cnt$cnt_leisure    == 1 |
+                    data_cnt$cnt_otherplace == 1
+  # add contacts with missing location
+  loc_unknown    <- data_cnt$cnt_home       == 0 &
+                    data_cnt$cnt_school     == 0 &
+                    data_cnt$cnt_work       == 0 &
+                    bool_cnt_other          == 0 
+  bool_cnt_other <- bool_cnt_other | loc_unknown
   
   # select contact location
-  bool_cnt    <- rep(FALSE,nrow(data_cnt))
+  bool_cnt <- rep(FALSE,nrow(data_cnt))
   if(cnt_home)   { bool_cnt <- bool_cnt | data_cnt$cnt_home}
   if(cnt_school) { bool_cnt <- bool_cnt | data_cnt$cnt_school}
   if(cnt_work)   { bool_cnt <- bool_cnt | data_cnt$cnt_work}
   if(cnt_other)  { bool_cnt <- bool_cnt | bool_cnt_other  }
-  if(cnt_unknown){ 
-    # create temporary category for 'location unknown'
-    loc_unknown <- data_cnt$cnt_home   == 0 &
-                   data_cnt$cnt_school == 0 &
-                   data_cnt$cnt_work   == 0 &
-                   data_cnt$cnt_other  == 0 
-    bool_cnt    <- bool_cnt | loc_unknown
-  }
   
   if(bool_exclusive){
     loc_single <- ((data_cnt$cnt_home   == 1) +

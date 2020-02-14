@@ -39,13 +39,10 @@ shinyUI(pageWithSidebar(
     textInput(inputId="age_breaks_text",
               label="Age breaks (comma delimited)",
               value="0,18,45,65"),
-    
-    selectInput("daytype", "Weekdays/weekends?",
+   
+    selectInput("daytype", "Type of day?",
                 opt_day_type),
-    
-    selectInput("period", "Period? (regular/holiday)",
-                opt_period),
-    
+
     selectInput("duration", "Contact duration?",
                 opt_duration),
     

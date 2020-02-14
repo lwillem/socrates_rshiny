@@ -19,13 +19,13 @@ library('rlist')
 source('R/contact_matrix_fix.R')
 source('R/plot_social_contact_matrix.R')
 
-run_social_contact_analysis <- function(country,daytype,period,touch,duration,
+run_social_contact_analysis <- function(country,daytype_period,touch,duration,
                                          cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
                                          symmetric,age_breaks_text,
                                          bool_schools_closed,telework_reference,telework_target){
   
   # get social contact matrix, using all features
-  cnt_matrix_ui <- get_contact_matrix(country,daytype,period,touch,duration,
+  cnt_matrix_ui <- get_contact_matrix(country,daytype_period,touch,duration,
                                       cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
                                       symmetric,age_breaks_text,
                                       bool_schools_closed,
@@ -92,7 +92,7 @@ run_social_contact_analysis <- function(country,daytype,period,touch,duration,
 }
 
 ## MAIN FUNCTION ####
-get_contact_matrix <- function(country,daytype,period,touch,duration,
+get_contact_matrix <- function(country,daytype_period,touch,duration,
                                cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
                                symmetric,age_breaks_text,
                                bool_schools_closed,bool_exclusive){
@@ -110,8 +110,8 @@ get_contact_matrix <- function(country,daytype,period,touch,duration,
   
   # get specific social_mixr survey object
   survey_object <- get_survey_object(country      = country,
-                                     daytype      = daytype,
-                                     period       = period,
+                                     daytype_period      = daytype_period,
+                                     #period       = period,
                                      touch        = touch,
                                      duration     = duration,
                                      cnt_home     = cnt_home,
@@ -132,7 +132,7 @@ get_contact_matrix <- function(country,daytype,period,touch,duration,
 }
 
 ## GET SURVEY DATA ####
-get_survey_object <- function(country,daytype,period,touch,duration,
+get_survey_object <- function(country,daytype_period,touch,duration,
                               cnt_home,cnt_school,cnt_work,cnt_other,cnt_unknown,
                               bool_exclusive){
   
@@ -146,20 +146,19 @@ get_survey_object <- function(country,daytype,period,touch,duration,
   data_part    <- data_part[bool_country,]
   
   # select type of day
-  bool_dayofweek <- data_part$dayofweek >= 0 # all
-  if(daytype == opt_day_type[[2]]){ # weekday
-    bool_dayofweek <- data_part$dayofweek %in% 1:5
-    data_part      <- data_part[bool_dayofweek,]
-    print(opt_day_type[[2]])
-  }
-  if(daytype == opt_day_type[[3]]){ # weekend
-    bool_dayofweek <- data_part$dayofweek %in% c(0,6)
-    data_part      <- data_part[bool_dayofweek,]
-    print(opt_day_type[[3]])
+  if(daytype_period != opt_day_type_period[[1]]){
+    bool_dayofweek <- data_part$dayofweek >= 0 # all
+    if(daytype_period == opt_day_type_period[[3]]){ # weekend
+      bool_dayofweek <- data_part$dayofweek %in% c(0,6)
+      data_part      <- data_part[bool_dayofweek,]
+    } else{
+      bool_dayofweek <- data_part$dayofweek %in% 1:5
+      data_part      <- data_part[bool_dayofweek,]
+    }
   }
   
   # select period
-  if(period != opt_period[[1]]){
+  if(daytype_period %in% names(opt_day_type_period[4:5])){
     load('data/holiday_all.RData')
     country_iso3 <- countrycode(unlist(country), 'country.name', 'iso3c')
     country_holiday_data <- holiday_all[holiday_all$iso3 == country_iso3,]
@@ -170,7 +169,7 @@ get_survey_object <- function(country,daytype,period,touch,duration,
                               ,'%d/%m/%Y')
     data_part$is_holiday <- data_part$date %in% country_holiday_data$date
 
-    if(period == opt_period[[2]]){
+    if(daytype_period == opt_day_type_period[[4]]){
       if(!any(data_part$is_holiday)){ # if no holiday period data
         print("NO HOLIDAY DATA... USE REGULAR PERIOD DATA")
       } else{ # select holiday period data

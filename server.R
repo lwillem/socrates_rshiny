@@ -20,7 +20,6 @@ shinyServer(function(input, output, session) {
     
     out <- run_social_contact_analysis(country      = input$country,
                                        daytype      = input$daytype,
-                                       period       = input$period,
                                        touch        = input$touch,
                                        duration     = input$duration,
                                        cnt_home     = input$cnt_home,
@@ -45,7 +44,6 @@ shinyServer(function(input, output, session) {
     
     get_contact_matrix(country      = input$country,
                        daytype      = input$daytype,
-                       period       = input$period,
                        touch        = input$touch,
                        duration     = input$duration,
                        cnt_home     = input$cnt_home,

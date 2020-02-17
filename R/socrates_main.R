@@ -258,9 +258,6 @@ get_survey_object <- function(country,
 
 #mija <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45,65))$matrix*c(1,0.5,0.6,1)
 #mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45, 65))$matrix
-mija <- get_contact_matrix(country,daytype,touch,duration,gender,NULL,symmetric,age_breaks_text,bool_schools_closed = F,bool_exclusive = F)$matrix
-mijb <- get_contact_matrix(country,daytype,touch,duration,gender,NULL,symmetric,age_breaks_text,bool_schools_closed = T,bool_exclusive = F)$matrix
-
 compare_contact_matrices <- function(mija,mijb){
   R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)
   mij_ratio     <- mija/mijb

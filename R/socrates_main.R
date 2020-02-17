@@ -271,7 +271,21 @@ compare_contact_matrices <- function(mija,mijb){
   RI_ratio        <- RIa/RIb
   names(RI_ratio) <- colnames(mija)
   
-  return(list(R0_ratio=R0_ratio,mij_ratio=mij_ratio,RI_ratio=RI_ratio))
+  #output 
+  out <- list(R0_ratio=R0_ratio,mij_ratio=mij_ratio,RI_ratio=RI_ratio)
+  
+  # fix NA-results
+  if(identical(mija,mijb)){ # set 1 if mija == mijb
+    for(i in 1:length(out)) { 
+      out[[i]][] <- 1 
+    }
+  } else if(sum(mija) == 0){ # set 0 if mija[] == 0
+      for(i in 1:length(out)) { 
+      out[[i]][] <- 0 
+    }
+  }
+  
+  return(out)
 }
 
 # help function to standardize the relative incidence

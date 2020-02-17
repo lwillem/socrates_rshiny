@@ -38,6 +38,9 @@ shinyUI(pageWithSidebar(
     selectInput("touch", "Skin-to-skin touching?",
                 opt_touch),
     
+    selectInput("gender", "Gender?",
+                opt_gender),
+    
     checkboxInput("cnt_home",   "Contacts at HOME?", TRUE),
     checkboxInput("cnt_school", "Contacts at SCHOOL?", TRUE),
     checkboxInput("cnt_work",   "Contacts at WORK?", TRUE),

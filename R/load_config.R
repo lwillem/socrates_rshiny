@@ -39,7 +39,7 @@ for(package_i in all_packages){
 
 # set all options
 # note: the first is the default
-opt_gender   <- list("All","Female","Male")
+opt_gender   <- list("All","Female-Female","Male-Male",'Male-Female')
 opt_day_type <- list("All contacts",
                      "Monday-Friday",
                      "Saturday-Sunday",

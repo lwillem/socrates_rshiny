@@ -14,13 +14,13 @@ source('R/plot_social_contact_matrix.R')
 # example
 #contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
 
-run_social_contact_analysis <- function(country,daytype,touch,duration,
+run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                          cnt_home,cnt_school,cnt_work,cnt_other,
                                          symmetric,age_breaks_text,
                                          bool_schools_closed,telework_reference,telework_target){
   
   # get social contact matrix, using all features
-  cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,
+  cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
                                       cnt_home,cnt_school,cnt_work,cnt_other,
                                       symmetric,age_breaks_text,
                                       bool_schools_closed,
@@ -39,7 +39,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,
     }
     
     # get reference social contact matrix (no intervention)
-    cnt_matrix_ref <- get_contact_matrix(country,daytype,touch,duration,
+    cnt_matrix_ref <- get_contact_matrix(country,daytype,touch,duration,gender,
                                          cnt_home,cnt_school,cnt_work,cnt_other,
                                          symmetric,age_breaks_text,
                                          bool_schools_closed = FALSE,
@@ -52,7 +52,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,
       
       # get contact matrix with work-contacts (exclusive)
       if(cnt_work){
-        cnt_matrix_work_excl <- get_contact_matrix(country,daytype,touch,duration,
+        cnt_matrix_work_excl <- get_contact_matrix(country,daytype,touch,duration,gender,
                                                       cnt_home = FALSE,
                                                       cnt_school = FALSE,
                                                       cnt_work,
@@ -86,7 +86,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,
 }
 
 ## MAIN FUNCTION ####
-get_contact_matrix <- function(country,daytype,touch,duration,
+get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                cnt_home,cnt_school,cnt_work,cnt_other,
                                symmetric,age_breaks_text,
                                bool_schools_closed,bool_exclusive){
@@ -107,6 +107,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,
                                      daytype      = daytype,
                                      touch        = touch,
                                      duration     = duration,
+                                     gender       = gender,
                                      cnt_home     = cnt_home,
                                      cnt_school   = cnt_school,
                                      cnt_work     = cnt_work,
@@ -124,7 +125,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,
 }
 
 ## GET SURVEY DATA ####
-get_survey_object <- function(country,daytype,touch,duration,
+get_survey_object <- function(country,daytype,touch,duration,gender,
                               cnt_home,cnt_school,cnt_work,cnt_other,
                               bool_exclusive){
   
@@ -132,10 +133,10 @@ get_survey_object <- function(country,daytype,touch,duration,
   data_part <- polymod$participants
   data_cnt  <- polymod$contacts
   
-  # select country
-  #print(country)
+  # select country: participant and contact data
   bool_country <- (data_part$country == country)
   data_part    <- data_part[bool_country,]
+  data_cnt     <- data_cnt[data_cnt$part_id %in% data_part$part_id,]
   
   # select type of day
   if(daytype != opt_day_type[[1]]){
@@ -193,6 +194,26 @@ get_survey_object <- function(country,daytype,touch,duration,
     bool_touching <- !is.na(data_cnt$phys_contact) & data_cnt$phys_contact == touch_code
     data_cnt      <- data_cnt[bool_touching,]
     print(touch)
+  }
+  
+  # select gender
+  if(gender != opt_gender[[1]]){
+    bool_cnt_female  <- data_cnt$cnt_gender   == 'F'
+    bool_part_female <- data_part$part_gender == 'F'
+    if(gender == opt_gender[[2]]){         # female-female
+      data_cnt       <- data_cnt[bool_cnt_female,]
+      data_part      <- data_part[bool_part_female,]
+    } else if(gender == opt_gender[[3]]){  # male-male
+      data_cnt       <- data_cnt[!bool_cnt_female,]
+      data_part      <- data_part[!bool_part_female,]
+    } else {                               # female-male
+      
+      data_cnt_gender  <- merge(data_cnt,
+                                data_part[,c('part_id','part_gender')],
+                                by='part_id')
+      bool_gender_diff <- data_cnt_gender$cnt_gender != data_cnt_gender$part_gender
+      data_cnt         <- data_cnt[bool_gender_diff,]
+     }
   }
   
   # create temporary category for "other"

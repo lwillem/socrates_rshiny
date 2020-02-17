@@ -15,12 +15,12 @@ source('R/plot_social_contact_matrix.R')
 #contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
 
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
-                                        cnt_location,symmetric,age_breaks_text,
+                                        cnt_location,cnt_matrix_features,age_breaks_text,
                                         bool_schools_closed,telework_reference,telework_target){
   
   # get social contact matrix, using all features
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                      cnt_location,symmetric,age_breaks_text,
+                                      cnt_location,cnt_matrix_features,age_breaks_text,
                                       bool_schools_closed,
                                       bool_exclusive = FALSE)
   
@@ -35,7 +35,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     # get reference social contact matrix (no intervention)
     cnt_matrix_ref <- get_contact_matrix(country,daytype,touch,duration,gender,
                                          cnt_location,
-                                         symmetric,
+                                         cnt_matrix_features,
                                          age_breaks_text,
                                          bool_schools_closed = FALSE,
                                          bool_exclusive = FALSE)
@@ -46,7 +46,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       if('Work' %in% cnt_location){
         cnt_matrix_work_excl <- get_contact_matrix(country,daytype,touch,duration,gender,
                                                    cnt_location = "Work",
-                                                   symmetric,age_breaks_text,
+                                                   cnt_matrix_features,age_breaks_text,
                                                    bool_schools_closed = FALSE,
                                                    bool_exclusive = FALSE)$matrix
       } else{
@@ -83,7 +83,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
 
 ## MAIN FUNCTION ####
 get_contact_matrix <- function(country,daytype,touch,duration,gender,
-                               cnt_location,symmetric,age_breaks_text,
+                               cnt_location,cnt_matrix_features,age_breaks_text,
                                bool_schools_closed,bool_exclusive){
   
   # REACTIVE STRATEGY: SCHOOL CLOSURE
@@ -105,12 +105,17 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      gender       = gender,
                                      cnt_location = cnt_location,
                                      bool_exclusive   = bool_exclusive)  # remove contacts at multiple loations
+  
+  bool_symmetric       <- opt_matrix_features[[1]]  %in% cnt_matrix_features
+  bool_weigh_age_group <- opt_matrix_features[[2]]  %in% cnt_matrix_features
+  bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features
+  
   # run social_mixr function
   matrix_out <- contact_matrix(survey           = survey_object, 
                                 age.limits      = age_breaks_num,
-                                symmetric       = symmetric,
-                                weigh.dayofweek = TRUE,
-                                weigh.age.group = TRUE,
+                                symmetric       = bool_symmetric,
+                                weigh.age.group = bool_weigh_age_group,
+                                weigh.dayofweek = bool_weigh_dayofweek,
                                 quiet           = TRUE)
   # return
   matrix_out

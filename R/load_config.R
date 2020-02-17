@@ -52,6 +52,7 @@ opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes
 opt_country  <- as.list(levels(unique(polymod$participants$country)))
 
 opt_location         <- c("Home","Work","School","Transport","Leisure","Otherplace")
+opt_matrix_features   <- c("Reciprocal","Weighted by age","Weighted by week/weekend")
 
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)
@@ -60,6 +61,8 @@ names(opt_touch)    <- unlist(opt_touch)
 names(opt_duration) <- unlist(opt_duration)
 names(opt_country)  <- unlist(opt_country)
 names(opt_location) <- unlist(opt_location)
+names(opt_matrix_features) <- unlist(opt_matrix_features)
+
 
 
 

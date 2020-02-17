@@ -24,7 +24,7 @@ shinyServer(function(input, output, session) {
                                        duration     = input$duration,
                                        gender       = input$gender,
                                        cnt_location = input$cnt_location,
-                                       symmetric    = input$symmetric,
+                                       cnt_matrix_features = input$cnt_matrix_features,
                                        age_breaks_text     = input$age_breaks_text,
                                        bool_schools_closed = input$bool_schools_closed,
                                        telework_reference  = input$telework_reference,
@@ -45,8 +45,8 @@ shinyServer(function(input, output, session) {
                        duration     = input$duration,
                        gender       = input$gender,
                        cnt_location = input$cnt_location,
-                       symmetric    = input$symmetric,
-                       age_breaks_text = input$age_breaks_text,
+                       cnt_matrix_features = input$cnt_matrix_features,
+                       age_breaks_text     = input$age_breaks_text,
                        bool_schools_closed = input$bool_schools_closed,
                        bool_exclusive = FALSE)
   })

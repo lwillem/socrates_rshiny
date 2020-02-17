@@ -41,7 +41,12 @@ shinyUI(pageWithSidebar(
     selectInput("gender", "Gender?",
                 opt_gender),
     
-    checkboxInput("symmetric", "Reciprocal contacts?", TRUE),
+    #checkboxInput("symmetric", "Reciprocal contacts?", TRUE),
+    checkboxGroupInput('cnt_matrix_features',
+                       label = 'Matrix options',
+                       choices = opt_matrix_features,
+                       selected = opt_matrix_features),
+    
     
     checkboxGroupInput('cnt_location',
                        label = 'Included locations',

@@ -41,13 +41,13 @@ shinyUI(pageWithSidebar(
     selectInput("gender", "Gender?",
                 opt_gender),
     
-    checkboxInput("cnt_home",   "Contacts at HOME?", TRUE),
-    checkboxInput("cnt_school", "Contacts at SCHOOL?", TRUE),
-    checkboxInput("cnt_work",   "Contacts at WORK?", TRUE),
-    checkboxInput("cnt_other",  "Contacts at OTHER places?", TRUE),
-
     checkboxInput("symmetric", "Reciprocal contacts?", TRUE),
-  
+    
+    checkboxGroupInput('cnt_location',
+                       label = 'Included locations',
+                       choices = opt_location,
+                       selected = opt_location),
+    
     helpText("Reactive strategies"),
     checkboxInput("bool_schools_closed","Close all schools"),
     

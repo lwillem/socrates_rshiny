@@ -12,7 +12,7 @@
 # socialmixr    to process social contact data
 # npsp          to use 'simage' in plot_cnt_matrix
 # countrycode   to convert country names into iso3 codes
-print('load all packages')
+
 # list all package names
 all_packages <- c('socialmixr','npsp','countrycode')
 
@@ -50,12 +50,16 @@ opt_touch    <- list("All contacts", "Physical contacts","Non-physical contacts"
 opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes","More than 15 minutes","More than 1 hour","More than 4 hours")
 opt_country  <- as.list(levels(unique(polymod$participants$country)))
 
+opt_location         <- c("Home","Work","School","Transport","Leisure","Otherplace")
+
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)
 names(opt_day_type) <- unlist(opt_day_type)
 names(opt_touch)    <- unlist(opt_touch)
 names(opt_duration) <- unlist(opt_duration)
 names(opt_country)  <- unlist(opt_country)
+names(opt_location) <- unlist(opt_location)
+
 
 
 

@@ -23,10 +23,7 @@ shinyServer(function(input, output, session) {
                                        touch        = input$touch,
                                        duration     = input$duration,
                                        gender       = input$gender,
-                                       cnt_home     = input$cnt_home,
-                                       cnt_school   = input$cnt_school,
-                                       cnt_work     = input$cnt_work,
-                                       cnt_other    = input$cnt_other,
+                                       cnt_location = input$cnt_location,
                                        symmetric    = input$symmetric,
                                        age_breaks_text     = input$age_breaks_text,
                                        bool_schools_closed = input$bool_schools_closed,
@@ -41,16 +38,13 @@ shinyServer(function(input, output, session) {
   })
   
   cnt_matrix_ui<- reactive({
-    
+
     get_contact_matrix(country      = input$country,
                        daytype      = input$daytype,
                        touch        = input$touch,
                        duration     = input$duration,
                        gender       = input$gender,
-                       cnt_home     = input$cnt_home,
-                       cnt_school   = input$cnt_school,
-                       cnt_work     = input$cnt_work,
-                       cnt_other    = input$cnt_other,
+                       cnt_location = input$cnt_location,
                        symmetric    = input$symmetric,
                        age_breaks_text = input$age_breaks_text,
                        bool_schools_closed = input$bool_schools_closed,
@@ -79,7 +73,6 @@ shinyServer(function(input, output, session) {
       colnames(cnt_matrix) <- paste0('contact_',colnames(cnt_matrix))
       cnt_matrix           <- cbind(age_group=row.names(out$matrix),cnt_matrix)
       
-      #write.table(social_contact_analysis(), file,sep=',')
       write.table(cnt_matrix, file,sep=',',row.names=F)
     }
   )

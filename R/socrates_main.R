@@ -15,14 +15,12 @@ source('R/plot_social_contact_matrix.R')
 #contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
 
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
-                                         cnt_home,cnt_school,cnt_work,cnt_other,
-                                         symmetric,age_breaks_text,
-                                         bool_schools_closed,telework_reference,telework_target){
+                                        cnt_location,symmetric,age_breaks_text,
+                                        bool_schools_closed,telework_reference,telework_target){
   
   # get social contact matrix, using all features
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                      cnt_home,cnt_school,cnt_work,cnt_other,
-                                      symmetric,age_breaks_text,
+                                      cnt_location,symmetric,age_breaks_text,
                                       bool_schools_closed,
                                       bool_exclusive = FALSE)
   
@@ -34,32 +32,23 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   
   if(bool_schools_closed | bool_telework){
     
-    if(bool_schools_closed) {
-      fct_out <- c(fct_out,list(intervention = "All schools are closed"))
-    }
-    
     # get reference social contact matrix (no intervention)
     cnt_matrix_ref <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                         cnt_home,cnt_school,cnt_work,cnt_other,
-                                         symmetric,age_breaks_text,
+                                         cnt_location,
+                                         symmetric,
+                                         age_breaks_text,
                                          bool_schools_closed = FALSE,
                                          bool_exclusive = FALSE)
     
     if(bool_telework){
-      fct_out <- c(fct_out,list(intervention = paste0("Increased telework (",
-                                       telework_target,'% instead of ',
-                                       telework_reference,'%)')))
       
       # get contact matrix with work-contacts (exclusive)
-      if(cnt_work){
+      if('Work' %in% cnt_location){
         cnt_matrix_work_excl <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                                      cnt_home = FALSE,
-                                                      cnt_school = FALSE,
-                                                      cnt_work,
-                                                      cnt_other = FALSE,
-                                                      symmetric,age_breaks_text,
-                                                      bool_schools_closed = FALSE,
-                                                      bool_exclusive = FALSE)$matrix
+                                                   cnt_location = "Work",
+                                                   symmetric,age_breaks_text,
+                                                   bool_schools_closed = FALSE,
+                                                   bool_exclusive = FALSE)$matrix
       } else{
         cnt_matrix_work_excl <- cnt_matrix_ui$matrix * 0
       }
@@ -78,22 +67,28 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     
     fct_out <- c(cnt_matrix_ui,model_comparison)
     
-    
-    # add note
-    fct_out <- c(fct_out,note="ratio = with intervention / without intervention")
+    # add note(s)
+    fct_out <- c(fct_out,notes="ratio = with intervention / without intervention")
+    if(bool_schools_closed) { 
+      fct_out$notes <- rbind(fct_out$notes,"All schools are closed")
+      }
+    if(bool_telework) {   
+      fct_out$notes <- rbind(fct_out$notes, paste0("Increased telework (",
+                                                  telework_target,'% instead of ',
+                                                  telework_reference,'%)'))
+    }
   }
    return(fct_out)
 }
 
 ## MAIN FUNCTION ####
 get_contact_matrix <- function(country,daytype,touch,duration,gender,
-                               cnt_home,cnt_school,cnt_work,cnt_other,
-                               symmetric,age_breaks_text,
+                               cnt_location,symmetric,age_breaks_text,
                                bool_schools_closed,bool_exclusive){
   
   # REACTIVE STRATEGY: SCHOOL CLOSURE
   if(bool_schools_closed){
-    cnt_school <- FALSE
+    cnt_location <- cnt_location[!grepl('School',cnt_location)]
   }
   
   # set age intervals
@@ -108,25 +103,24 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      touch        = touch,
                                      duration     = duration,
                                      gender       = gender,
-                                     cnt_home     = cnt_home,
-                                     cnt_school   = cnt_school,
-                                     cnt_work     = cnt_work,
-                                     cnt_other    = cnt_other,
+                                     cnt_location = cnt_location,
                                      bool_exclusive   = bool_exclusive)  # remove contacts at multiple loations
- 
   # run social_mixr function
   matrix_out <- contact_matrix(survey     = survey_object, 
-                               age.limits = age_breaks_num,
-                               symmetric  = symmetric,
-                               quiet      = TRUE)
-  
+                                age.limits = age_breaks_num,
+                                symmetric  = symmetric,
+                                quiet      = TRUE)
   # return
   matrix_out
 }
 
 ## GET SURVEY DATA ####
-get_survey_object <- function(country,daytype,touch,duration,gender,
-                              cnt_home,cnt_school,cnt_work,cnt_other,
+get_survey_object <- function(country,
+                              daytype,
+                              touch,
+                              duration,
+                              gender,
+                              cnt_location,
                               bool_exclusive){
   
   # get original polymod data
@@ -216,39 +210,43 @@ get_survey_object <- function(country,daytype,touch,duration,gender,
      }
   }
   
-  # create temporary category for "other"
-  bool_cnt_other <- data_cnt$cnt_transport  == 1 |
-                    data_cnt$cnt_leisure    == 1 |
-                    data_cnt$cnt_otherplace == 1
-  # add contacts with missing location
-  loc_unknown    <- data_cnt$cnt_home       == 0 &
-                    data_cnt$cnt_school     == 0 &
-                    data_cnt$cnt_work       == 0 &
-                    bool_cnt_other          == 0 
-  bool_cnt_other <- bool_cnt_other | loc_unknown
-  
-  # select contact location
-  bool_cnt <- rep(FALSE,nrow(data_cnt))
-  if(cnt_home)   { bool_cnt <- bool_cnt | data_cnt$cnt_home}
-  if(cnt_school) { bool_cnt <- bool_cnt | data_cnt$cnt_school}
-  if(cnt_work)   { bool_cnt <- bool_cnt | data_cnt$cnt_work}
-  if(cnt_other)  { bool_cnt <- bool_cnt | bool_cnt_other  }
-  
-  if(bool_exclusive){
-    loc_single <- ((data_cnt$cnt_home   == 1) +
-                     (data_cnt$cnt_school == 1) +
-                     (data_cnt$cnt_work   == 1) +
-                     (data_cnt$cnt_other  == 1) ) <= 1
-    bool_cnt   <- bool_cnt & loc_single
+  #select location
+  if(length(cnt_location)==0){
+    print("WARNING: NO LOCATIONS SPECIFIED...")
+    data_cnt <- data_cnt[0,]
+  } else if(!identical(cnt_location,opt_location)){
+    
+    # fix: change data.table to data.frame
+    data_cnt_tmp <- data.frame(data_cnt)
+    
+    # get column names
+    cnt_location_colnames <- c(paste0('cnt_',tolower(cnt_location)))
+    
+    # select columns
+    if(length(cnt_location)>1){
+      is_present <- rowSums(data_cnt_tmp[,cnt_location_colnames] == 1)
+    } else{
+      is_present <- data_cnt_tmp[,cnt_location_colnames]
+    }
+      
+    # select contact at specified location(s) 
+    bool_location <- is_present > 0
+    
+    # option to select only exclusive contacts
+    if(bool_exclusive){
+      bool_exclusive <- rowSums(data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))]) == 1
+      bool_location  <- bool_location & bool_exclusive
+    }
+    
+    # select
+    data_cnt <- data_cnt[bool_location,]
+    
+    # add warning
+    if(!any(bool_location)){
+      print("WARNING: NO LOCATIONS LEFT AFTER LOCATION SELECTION...")
+    } 
   }
-  
-  # select... if any contact left
-  if(any(bool_cnt)){
-    data_cnt <- data_cnt[bool_cnt,]
-  } else{
-    print("NO CONTACTS (LEFT) FOR THE SPECIFIED LOCATION(S)... USE ALL CONTACTS")
-  }
-  
+      
   # create new survey object
   mixr_survey <- survey(data_part, data_cnt)
   
@@ -260,6 +258,8 @@ get_survey_object <- function(country,daytype,touch,duration,gender,
 
 #mija <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45,65))$matrix*c(1,0.5,0.6,1)
 #mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45, 65))$matrix
+mija <- get_contact_matrix(country,daytype,touch,duration,gender,NULL,symmetric,age_breaks_text,bool_schools_closed = F,bool_exclusive = F)$matrix
+mijb <- get_contact_matrix(country,daytype,touch,duration,gender,NULL,symmetric,age_breaks_text,bool_schools_closed = T,bool_exclusive = F)$matrix
 
 compare_contact_matrices <- function(mija,mijb){
   R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)

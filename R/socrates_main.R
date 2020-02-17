@@ -6,18 +6,13 @@
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
-# install.packages('socialmixr')
-
-# load 'socialmixr' package
-#suppressPackageStartupMessages(library('socialmixr'))
-library('socialmixr')
-# example
-#contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
-
-library('countrycode')
-library('rlist')
+# load packages and help functions
+source('R/load_config.R')
 source('R/contact_matrix_fix.R')
 source('R/plot_social_contact_matrix.R')
+
+# example
+#contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
 
 run_social_contact_analysis <- function(country,daytype,touch,duration,
                                          cnt_home,cnt_school,cnt_work,cnt_other,
@@ -230,7 +225,7 @@ get_survey_object <- function(country,daytype,touch,duration,
   if(any(bool_cnt)){
     data_cnt <- data_cnt[bool_cnt,]
   } else{
-    print("NO LOCATION BASED SELECTION POSSIBLE... NO CONTACTS LEFT")
+    print("NO CONTACTS (LEFT) FOR THE SPECIFIED LOCATION(S)... USE ALL CONTACTS")
   }
   
   # create new survey object

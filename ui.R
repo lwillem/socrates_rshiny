@@ -8,21 +8,10 @@
 
 # clear workspace
 rm(list=ls(all=TRUE))
-library('socialmixr')
 
-# ######Automatically set working directory###
-# if(require(rstudioapi) && isAvailable()){
-#   current_path <- getActiveDocumentContext()$path 
-#   #setwd(dirname(current_path ))
-# }
-
-# load shiny libraary
-library(shiny)
-
-# load social contact functions
-source('R/sidebarPanel_config.R')
-source('R/social_mixr_main.R')
-
+# load all functions and packages
+library('shiny')
+source('R/socrates_main.R')
 
 # Define UI for social contact application
 shinyUI(pageWithSidebar(

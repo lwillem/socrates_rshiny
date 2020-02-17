@@ -6,16 +6,13 @@
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
-library(npsp)
-
 
 #mij <- contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))$matrix
-## SIMAGE ####
 plot_cnt_matrix <- function(mij){
   redc <- rev(heat.colors(100))
   par(mar=c(5, 6, 2, 2),mgp=c(3,0.5,0))
   p <- simage(s = mij, 
-             xlab="Age (year)",
+             xlab="Age of participant (year)",
              ylab="Age of contact (year)", 
              legend.width=1,
              slim=c(min(mij), max(mij)), 

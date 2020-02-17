@@ -6,17 +6,43 @@
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
+#__________________________#
+##  R-PACKAGES          ####
+#__________________________#
+# socialmixr    to process social contact data
+# npsp          to use 'simage' in plot_cnt_matrix
+# countrycode   to convert country names into iso3 codes
+print('load all packages')
+# list all package names
+all_packages <- c('socialmixr','npsp','countrycode')
 
-##########################
-##  UI PANEL OPTIONS    ##
-##########################
+# load package, and install if not present yet
+for(package_i in all_packages){
+  
+  # if not present => install
+  if(!package_i %in% rownames(installed.packages())){
+    install.packages(package_i)
+  }
+  
+  # load package
+  library(package_i, 
+          character.only=TRUE, 
+          quietly = TRUE, 
+          warn.conflicts = FALSE,
+          verbose = FALSE)
+}
+
+
+#__________________________#
+##  UI PANEL OPTIONS    ####
+#__________________________#
 
 # set all options
 # note: the first is the default
 opt_gender   <- list("All","Female","Male")
 opt_day_type <- list("All contacts",
-                     "Monday-Friday (all)",
-                     "Saturday-Sunday (all)",
+                     "Monday-Friday",
+                     "Saturday-Sunday",
                      "Monday-Friday (holidays)",
                      "Monday-Friday (excl. holidays)") 
 

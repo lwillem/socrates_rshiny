@@ -6,9 +6,9 @@
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
-library(shiny)
-library('socialmixr')
-source('R/social_mixr_main.R')
+# load all functions and packages
+library('shiny')
+source('R/socrates_main.R')
 
 # controls the number of digits to print when printing numeric values
 options(digits = 3)

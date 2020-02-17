@@ -6,30 +6,36 @@
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
-# override socialmirx::contact_matrix function with small edits
-# TODO include in socialmixr package
-contact_matrix <- function(...){
+# load adapted socialmirx::contact_matrix function
+mixr_files <- dir('R_socialmixr',full.names = T)
+for(i_file in mixr_files)
+  source(i_file)
 
-  # print statement
-  #print("Use modified contact_matrix() function")
-  
-  # run social_mixr function
-  matrix_out <- socialmixr::contact_matrix(...)
-  
-  # fix (when symmetric)
-  dimnames(matrix_out$matrix)[[1]] <- dimnames(matrix_out$matrix)[[2]]
-  names(dimnames(matrix_out$matrix))[1] <- 'age.group'
-  
-  # remove population (for now)
-  matrix_out$demography <- NULL
-  
-  # # set age.groups as rownames instead of a column
-  age.groups <- matrix_out$participants$age.group
-  matrix_out$participants <- data.frame(as.matrix(matrix_out$participants[,-1]))
-  row.names(matrix_out$participants) <- age.groups
-  
-  # return
-  matrix_out
-}
+# # override socialmirx::contact_matrix function with small edits
+# # TODO include in socialmixr package
+# contact_matrix <- function(...){
+# 
+#   # print statement
+#   #print("Use modified contact_matrix() function")
+#   
+#   # run social_mixr function
+#   matrix_out <- socialmixr::contact_matrix(...)
+#   
+#   
+#   # fix (when symmetric)
+#   dimnames(matrix_out$matrix)[[1]] <- dimnames(matrix_out$matrix)[[2]]
+#   names(dimnames(matrix_out$matrix))[1] <- 'age.group'
+#   
+#   # remove population (for now)
+#   matrix_out$demography <- NULL
+#   
+#   # # set age.groups as rownames instead of a column
+#   age.groups <- matrix_out$participants$age.group
+#   matrix_out$participants <- data.frame(as.matrix(matrix_out$participants[,-1]))
+#   row.names(matrix_out$participants) <- age.groups
+#   
+#   # return
+#   matrix_out
+# }
 
 

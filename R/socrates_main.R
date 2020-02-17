@@ -106,10 +106,12 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      cnt_location = cnt_location,
                                      bool_exclusive   = bool_exclusive)  # remove contacts at multiple loations
   # run social_mixr function
-  matrix_out <- contact_matrix(survey     = survey_object, 
-                                age.limits = age_breaks_num,
-                                symmetric  = symmetric,
-                                quiet      = TRUE)
+  matrix_out <- contact_matrix(survey           = survey_object, 
+                                age.limits      = age_breaks_num,
+                                symmetric       = symmetric,
+                                weigh.dayofweek = TRUE,
+                                weigh.age.group = TRUE,
+                                quiet           = TRUE)
   # return
   matrix_out
 }

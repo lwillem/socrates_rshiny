@@ -12,9 +12,10 @@
 # socialmixr    to process social contact data
 # npsp          to use 'simage' in plot_cnt_matrix
 # countrycode   to convert country names into iso3 codes
+# data.table    to adapt socialmixr::contact_matrix
 
 # list all package names
-all_packages <- c('socialmixr','npsp','countrycode')
+all_packages <- c('socialmixr','npsp','countrycode','data.table')
 
 # load package, and install if not present yet
 for(package_i in all_packages){

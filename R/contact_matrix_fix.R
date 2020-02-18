@@ -7,9 +7,10 @@
 #___________________________________________________________________________
 
 # load adapted socialmirx::contact_matrix function
-mixr_files <- dir('R_socialmixr',full.names = T)
-for(i_file in mixr_files)
-  source(i_file)
+source('R_socialmixr/check.r')
+source('R_socialmixr/contact_matrix.r')
+source('R_socialmixr/survey.r')
+
 
 # # override socialmirx::contact_matrix function with small edits
 # # TODO include in socialmixr package

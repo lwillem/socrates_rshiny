@@ -61,6 +61,18 @@ shinyServer(function(input, output, session) {
       updateSliderInput(session, "telework_target", min = input$telework_reference)
   })
   
+  # Update whether the location-specific checkboxes are displayed
+  observe({
+    if(input$bool_location)
+    updateCheckboxGroupInput(session, "cnt_location", selected = opt_location)
+  })
+  
+  # Update whether the telework slides are displayed
+  observe({
+    if(!input$bool_telework)
+      updateSliderInput(session, "telework_target", value = input$telework_reference)
+  })
+  
   output$download_matrix <- downloadHandler(
     filename = function(file) {
       paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_matrix.csv")

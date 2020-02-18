@@ -47,17 +47,26 @@ shinyUI(pageWithSidebar(
                        choices = opt_matrix_features,
                        selected = opt_matrix_features),
     
+    checkboxInput("bool_location", "Include all locations",value = TRUE),
     
-    checkboxGroupInput('cnt_location',
-                       label = 'Included locations',
-                       choices = opt_location,
-                       selected = opt_location),
+    conditionalPanel(
+      condition = "input.bool_location == false",
+      checkboxGroupInput('cnt_location',
+                         label = 'Included locations',
+                         choices = opt_location,
+                         selected = opt_location)
+      ),
+    
     
     helpText("Reactive strategies"),
     checkboxInput("bool_schools_closed","Close all schools"),
     
-    sliderInput("telework_reference","Observed % telework",min=0,max=99,value=16),
-    sliderInput("telework_target","Target % telework",min=0,max=99,value=16),
+    checkboxInput("bool_telework","Telework"),
+    conditionalPanel(
+      condition = "input.bool_telework == true",
+      sliderInput("telework_reference","Observed % telework",min=0,max=99,value=16),
+      sliderInput("telework_target","Target % telework",min=0,max=99,value=16)
+    ),
     
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),
     downloadButton('download_all',"Download all results (.RData)",style = "width:99%;")

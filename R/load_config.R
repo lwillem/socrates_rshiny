@@ -14,25 +14,11 @@
 # countrycode   to convert country names into iso3 codes
 # data.table    to adapt socialmixr::contact_matrix
 
-# list all package names
-all_packages <- c('socialmixr','npsp','countrycode','data.table')
-
-# load package, and install if not present yet
-for(package_i in all_packages){
-  
-  # if not present => install
-  if(!package_i %in% rownames(installed.packages())){
-    install.packages(package_i)
-  }
-  
-  # load package
-  library(package_i, 
-          character.only=TRUE, 
-          quietly = TRUE, 
-          warn.conflicts = FALSE,
-          verbose = FALSE)
-}
-
+# Explicit loading of the packages (fix for www.shinyapps.io)
+library('socialmixr')
+library('npsp')
+library('countrycode')
+library('data.table')
 
 #__________________________#
 ##  UI PANEL OPTIONS    ####

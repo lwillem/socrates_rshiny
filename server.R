@@ -16,7 +16,8 @@ options(digits = 3)
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {
   
-  app_social_contact_analysis <- reactive({
+  ## UPDATE CONTENT ####
+  observe({
     
     out <- run_social_contact_analysis(country      = input$country,
                                        daytype      = input$daytype,
@@ -30,73 +31,55 @@ shinyServer(function(input, output, session) {
                                        telework_reference  = input$telework_reference,
                                        telework_target     = input$telework_target)
     
-    out
+    # plot social contact matrix
+    output$plot_cnt_matrix <- renderPlot({
+      plot_cnt_matrix(out$matrix)
+    })
+    
+    # print results
+    output$social_contact_analysis <- renderPrint({
+      out
+    })
+    
+    # download matrix
+    output$download_matrix <- downloadHandler(
+      filename = function(file) {
+        paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_matrix.csv")
+      },
+      content = function(file) {
+        
+        cnt_matrix           <- unlist(out$matrix)
+        colnames(cnt_matrix) <- paste0('contact_',colnames(cnt_matrix))
+        cnt_matrix           <- cbind(age_group=row.names(out$matrix),cnt_matrix)
+        
+        write.table(cnt_matrix, file,sep=',',row.names=F)
+      }
+    )
+    
+    # download all
+    output$download_all <- downloadHandler(
+      filename = function(file) {
+        paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_analysis.RData")
+      },
+      content = function(file) {
+        saveRDS(object = out, file)
+      }
+    )
   })
   
-  output$social_contact_analysis <- renderPrint({
-    app_social_contact_analysis()
-  })
-  
-  cnt_matrix_ui<- reactive({
-
-    get_contact_matrix(country      = input$country,
-                       daytype      = input$daytype,
-                       touch        = input$touch,
-                       duration     = input$duration,
-                       gender       = input$gender,
-                       cnt_location = input$cnt_location,
-                       cnt_matrix_features = input$cnt_matrix_features,
-                       age_breaks_text     = input$age_breaks_text,
-                       bool_schools_closed = input$bool_schools_closed,
-                       bool_exclusive = FALSE)
-  })
-  
-  # plot social contact matrix
-  output$plot_cnt_matrix <- renderPlot({
-    plot_cnt_matrix(cnt_matrix_ui()$matrix)
-  })
-  
-  # Update the minimum "telework target" (at least the observed value)
+  # Update UI panel(s) ####
   observe({
-      updateSliderInput(session, "telework_target", min = input$telework_reference)
-  })
-  
-  # Update whether the location-specific checkboxes are displayed
-  observe({
+    
+    #Update the minimum "telework target" (at least the observed value)
+    updateSliderInput(session, "telework_target", min = input$telework_reference)
+    
+    # Update whether the location-specific checkboxes are displayed
     if(input$bool_location)
-    updateCheckboxGroupInput(session, "cnt_location", selected = opt_location)
-  })
-  
-  # Update whether the telework slides are displayed
-  observe({
+      updateCheckboxGroupInput(session, "cnt_location", selected = opt_location)
+    
+    # Update whether the telework sliders are displayed
     if(!input$bool_telework)
-      updateSliderInput(session, "telework_target", value = input$telework_reference)
+        updateSliderInput(session, "telework_target", value = input$telework_reference)
   })
   
-  output$download_matrix <- downloadHandler(
-    filename = function(file) {
-      paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_matrix.csv")
-    },
-    content = function(file) {
-      
-      out <- cnt_matrix_ui()
-      
-      cnt_matrix           <- unlist(out$matrix)
-      colnames(cnt_matrix) <- paste0('contact_',colnames(cnt_matrix))
-      cnt_matrix           <- cbind(age_group=row.names(out$matrix),cnt_matrix)
-      
-      write.table(cnt_matrix, file,sep=',',row.names=F)
-    }
-  )
-  
-  output$download_all <- downloadHandler(
-    filename = function(file) {
-      paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_analysis.RData")
-    },
-    content = function(file) {
-      out <- app_social_contact_analysis()
-      saveRDS(object = out, file)
-    }
-  )
-
 })

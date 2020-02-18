@@ -130,14 +130,20 @@ get_survey_object <- function(country,
                               cnt_location,
                               bool_exclusive){
   
-  # get original polymod data
-  data_part <- polymod$participants
-  data_cnt  <- polymod$contacts
+  # select dataset filename and load
+  sel_dataset <- opt_country_admin[opt_country_admin$name == country,]
   
-  # select country: participant and contact data
-  bool_country <- (data_part$country == country)
-  data_part    <- data_part[bool_country,]
-  data_cnt     <- data_cnt[data_cnt$part_id %in% data_part$part_id,]
+  # get original data
+  survey_data <- readRDS(sel_dataset$dataset)
+  data_part <- survey_data$participants
+  data_cnt  <- survey_data$contacts
+  
+  # option to select country-specific participant and contact data
+  if(nchar(sel_dataset$country)>0){
+    bool_country <- (data_part$country == sel_dataset$country)
+    data_part    <- data_part[bool_country,]
+    data_cnt     <- data_cnt[data_cnt$part_id %in% data_part$part_id,]
+  }
   
   # select type of day
   if(daytype != opt_day_type[[1]]){

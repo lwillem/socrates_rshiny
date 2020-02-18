@@ -35,10 +35,41 @@ opt_day_type <- list("All contacts",
 
 opt_touch    <- list("All contacts", "Physical contacts","Non-physical contacts")
 opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes","More than 15 minutes","More than 1 hour","More than 4 hours")
-opt_country  <- as.list(levels(unique(polymod$participants$country)))
-
-opt_location         <- c("Home","Work","School","Transport","Leisure","Otherplace")
+opt_location          <- c("Home","Work","School","Transport","Leisure","Otherplace")
 opt_matrix_features   <- c("Reciprocal","Weighted by age","Weighted by week/weekend")
+
+
+# get polymod countries
+polymod_countries <- survey_countries(polymod,quiet = T)
+
+# add other dataset (and reference)
+opt_country       <- c(paste(polymod_countries,'(Mossong 2007)'),
+                        'Peru (Grijalva 2011)',
+                        'Zimbabwe (Melegaro 2013)',
+                        'France (Beraud 2012)',
+                        'Hong Kong (Lyung 2015)',
+                        'Vietnam (Horby 2007)',
+                        'United Kingdom (van Hoek 2012)',
+                        'Zambia & South Africa (Dodd 2011)',
+                        'Russia (Litvinova 2019)',
+                        'China (Zhang 2019)')
+
+# set country admin => filenames and country names
+opt_country_admin <- data.frame(name = opt_country,
+                                dataset = c(rep("polymod",8),'peru','zimbabwe','france',
+                                            'hong_kong','vietnam','uk','zambia_south_africa',
+                                            'russia','china'),
+                                country =  c(polymod_countries, rep('',9)),
+                                stringsAsFactors = FALSE)
+
+# complete filenames with relative path
+opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')
+
+# select only polymod dataset (TEMP)
+opt_country <- opt_country[grepl('Mossong',opt_country)]
+
+# reformat and sort opt_country
+opt_country <- sort(opt_country)
 
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)

@@ -22,26 +22,25 @@ shinyUI(pageWithSidebar(
   # Sidebar with controls
   sidebarPanel(
    
-    selectInput("country", "Country?",
+    selectInput("country", "Country",
                 opt_country),
     
     textInput(inputId="age_breaks_text",
               label="Age breaks (comma delimited)",
               value="0,18,45,65"),
    
-    selectInput("daytype", "Type of day?",
+    selectInput("daytype", "Type of day",
                 opt_day_type),
 
-    selectInput("duration", "Contact duration?",
+    selectInput("duration", "Contact duration",
                 opt_duration),
     
-    selectInput("touch", "Skin-to-skin touching?",
+    selectInput("touch", "Contact intensity",
                 opt_touch),
     
-    selectInput("gender", "Gender?",
+    selectInput("gender", "Gender",
                 opt_gender),
     
-    #checkboxInput("symmetric", "Reciprocal contacts?", TRUE),
     checkboxGroupInput('cnt_matrix_features',
                        label = 'Matrix options',
                        choices = opt_matrix_features,

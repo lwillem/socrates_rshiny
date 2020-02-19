@@ -26,7 +26,7 @@ library('data.table')
 
 # set all options
 # note: the first is the default
-opt_gender   <- list("All","Female-Female","Male-Male",'Male-Female')
+opt_gender   <- list("All","Female-Female",'Female-Male','Male-Female',"Male-Male")
 opt_day_type <- list("All contacts",
                      "Monday-Friday",
                      "Saturday-Sunday",

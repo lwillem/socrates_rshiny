@@ -97,6 +97,10 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   # make sure the ages are increasing 
   age_breaks_num <- sort(age_breaks_num)
   
+  bool_reciprocal      <- opt_matrix_features[[1]]  %in% cnt_matrix_features
+  bool_weigh_age_group <- opt_matrix_features[[2]]  %in% cnt_matrix_features
+  bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features
+  
   # get specific social_mixr survey object
   survey_object <- get_survey_object(country      = country,
                                      daytype      = daytype,
@@ -104,16 +108,13 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      duration     = duration,
                                      gender       = gender,
                                      cnt_location = cnt_location,
+                                     bool_reciprocal  = bool_reciprocal,
                                      bool_exclusive   = bool_exclusive)  # remove contacts at multiple loations
   
-  bool_symmetric       <- opt_matrix_features[[1]]  %in% cnt_matrix_features
-  bool_weigh_age_group <- opt_matrix_features[[2]]  %in% cnt_matrix_features
-  bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features
-  
-  # run social_mixr function
+    # run social_mixr function
   matrix_out <- contact_matrix(survey           = survey_object, 
                                 age.limits      = age_breaks_num,
-                                symmetric       = bool_symmetric,
+                                symmetric       = bool_reciprocal,
                                 weigh.age.group = bool_weigh_age_group,
                                 weigh.dayofweek = bool_weigh_dayofweek,
                                 quiet           = TRUE)
@@ -128,9 +129,10 @@ get_survey_object <- function(country,
                               duration,
                               gender,
                               cnt_location,
+                              bool_reciprocal,
                               bool_exclusive){
   
-  # select dataset filename and load
+  # select dataset filename and load #####
   sel_dataset <- opt_country_admin[opt_country_admin$name == country,]
   
   # get original data
@@ -145,7 +147,7 @@ get_survey_object <- function(country,
     data_cnt     <- data_cnt[data_cnt$part_id %in% data_part$part_id,]
   }
   
-  # select type of day
+  # select type of day ####
   if(daytype != opt_day_type[[1]]){
     bool_dayofweek <- data_part$dayofweek >= 0 # all
     if(daytype == opt_day_type[[3]]){ # weekend
@@ -157,7 +159,7 @@ get_survey_object <- function(country,
     }
   }
   
-  # select period
+  # select period ####
   if(daytype %in% names(opt_day_type[4:5])){
     load('data/holiday_all.RData')
     country_iso3 <- countrycode(unlist(country), 'country.name', 'iso3c')
@@ -180,7 +182,7 @@ get_survey_object <- function(country,
     }
   }
   
-  # select contact duration
+  # select contact duration ####
   if(duration != opt_duration[[1]]){
     print(duration)
   
@@ -195,7 +197,7 @@ get_survey_object <- function(country,
     }
   }
   
-  # select touching
+  # select contact intensity ####
   if(touch != opt_touch[[1]]){
     touch_code    <- which(opt_touch == touch)-1
     bool_touching <- !is.na(data_cnt$phys_contact) & data_cnt$phys_contact == touch_code
@@ -203,24 +205,32 @@ get_survey_object <- function(country,
     print(touch)
   }
   
-  # select gender
+  # select gender ####
   if(gender != opt_gender[[1]]){
     bool_cnt_female  <- data_cnt$cnt_gender   == 'F'
     bool_part_female <- data_part$part_gender == 'F'
-    if(gender == opt_gender[[2]]){         # female-female
+    
+    # merge dataset to compare participant and contact gender
+    data_cnt_gender  <- merge(data_cnt,data_part[,c('part_id','part_gender')],by='part_id')
+    bool_gender_diff <- data_cnt_gender$cnt_gender != data_cnt_gender$part_gender
+    
+    if(gender == opt_gender[[2]]){                  # female-female
       data_cnt       <- data_cnt[bool_cnt_female,]
       data_part      <- data_part[bool_part_female,]
-    } else if(gender == opt_gender[[3]]){  # male-male
+    } else if(gender == opt_gender[[5]]){           # male-male
       data_cnt       <- data_cnt[!bool_cnt_female,]
       data_part      <- data_part[!bool_part_female,]
-    } else {                               # female-male
-      
-      data_cnt_gender  <- merge(data_cnt,
-                                data_part[,c('part_id','part_gender')],
-                                by='part_id')
-      bool_gender_diff <- data_cnt_gender$cnt_gender != data_cnt_gender$part_gender
-      data_cnt         <- data_cnt[bool_gender_diff,]
-     }
+    } else if(bool_reciprocal){
+      data_cnt       <- data_cnt[bool_gender_diff,]
+    } else {
+      if(gender == opt_gender[[3]]){                # female-male
+      data_cnt       <- data_cnt[bool_gender_diff,]
+      data_part      <- data_part[bool_part_female,]
+      } else if(gender == opt_gender[[4]]){         # male-female
+        data_cnt       <- data_cnt[bool_gender_diff,]
+        data_part      <- data_part[!bool_part_female,]
+      }
+    }
   }
   
   #select location

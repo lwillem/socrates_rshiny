@@ -371,8 +371,6 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
                 survey[[table]][dayofweek %in% 1:5, weight := (5/7) / sample.weekday.prop ]
                 survey[[table]][!(dayofweek %in% 1:5), weight := (2/7) / (1-sample.weekday.prop)]
                 found.dayofweek <- TRUE
-                print(survey[[table]][,weight])
-                print(sample.weekday.prop)
             }
         }
         if (!found.dayofweek)

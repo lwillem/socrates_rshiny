@@ -29,7 +29,8 @@ shinyServer(function(input, output, session) {
                                        age_breaks_text     = input$age_breaks_text,
                                        bool_schools_closed = input$bool_schools_closed,
                                        telework_reference  = input$telework_reference,
-                                       telework_target     = input$telework_target)
+                                       telework_target     = input$telework_target,
+                                       max_part_weight     = max_part_weight)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({

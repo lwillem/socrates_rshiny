@@ -50,23 +50,27 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2007)'),
                         'Hong Kong (Lyung 2015)',
                         'Vietnam (Horby 2007)',
                         'United Kingdom (van Hoek 2012)',
-                        'Zambia & South Africa (Dodd 2011)',
                         'Russia (Litvinova 2019)',
-                        'China (Zhang 2019)')
+                        'China (Zhang 2019)',
+                        'Zambia (Dodd 2011)',
+                        'South Africa (Dodd 2011)')
 
 # set country admin => filenames and country names
 opt_country_admin <- data.frame(name = opt_country,
                                 dataset = c(rep("polymod",8),'peru','zimbabwe','france',
-                                            'hong_kong','vietnam','uk','zambia_south_africa',
-                                            'russia','china'),
-                                country =  c(polymod_countries, rep('',9)),
+                                            'hong_kong','vietnam','uk',
+                                            'russia','china','zambia_south_africa','zambia_south_africa'),
+                                country =  c(polymod_countries, rep('',8),'Zambia','South Africa'),
                                 stringsAsFactors = FALSE)
 
 # complete filenames with relative path
 opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')
 
 # select only polymod dataset (TEMP)
-opt_country <- opt_country[grepl('Mossong',opt_country)]
+#opt_country <- opt_country[grepl('Mossong',opt_country)]
+# disable the UK van Hoek dataset (TEMP)
+opt_country <- opt_country[!grepl('van Hoek',opt_country)]
+
 
 # reformat and sort opt_country
 opt_country <- sort(opt_country)
@@ -80,7 +84,8 @@ names(opt_country)  <- unlist(opt_country)
 names(opt_location) <- unlist(opt_location)
 names(opt_matrix_features) <- unlist(opt_matrix_features)
 
-
+## MAXIMUM WEIGHT
+max_part_weight <- 3
 
 
 

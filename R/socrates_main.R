@@ -16,13 +16,14 @@ source('R/plot_social_contact_matrix.R')
 
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
-                                        bool_schools_closed,telework_reference,telework_target){
+                                        bool_schools_closed,telework_reference,telework_target,max_part_weight){
   
   # get social contact matrix, using all features
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
                                       cnt_location,cnt_matrix_features,age_breaks_text,
                                       bool_schools_closed,
-                                      bool_exclusive = FALSE)
+                                      bool_exclusive  = FALSE,
+                                      max_part_weight = max_part_weight)
   
   # CLI
   fct_out <- cnt_matrix_ui
@@ -38,7 +39,8 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                          cnt_matrix_features,
                                          age_breaks_text,
                                          bool_schools_closed = FALSE,
-                                         bool_exclusive = FALSE)
+                                         bool_exclusive      = FALSE,
+                                         max_part_weight     = max_part_weight)
     
     if(bool_telework){
       
@@ -46,9 +48,11 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       if('Work' %in% cnt_location){
         cnt_matrix_work_excl <- get_contact_matrix(country,daytype,touch,duration,gender,
                                                    cnt_location = "Work",
-                                                   cnt_matrix_features,age_breaks_text,
+                                                   cnt_matrix_features,
+                                                   age_breaks_text,
                                                    bool_schools_closed = FALSE,
-                                                   bool_exclusive = FALSE)$matrix
+                                                   bool_exclusive      = FALSE,
+                                                   max_part_weight     = max_part_weight)$matrix
       } else{
         cnt_matrix_work_excl <- cnt_matrix_ui$matrix * 0
       }
@@ -84,7 +88,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
 ## MAIN FUNCTION ####
 get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                cnt_location,cnt_matrix_features,age_breaks_text,
-                               bool_schools_closed,bool_exclusive){
+                               bool_schools_closed,bool_exclusive,max_part_weight){
   
   # REACTIVE STRATEGY: SCHOOL CLOSURE
   if(bool_schools_closed){
@@ -117,6 +121,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                 symmetric       = bool_reciprocal,
                                 weigh.age.group = bool_weigh_age_group,
                                 weigh.dayofweek = bool_weigh_dayofweek,
+                                max.part.weight = max_part_weight,
                                 quiet           = TRUE)
   # return
   matrix_out
@@ -247,7 +252,7 @@ get_survey_object <- function(country,
     
     # select columns
     if(length(cnt_location)>1){
-      is_present <- rowSums(data_cnt_tmp[,cnt_location_colnames] == 1)
+      is_present <- rowSums(data_cnt_tmp[,cnt_location_colnames] == 1,na.rm=T)
     } else{
       is_present <- data_cnt_tmp[,cnt_location_colnames]
     }

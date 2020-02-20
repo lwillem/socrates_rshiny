@@ -18,6 +18,7 @@
 ##' @param weights columns that contain weights
 ##' @param weigh.dayofweek whether to weigh the day of the week (weight 5 for weekdays ans 2 for weekends)
 ##' @param weigh.age.group whether to weigh by the age of the participants (vs. the populations' age distribution)
+##' @param max.part.weight maximum value of the participant weights (default 'NA' = no maximum)
 ##' @param sample.all.age.groups what to do if bootstrapping fails to sample participants from one or more age groups; if FALSE (default), corresponding rows will be set to NA, if TRUE the sample will be discarded and a new one taken instead
 ##' @param quiet if set to TRUE, output is reduced
 ##' @param ... further arguments to pass to \code{\link{get_survey}}, \code{\link{check}} and \code{\link{pop_age}} (especially column names)
@@ -31,7 +32,7 @@
 ##' data(polymod)
 ##' contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
 ##' @author Sebastian Funk
-contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter, n = 1, bootstrap, counts = FALSE, symmetric = FALSE, split = FALSE, estimated.contact.age=c("mean", "sample", "missing"), missing.participant.age = c("remove", "keep"), missing.contact.age = c("remove", "sample", "keep"), weights = c(), weigh.dayofweek = FALSE,weigh.age.group = FALSE, sample.all.age.groups = FALSE, quiet = FALSE, ...)
+contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter, n = 1, bootstrap, counts = FALSE, symmetric = FALSE, split = FALSE, estimated.contact.age=c("mean", "sample", "missing"), missing.participant.age = c("remove", "keep"), missing.contact.age = c("remove", "sample", "keep"), weights = c(), weigh.dayofweek = FALSE,weigh.age.group = FALSE, max.part.weight = NA, sample.all.age.groups = FALSE, quiet = FALSE, ...)
 {
     ## circumvent R CMD CHECK errors by defining global variables
     lower.age.limit <- NULL
@@ -265,7 +266,11 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
             if (!survey.representative) {
                 ## get population data for countries from 'wpp' package
                 country.pop <- data.table(wpp_age(survey.countries))
-
+                
+                # !! warning: spelling can differ between wpp_age and wpp_countries (e.g. Viet Nam vs Vietnam) 
+                # fix: rename countries using the same approach as in clean(survey,...)
+                country.pop$country <- suppressWarnings(countrycode(country.pop$country, "country.name", "country.name"))
+                
                 ## check if survey data are from a specific year - in that case
                 ## use demographic data from that year, otherwise latest
                 if (columns[["year"]] %in% colnames(survey$participants))
@@ -387,7 +392,6 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         {
             if ("age.group" %in% colnames(survey[[table]]))
             {
-                
                 sample.pop <- data.frame(table(survey[[table]][,age.group]))
                 sample.pop$age.group  <- sample.pop$Var1
                 sample.pop$proportion <- sample.pop$Freq / sum(sample.pop$Freq)
@@ -395,14 +399,7 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
                 
                 survey[[table]] <- merge(survey[[table]],sample.pop[,c("age.group","weight.age.group")],by='age.group')
                 survey[[table]][, weight := weight * weight.age.group]
-    
-                found.age.group <- TRUE
             }
-        }
-        if (!found.age.group)
-        {
-            warning("'weigh.age.group' is TRUE, but no 'part_age' column in the data. ",
-                    "Will ignore.")
         }
     }
    
@@ -431,6 +428,11 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
     survey$participants[, weight := weight / sum(weight) * .N]
     setkeyv(survey$participants, columns[["id"]])
     participant_ids <- unique(survey$participants[[columns[["id"]]]])
+    
+    ## limit participant weights (optional)
+    if(!is.na(max.part.weight)){
+        survey$participants[weight > max.part.weight,weight := max.part.weight]
+    }
 
     survey$contacts <-
         merge(survey$contacts, survey$participants, by = columns[["id"]], all = F,
@@ -685,7 +687,7 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         if(length(weights)>0){ 
             fmla <- paste(fmla,'+', weights) 
         }
-        if(weigh.dayofweek){
+        if(weigh.dayofweek && found.dayofweek){
             survey$participants[, weekday := dayofweek %in% 1:5]
             fmla <- paste(fmla, '+  weekday')
         }

@@ -551,15 +551,12 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
             #     xtabs(data = sampled.participants,
             #           formula = sampled.weight ~ age.group, addNA = TRUE)
             # 
-            sampled.participants$dummy <- 1
-            norm.vector <-
-                xtabs(data = sampled.participants,
-                      formula = dummy ~ age.group, addNA = TRUE)
-            
-
+            norm.vector <- data.table(table(sampled.participants[, age.group]))
+            setnames(norm.vector, c("age.group", "participants"))
+        
             ## normalise contact matrix
             weighted.matrix <-
-                array(apply(weighted.matrix, 2, function(x) x/norm.vector), dim=dims,
+                array(apply(weighted.matrix, 2, function(x) x/norm.vector$participants), dim=dims,
                       dimnames=dim.names)
             ## set non-existent data to NA
             weighted.matrix[is.nan(weighted.matrix)] <- NA_real_

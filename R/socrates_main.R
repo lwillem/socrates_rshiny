@@ -109,6 +109,9 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   # set age intervals
   age_breaks_num <- as.numeric(unlist(strsplit(age_breaks_text,",")))
   
+  # remove missing values (eg. by typing ',,')
+  age_breaks_num <- age_breaks_num[!is.na(age_breaks_num)]
+  
   # make sure the ages are postive and increasing 
   if(any(age_breaks_num<0)){
     warning('Negative age breaks are removed')

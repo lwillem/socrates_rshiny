@@ -43,7 +43,7 @@ opt_matrix_features   <- c("Reciprocal","Weighted by age","Weighted by week/week
 polymod_countries <- survey_countries(polymod,quiet = T)
 
 # add other dataset (and reference)
-opt_country       <- c(paste(polymod_countries,'(Mossong 2007)'),
+opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Peru (Grijalva 2011)',
                         'Zimbabwe (Melegaro 2013)',
                         'France (Beraud 2012)',

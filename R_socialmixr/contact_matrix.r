@@ -229,6 +229,20 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         survey$participants <- survey$participants[!(get(columns[["id"]]) %in% missing.age.id)]
     }
 
+    # note: moved up, so we can use the adapted part.age.group.breaks
+    survey$participants[, lower.age.limit := reduce_agegroups(get(columns[["participant.age"]]),
+                                                              age.limits[age.limits < max.age])]
+    part.age.group.breaks <- c(age.limits[age.limits < max.age], max.age)
+    survey$participants[, age.group :=
+                            cut(survey$participants[, get(columns[["participant.age"]])],
+                                breaks = part.age.group.breaks,
+                                right = FALSE)]
+    age.groups <- survey$participants[, levels(age.group)]
+    age.groups[length(age.groups)] <-
+        paste0(max(survey$participants$lower.age.limit, na.rm=TRUE), "+")
+    survey$participants[, age.group :=
+                            factor(age.group, levels=levels(age.group), labels=age.groups)]
+    
     ## if split or symmetric requested, get demographic data (survey population)
     need.survey.pop <- split || symmetric || weigh.age.group
     if (need.survey.pop)
@@ -318,46 +332,38 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         }
         ## adjust age groups by interpolating, in case they don't match between
         ## demographic and survey data
-        survey.pop <- data.table(pop_age(survey.pop, age.limits, ...))
+        survey.pop <- data.table(pop_age(survey.pop, part.age.group.breaks, ...))
 
         ## possibly adjust age groups according to maximum age (so as not to have empty age groups)
-        survey.pop[, lower.age.limit := reduce_agegroups(lower.age.limit, age.limits)]
+        survey.pop[, lower.age.limit := reduce_agegroups(lower.age.limit, part.age.group.breaks)]
         survey.pop <- survey.pop[, list(population = sum(population)), by=lower.age.limit]
         setkey(survey.pop, lower.age.limit)
         ## re-assign lower age limits in participants
-        survey$participants[, lower.age.limit :=
-                                  reduce_agegroups(get(columns[["participant.age"]]),
-                                                   survey.pop$lower.age.limit)]
-        present.lower.age.limits <- unique(survey.pop$lower.age.limit)
-        present.lower.age.limits <-
-            present.lower.age.limits[order(present.lower.age.limits)]
+        # note: this was replaced in the orignal code 
+        # survey$participants[, lower.age.limit :=
+        #                           reduce_agegroups(get(columns[["participant.age"]]),
+        #                                            survey.pop$lower.age.limit)]
+        # present.lower.age.limits <- unique(survey.pop$lower.age.limit)
+        # present.lower.age.limits <-
+        #     present.lower.age.limits[order(present.lower.age.limits)]
 
-        ## set upper age limits
-        survey.pop[, upper.age.limit := c(survey.pop$lower.age.limit[-1], max.age)]
+        # ## set upper age limits
+        # survey.pop[, upper.age.limit := c(survey.pop$lower.age.limit[-1], max.age)]
 
         # set proportions
         survey.pop[, proportion := survey.pop$population/sum(survey.pop$population)]
         
-        lower.upper.age.limits <-
-            data.table(lower.age.limit = present.lower.age.limits,
-                       upper.age.limit = c(present.lower.age.limits[-1], max.age))
-        ## set upper age limits and construct age groups
-        survey$participants <-
-            merge(survey$participants, lower.upper.age.limits, by="lower.age.limit", all.x=TRUE)
+        # lower.upper.age.limits <-
+        #     data.table(lower.age.limit = present.lower.age.limits,
+        #                upper.age.limit = c(present.lower.age.limits[-1], max.age))
+        # ## set upper age limits and construct age groups
+        # survey$participants <-
+        #     merge(survey$participants, lower.upper.age.limits, by="lower.age.limit", all.x=TRUE)
+        
+        # remove age categories that are not present in the participant population (i.e. the last opend ended category)
+        survey.pop <- survey.pop[survey.pop$lower.age.limit %in% unique(survey$participants$lower.age.limit),]
+        
     } # end need.survey.pop
-
-    survey$participants[, lower.age.limit := reduce_agegroups(get(columns[["participant.age"]]),
-                                                              age.limits[age.limits < max.age])]
-    part.age.group.breaks <- c(age.limits[age.limits < max.age], max.age)
-    survey$participants[, age.group :=
-                              cut(survey$participants[, get(columns[["participant.age"]])],
-                                  breaks = part.age.group.breaks,
-                                  right = FALSE)]
-    age.groups <- survey$participants[, levels(age.group)]
-    age.groups[length(age.groups)] <-
-        paste0(max(survey$participants$lower.age.limit, na.rm=TRUE), "+")
-    survey$participants[, age.group :=
-                              factor(age.group, levels=levels(age.group), labels=age.groups)]
 
     survey$participants[, weight := 1]
     survey$contacts[, weight := 1]
@@ -387,7 +393,6 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
 
     ## assign weights to participants, to account for age variation
     if (weigh.age.group) {
-        found.age.group <- FALSE
         for (table in surveys)
         {
             if ("age.group" %in% colnames(survey[[table]]))
@@ -396,6 +401,9 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
                 sample.pop$age.group  <- sample.pop$Var1
                 sample.pop$proportion <- sample.pop$Freq / sum(sample.pop$Freq)
                 sample.pop$weight.age.group  <- survey.pop$proportion / sample.pop$proportion
+   
+                data.frame(table(survey[[table]][,age.group]))
+                names(survey[[table]])
                 
                 survey[[table]] <- merge(survey[[table]],sample.pop[,c("age.group","weight.age.group")],by='age.group')
                 survey[[table]][, weight := weight * weight.age.group]

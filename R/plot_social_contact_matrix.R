@@ -8,6 +8,7 @@
 
 
 #mij <- contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))$matrix
+#mij <- matrix_out$matrix
 plot_cnt_matrix <- function(mij){
   redc <- rev(heat.colors(100))
   par(mar=c(5, 6, 2, 2),mgp=c(3,0.5,0))
@@ -15,7 +16,7 @@ plot_cnt_matrix <- function(mij){
              xlab="Age of participant (year)",
              ylab="Age of contact (year)", 
              legend.width=1,
-             slim=c(min(mij), max(mij)), 
+             slim=c(min(mij,na.rm=T), max(mij,na.rm=T)), 
              cex.lab=1.2,
              cex.main=1.2, 
              las=0.1,

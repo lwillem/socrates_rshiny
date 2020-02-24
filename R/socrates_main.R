@@ -134,6 +134,13 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      bool_reciprocal  = bool_reciprocal,
                                      bool_exclusive   = bool_exclusive)  # remove contacts at multiple loations
   
+  if(nrow(survey_object$participants)==0){
+    return(list(matrix=NA,
+                participants = NA,
+                warning="Participant selection issue!")
+           )
+  }
+  
     # run social_mixr function
   matrix_out <- contact_matrix(survey           = survey_object, 
                                 age.limits      = age_breaks_num,
@@ -196,11 +203,11 @@ get_survey_object <- function(country,
     data_part$is_holiday <- data_part$date %in% country_holiday_data$date
 
     if(daytype == opt_day_type[[4]]){
-      if(!any(data_part$is_holiday)){ # if no holiday period data
-        print("NO HOLIDAY DATA... USE REGULAR PERIOD DATA")
-      } else{ # select holiday period data
+      # if(!any(data_part$is_holiday)){ # if no holiday period data
+      #   print("NO HOLIDAY DATA... USE REGULAR PERIOD DATA")
+      # } else{ # select holiday period data
         data_part <- data_part[data_part$is_holiday,]
-      }
+      # }
     } else{ # select regular period data
       data_part <- data_part[!data_part$is_holiday,]
     }

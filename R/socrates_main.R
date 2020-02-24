@@ -25,6 +25,8 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                       bool_exclusive  = FALSE,
                                       max_part_weight = max_part_weight)
   
+  warnings_all <- warnings()
+ 
   # CLI
   fct_out <- cnt_matrix_ui
   
@@ -32,57 +34,66 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   bool_telework <- telework_target > telework_reference
   
   if(bool_schools_closed | bool_telework){
-    
-    # get reference social contact matrix (no intervention)
-    cnt_matrix_ref <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                         cnt_location,
-                                         cnt_matrix_features,
-                                         age_breaks_text,
-                                         bool_schools_closed = FALSE,
-                                         bool_exclusive      = FALSE,
-                                         max_part_weight     = max_part_weight)
-    
-    if(bool_telework){
+    if(any(is.na(cnt_matrix_ui$matrix))){
+      fct_out$notes <- "Contact matrix contains NA, no further analysis possible."
+    } else {
+      # get reference social contact matrix (no intervention)
+      cnt_matrix_ref <- get_contact_matrix(country,daytype,touch,duration,gender,
+                                           cnt_location,
+                                           cnt_matrix_features,
+                                           age_breaks_text,
+                                           bool_schools_closed = FALSE,
+                                           bool_exclusive      = FALSE,
+                                           max_part_weight     = max_part_weight)
       
-      # get contact matrix with work-contacts (exclusive)
-      if('Work' %in% cnt_location){
-        cnt_matrix_work_excl <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                                   cnt_location = "Work",
-                                                   cnt_matrix_features,
-                                                   age_breaks_text,
-                                                   bool_schools_closed = FALSE,
-                                                   bool_exclusive      = FALSE,
-                                                   max_part_weight     = max_part_weight)$matrix
-      } else{
-        cnt_matrix_work_excl <- cnt_matrix_ui$matrix * 0
+      if(bool_telework){
+        
+        # get contact matrix with work-contacts (exclusive)
+        if('Work' %in% cnt_location){
+          cnt_matrix_work_excl <- get_contact_matrix(country,daytype,touch,duration,gender,
+                                                     cnt_location = "Work",
+                                                     cnt_matrix_features,
+                                                     age_breaks_text,
+                                                     bool_schools_closed = FALSE,
+                                                     bool_exclusive      = FALSE,
+                                                     max_part_weight     = max_part_weight)$matrix
+        } else{
+          cnt_matrix_work_excl <- cnt_matrix_ui$matrix * 0
+        }
+        
+        # apply reduction
+        telework_increase  <- telework_target/100 - telework_reference/100
+        telework_reduction <- telework_increase / (1-telework_reference/100)
+        cnt_matrix_work_reduction <- cnt_matrix_work_excl * telework_reduction
+        
+        # calculate final matrix
+        cnt_matrix_ui$matrix <- cnt_matrix_ui$matrix - cnt_matrix_work_reduction
       }
       
-      # apply reduction
-      telework_increase  <- telework_target/100 - telework_reference/100
-      telework_reduction <- telework_increase / (1-telework_reference/100)
-      cnt_matrix_work_reduction <- cnt_matrix_work_excl * telework_reduction
+      model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix)
+      #print(model_comparison)
       
-      # calculate final matrix
-      cnt_matrix_ui$matrix <- cnt_matrix_ui$matrix - cnt_matrix_work_reduction
-    }
-    
-    model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix)
-    #print(model_comparison)
-    
-    fct_out <- c(cnt_matrix_ui,model_comparison)
-    
-    # add note(s)
-    fct_out <- c(fct_out,notes="ratio = with intervention / without intervention")
-    if(bool_schools_closed) { 
-      fct_out$notes <- rbind(fct_out$notes,"All schools are closed")
-      }
-    if(bool_telework) {   
-      fct_out$notes <- rbind(fct_out$notes, paste0("Increased telework (",
-                                                  telework_target,'% instead of ',
-                                                  telework_reference,'%)'))
-    }
-  }
-   return(fct_out)
+      fct_out <- c(cnt_matrix_ui,model_comparison)
+      
+      # add note(s)
+      fct_out <- c(fct_out,notes="ratio = with intervention / without intervention")
+      if(bool_schools_closed) { 
+        fct_out$notes <- rbind(fct_out$notes,"All schools are closed")
+        }
+      if(bool_telework) {   
+        fct_out$notes <- rbind(fct_out$notes, paste0("Increased telework (",
+                                                    telework_target,'% instead of ',
+                                                    telework_reference,'%)'))
+      } # end add note
+    } # end else (no NA's present) 
+  }# end if intervention
+  
+ # add warnings to function output
+  warnings_all  <- names(warnings())
+  warnings_all  <- unique(warnings_all)
+  fct_out$notes <- c(warnings_all,fct_out$notes)
+
+     return(fct_out)
 }
 
 ## MAIN FUNCTION ####
@@ -98,7 +109,12 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   # set age intervals
   age_breaks_num <- as.numeric(unlist(strsplit(age_breaks_text,",")))
   
-  # make sure the ages are increasing 
+  # make sure the ages are postive and increasing 
+  if(any(age_breaks_num<0)){
+    warning('Negative age breaks are removed')
+  }
+  
+  age_breaks_num <- age_breaks_num[age_breaks_num>=0]
   age_breaks_num <- sort(age_breaks_num)
   
   bool_reciprocal      <- opt_matrix_features[[1]]  %in% cnt_matrix_features
@@ -287,26 +303,32 @@ get_survey_object <- function(country,
 #mija <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45,65))$matrix*c(1,0.5,0.6,1)
 #mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45, 65))$matrix
 compare_contact_matrices <- function(mija,mijb){
-  R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)
-  mij_ratio     <- mija/mijb
   
-  # relative incidence 
-  RIa             <- standardize_RI(eigen(mija)$vectors[,1])
-  RIb             <- standardize_RI(eigen(mijb)$vectors[,1])
-  RI_ratio        <- RIa/RIb
-  names(RI_ratio) <- colnames(mija)
-  
-  #output 
-  out <- list(R0_ratio=R0_ratio,mij_ratio=mij_ratio,RI_ratio=RI_ratio)
-  
-  # fix NA-results
-  if(identical(mija,mijb)){ # set 1 if mija == mijb
-    for(i in 1:length(out)) { 
-      out[[i]][] <- 1 
-    }
-  } else if(sum(mija) == 0){ # set 0 if mija[] == 0
+  if(any(is.na(mija))|any(is.na(mijb))){
+    warning('Social contact matrix contains NA... no comparison possible!')
+    out <- NULL
+  } else{
+    R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)
+    mij_ratio     <- mija/mijb
+    
+    # relative incidence 
+    RIa             <- standardize_RI(eigen(mija)$vectors[,1])
+    RIb             <- standardize_RI(eigen(mijb)$vectors[,1])
+    RI_ratio        <- RIa/RIb
+    names(RI_ratio) <- colnames(mija)
+    
+    #output 
+    out <- list(R0_ratio=R0_ratio,mij_ratio=mij_ratio,RI_ratio=RI_ratio)
+    
+    # fix NA-results
+    if(identical(mija,mijb)){ # set 1 if mija == mijb
       for(i in 1:length(out)) { 
-      out[[i]][] <- 0 
+        out[[i]][] <- 1 
+      }
+    } else if(sum(mija) == 0){ # set 0 if mija[] == 0
+      for(i in 1:length(out)) { 
+        out[[i]][] <- 0 
+      }
     }
   }
   

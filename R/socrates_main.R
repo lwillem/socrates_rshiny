@@ -141,6 +141,13 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
            )
   }
   
+  if(nrow(survey_object$contacts) == 0){
+    return(list(matrix=NA,
+                participants = NA,
+                warning="Contact selection issue!")
+    )
+  }
+  
     # run social_mixr function
   matrix_out <- contact_matrix(survey           = survey_object, 
                                 age.limits      = age_breaks_num,
@@ -238,6 +245,11 @@ get_survey_object <- function(country,
   
   # select gender ####
   if(gender != opt_gender[[1]]){
+    
+    # first select cnt data of remaining participants
+    data_cnt <- data_cnt[data_cnt$part_id %in% data_part$part_id]
+    
+    # set gender-specific booleans
     bool_cnt_female  <- data_cnt$cnt_gender   == 'F'
     bool_part_female <- data_part$part_gender == 'F'
     
@@ -268,7 +280,7 @@ get_survey_object <- function(country,
   if(length(cnt_location)==0){
     print("WARNING: NO LOCATIONS SPECIFIED...")
     data_cnt <- data_cnt[0,]
-  } else if(!identical(cnt_location,opt_location)){
+  } else if(!identical(cnt_location,opt_location) && nrow(data_cnt)>0){
     
     # fix: change data.table to data.frame
     data_cnt_tmp <- data.frame(data_cnt)

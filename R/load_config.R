@@ -77,7 +77,7 @@ opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.r
 # disable the UK van Hoek dataset (TEMP)
 opt_country <- opt_country[!grepl('van Hoek',opt_country)]
 opt_country <- opt_country[!grepl('Beraud',opt_country)]
-
+opt_country <- opt_country[!grepl('Zimbabwe',opt_country)]
 
 # reformat and sort opt_country
 opt_country <- sort(opt_country)

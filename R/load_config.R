@@ -20,6 +20,12 @@ library('npsp')
 library('countrycode')
 library('data.table')
 
+# temporary to use the get_survey script outside the SocialMixr package
+library(httr)
+library(jsonlite)
+library(XML)
+library(curl)
+
 #__________________________#
 ##  UI PANEL OPTIONS    ####
 #__________________________#
@@ -70,6 +76,7 @@ opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.r
 #opt_country <- opt_country[grepl('Mossong',opt_country)]
 # disable the UK van Hoek dataset (TEMP)
 opt_country <- opt_country[!grepl('van Hoek',opt_country)]
+opt_country <- opt_country[!grepl('Beraud',opt_country)]
 
 
 # reformat and sort opt_country

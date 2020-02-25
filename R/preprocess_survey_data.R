@@ -40,7 +40,7 @@ survey_opt <- c("polymod",'peru','zimbabwe','france','hong_kong',
 survey_meta_data <- rbind(survey_meta_data,survey_meta_data[8,],survey_meta_data[8,])
   
 # get dataset from ZENODO and save as RDS
-i <- 8
+i <- 4
 for(i in 7:nrow(survey_meta_data)){
   survey_data <- get_survey(survey_meta_data$url[i])
   
@@ -134,4 +134,38 @@ for(i in 7:nrow(survey_meta_data)){
 
 
 # finished
+library(data.table)
+library(httr)
+library(jsonlite)
+library(XML)
+library(curl)
+
+data_dir  <- './data/datasets_reformated_21Feb_2020/'
+survey_opt <- dir(data_dir)
+i <- 8
+for(i in 1:length(survey_opt)){
+  survey_data <- get_survey(survey = dir(file.path(data_dir,survey_opt[i]),pattern = '.csv',full.names = T),quiet = T)
+  
+  
+  if(tolower(survey_opt[i]) == 'zimbabwe'){
+    # include year (from paper)
+    survey_data$participants$year <- 2013
+  }
+  
+  if(survey_opt[i] == 'france'){
+    survey_data$participants
+    bool_day_one <- survey_data$contacts$sday_part_number == 1
+    survey_data$contacts <- survey_data$contacts[bool_day_one,]
+    
+    survey_data$participants
+    part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek')])
+    survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
+  }
+  
+  
+  saveRDS(survey_data, file=paste0('data/survey_',tolower(survey_opt[i]),'.rds'))
+}
+
+
+range(survey_data$participants$part_age,na.rm=T)
 

@@ -74,6 +74,14 @@ for(i in 7:nrow(survey_meta_data)){
 
     part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek','holiday')])
     survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
+    
+    table(survey_data$contacts$cnt_school,survey_data$contacts$wave)
+    table(survey_data$contacts$cnt_school)
+    table(survey_data$contacts$cnt_transport)
+    cnt_tmp <- survey_data$contacts$cnt_school
+    survey_data$contacts$cnt_school <- survey_data$contacts$cnt_transport
+    survey_data$contacts$cnt_transport <- cnt_tmp
+    
     }
   
   if(survey_opt[i] == 'zambia_south_africa'){

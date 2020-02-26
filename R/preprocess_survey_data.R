@@ -163,6 +163,13 @@ for(i in 1:length(survey_opt)){
     survey_data$participants$year <- 2013
   }
   
+  if(tolower(survey_opt[i]) == 'china'){
+    # include year (from paper)
+    names(survey_data$contacts)
+    survey_data$contacts$cnt_otherplace <- survey_data$contacts$cnt_otherplace | survey_data$contacts$cnt_otherpublicplace
+    survey_data$contacts$cnt_otherpublicplace <- NULL
+  }
+  
   if(survey_opt[i] == 'france'){
     survey_data$participants
     bool_day_one <- survey_data$contacts$sday_part_number == 1

@@ -292,6 +292,10 @@ get_survey_object <- function(country,
     # get column names
     cnt_location_colnames <- c(paste0('cnt_',tolower(cnt_location)))
     
+    # add missing location to "other"
+    data_cnt_tmp$cnt_loc_missing <- rowSums(data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))],na.rm=T) == 0
+    data_cnt_tmp$cnt_otherplace <- data_cnt_tmp$cnt_otherplace | data_cnt_tmp$cnt_loc_missing
+    
     # select columns
     if(length(cnt_location)>1){
       is_present <- rowSums(data_cnt_tmp[,cnt_location_colnames] == 1,na.rm=T)

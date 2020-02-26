@@ -112,12 +112,11 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   # remove missing values (eg. by typing ',,')
   age_breaks_num <- age_breaks_num[!is.na(age_breaks_num)]
   
-  # make sure the ages are postive and increasing 
+  # make sure the ages are postive, unique and increasing 
   if(any(age_breaks_num<0)){
     warning('Negative age breaks are removed')
   }
-  
-  age_breaks_num <- age_breaks_num[age_breaks_num>=0]
+  age_breaks_num <- unique(age_breaks_num[age_breaks_num>=0])
   age_breaks_num <- sort(age_breaks_num)
   
   bool_reciprocal      <- opt_matrix_features[[1]]  %in% cnt_matrix_features
@@ -284,7 +283,8 @@ get_survey_object <- function(country,
   if(length(cnt_location)==0){
     print("WARNING: NO LOCATIONS SPECIFIED...")
     data_cnt <- data_cnt[0,]
-  } else if(!identical(cnt_location,opt_location) && nrow(data_cnt)>0){
+  } else if(!identical(as.character(cnt_location),as.character(opt_location))
+            && nrow(data_cnt)>0){
     
     # fix: change data.table to data.frame
     data_cnt_tmp <- data.frame(data_cnt)

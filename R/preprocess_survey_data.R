@@ -44,24 +44,35 @@ i <- 4
 for(i in 7:nrow(survey_meta_data)){
   survey_data <- get_survey(survey_meta_data$url[i])
   
-  head(survey_data$participants)
-  table(survey_data$participants$country)
-  head(survey_data$contacts)
-  table(survey_data$contacts$cnt_age_est_max)
-  table(survey_data$contacts$cnt_age_est_min)
-  table(survey_data$contacts$cnt_age_exact)
-  typeof(survey_data$contacts$cnt_age_est_max)
-  typeof(survey_data$contacts$cnt_age_est_min)
-  typeof(survey_data$contacts$cnt_age_exact)
-  
+  # head(survey_data$participants)
+  # table(survey_data$participants$country)
+  # head(survey_data$contacts)
+  # table(survey_data$contacts$cnt_age_est_max)
+  # table(survey_data$contacts$cnt_age_est_min)
+  # table(survey_data$contacts$cnt_age_exact)
+  # typeof(survey_data$contacts$cnt_age_est_max)
+  # typeof(survey_data$contacts$cnt_age_est_min)
+  # typeof(survey_data$contacts$cnt_age_exact)
+  # 
   
   if(survey_opt[i] == 'france'){
     survey_data$participants
+    # select first day
     bool_day_one <- survey_data$contacts$sday_part_number == 1
     survey_data$contacts <- survey_data$contacts[bool_day_one,]
     
-    survey_data$participants
-    part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek')])
+    # select his/her first wave
+    part_id_wave_1 <- unique(survey_data$contacts$part_id[survey_data$contacts$wave == 1])
+    part_id_wave_2 <- unique(survey_data$contacts$part_id[survey_data$contacts$wave == 2])
+    exclude_wave_2 <- part_id_wave_2[part_id_wave_2 %in% part_id_wave_1]
+    bool_two_waves <- survey_data$contacts$wave == 2 & survey_data$contacts$part_id %in% exclude_wave_2
+    survey_data$contacts <- survey_data$contacts[!bool_two_waves,]
+    table(bool_two_waves)
+    
+    # convert holiday variable into boolean
+    survey_data$contacts$holiday <- survey_data$contacts$holiday == 1
+
+    part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek','holiday')])
     survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
     }
   
@@ -142,7 +153,7 @@ library(curl)
 
 data_dir  <- '../socrates_covid/data/datasets_full/'
 survey_opt <- dir(data_dir)
-i <- 8
+i <- 3
 for(i in 1:length(survey_opt)){
   survey_data <- get_survey(survey = dir(file.path(data_dir,survey_opt[i]),pattern = '.csv',full.names = T),quiet = T)
   

@@ -64,8 +64,8 @@ shinyUI(pageWithSidebar(
     checkboxInput("bool_telework","Telework"),
     conditionalPanel(
       condition = "input.bool_telework == true",
-      sliderInput("telework_reference","Observed % telework",min=0,max=99,value=16),
-      sliderInput("telework_target","Target % telework",min=0,max=99,value=16)
+      sliderInput("telework_reference","Observed % telework",min=0,max=99,value=5),
+      sliderInput("telework_target","Target % telework",min=0,max=99,value=5)
     ),
     
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),

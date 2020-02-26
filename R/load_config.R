@@ -88,7 +88,7 @@ opt_country_admin$has_dayofweek_data[opt_country_admin$country %in% c('Russia')]
 
 # exclude some datasets (TEMP)
 opt_country <- opt_country[!grepl('van Hoek',opt_country)]
-opt_country <- opt_country[!grepl('Beraud',opt_country)]
+#opt_country <- opt_country[!grepl('Beraud',opt_country)]
 opt_country <- opt_country[!grepl('Zimbabwe',opt_country)]
 
 # reformat and sort opt_country

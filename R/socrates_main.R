@@ -137,14 +137,14 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   if(nrow(survey_object$participants)==0){
     return(list(matrix=NA,
                 participants = NA,
-                warning="Participant selection issue!")
+                warning="Participant selection too strict... no data left!")
            )
   }
   
   if(nrow(survey_object$contacts) == 0){
     return(list(matrix=NA,
                 participants = NA,
-                warning="Contact selection issue!")
+                warning="Contact selection too strict... not data left!")
     )
   }
   
@@ -199,25 +199,29 @@ get_survey_object <- function(country,
   
   # select period ####
   if(daytype %in% names(opt_day_type[4:5])){
-    load('data/holiday_all.RData')
-    country_iso3 <- countrycode(unlist(country), 'country.name', 'iso3c')
-    country_holiday_data <- holiday_all[holiday_all$iso3 == country_iso3,]
-    data_part$date <- as.Date(paste(data_part$day,
-                                    data_part$month,
-                                    data_part$year,
-                                    sep='/')
-                              ,'%d/%m/%Y')
-    data_part$is_holiday <- data_part$date %in% country_holiday_data$date
-
+    if(!any(data_part$holiday)){
+      load('data/holiday_all.RData')
+      country_iso3 <- countrycode(unlist(country), 'country.name', 'iso3c')
+      country_holiday_data <- holiday_all[holiday_all$iso3 == country_iso3,]
+      data_part$date <- as.Date(paste(data_part$day,
+                                      data_part$month,
+                                      data_part$year,
+                                      sep='/')
+                                ,'%d/%m/%Y')
+      data_part$holiday <- data_part$date %in% country_holiday_data$date
+    }
+      
     if(daytype == opt_day_type[[4]]){
       # if(!any(data_part$is_holiday)){ # if no holiday period data
       #   print("NO HOLIDAY DATA... USE REGULAR PERIOD DATA")
       # } else{ # select holiday period data
-        data_part <- data_part[data_part$is_holiday,]
+        data_part <- data_part[data_part$holiday,]
       # }
     } else{ # select regular period data
-      data_part <- data_part[!data_part$is_holiday,]
+      data_part <- data_part[!data_part$holiday,]
     }
+    # select cnt data of remaining participants
+    data_cnt <- data_cnt[data_cnt$part_id %in% data_part$part_id]
   }
   
   # select contact duration ####

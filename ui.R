@@ -29,9 +29,10 @@ shinyUI(pageWithSidebar(
               label="Age breaks (comma delimited)",
               value="0,18,45,65"),
    
+    #by default 'all contacts' to prevent warnings/errors, can be extended in "server" script. 
     selectInput("daytype", "Type of day",
-                opt_day_type),
-
+                opt_day_type[1]),
+    
     selectInput("duration", "Contact duration",
                 opt_duration),
     

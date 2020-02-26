@@ -16,6 +16,37 @@ options(digits = 3)
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {
   
+  # Update UI panel(s) ####
+  observe({
+    
+    #Update the minimum "telework target" (at least the observed value)
+    updateSliderInput(session, "telework_target", min = input$telework_reference)
+    
+    # Update whether the location-specific checkboxes are displayed
+    if(input$bool_location)
+      updateCheckboxGroupInput(session, "cnt_location", selected = opt_location)
+    
+    # Update whether the telework sliders are displayed
+    if(!input$bool_telework)
+      updateSliderInput(session, "telework_target", value = input$telework_reference)
+    
+    # Update 'daytype' input, by default 'all contacts' to prevent warnings/errors  
+    # Options can be extended based on data availability
+    flag_country <- input$country == opt_country_admin$name
+    if(opt_country_admin$has_holiday_data[flag_country]){
+      updateSelectInput(session,"daytype", choices = opt_day_type, selected = input$daytype)
+    } else if(opt_country_admin$has_dayofweek_data[flag_country]) {
+      if(input$daytype %in% opt_day_type[1:3]){
+        updateSelectInput(session,"daytype", choices = opt_day_type[1:3], selected = input$daytype)
+      } else{
+        updateSelectInput(session,"daytype", choices = opt_day_type[1:3])
+      }
+    } else {
+      updateSelectInput(session,"daytype", choices = opt_day_type[1])
+    }
+    
+  })
+ 
   ## UPDATE CONTENT ####
   observe({
     
@@ -68,19 +99,6 @@ shinyServer(function(input, output, session) {
     )
   })
   
-  # Update UI panel(s) ####
-  observe({
-    
-    #Update the minimum "telework target" (at least the observed value)
-    updateSliderInput(session, "telework_target", min = input$telework_reference)
-    
-    # Update whether the location-specific checkboxes are displayed
-    if(input$bool_location)
-      updateCheckboxGroupInput(session, "cnt_location", selected = opt_location)
-    
-    # Update whether the telework sliders are displayed
-    if(!input$bool_telework)
-        updateSliderInput(session, "telework_target", value = input$telework_reference)
-  })
+  
   
 })

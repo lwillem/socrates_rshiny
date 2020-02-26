@@ -66,15 +66,27 @@ opt_country_admin <- data.frame(name = opt_country,
                                 dataset = c(rep("polymod",8),'peru','zimbabwe','france',
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa'),
-                                country =  c(polymod_countries, rep('',8),'Zambia','South Africa'),
+                                country =  c(polymod_countries, 'Peru','Zimbabwe','France',
+                                             '','Vietnam','UK',
+                                             'Russia','China','Zambia','South Africa'),
                                 stringsAsFactors = FALSE)
+
+# add with holiday and dayofweek boolean
+opt_country_admin$has_holiday_data <- TRUE
+opt_country_admin$has_holiday_data[opt_country_admin$country %in% c('Italy','Netherlands','Poland',
+                                                                    'Russia','South Africa','Vietnam',
+                                                                    'Zambia')] <- FALSE
+opt_country_admin$has_holiday_data[opt_country_admin$dataset %in% c('hong_kong')] <- FALSE
 
 # complete filenames with relative path
 opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')
 
-# select only polymod dataset (TEMP)
-#opt_country <- opt_country[grepl('Mossong',opt_country)]
-# disable the UK van Hoek dataset (TEMP)
+# complete with holiday boolean
+opt_country_admin$has_dayofweek_data <- TRUE
+opt_country_admin$has_dayofweek_data[opt_country_admin$country %in% c('Russia')] <- FALSE
+
+
+# exclude some datasets (TEMP)
 opt_country <- opt_country[!grepl('van Hoek',opt_country)]
 opt_country <- opt_country[!grepl('Beraud',opt_country)]
 opt_country <- opt_country[!grepl('Zimbabwe',opt_country)]

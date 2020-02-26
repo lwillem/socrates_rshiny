@@ -140,7 +140,7 @@ library(jsonlite)
 library(XML)
 library(curl)
 
-data_dir  <- './data/datasets_reformated_21Feb_2020/'
+data_dir  <- '../socrates_covid/data/datasets_full/'
 survey_opt <- dir(data_dir)
 i <- 8
 for(i in 1:length(survey_opt)){

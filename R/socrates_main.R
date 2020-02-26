@@ -186,7 +186,7 @@ get_survey_object <- function(country,
   }
   
   # select type of day ####
-  if(daytype != opt_day_type[[1]]){
+  if(!daytype %in% names(opt_day_type[c(1,6)])){
     bool_dayofweek <- data_part$dayofweek >= 0 # all
     if(daytype == opt_day_type[[3]]){ # weekend
       bool_dayofweek <- data_part$dayofweek %in% c(0,6)
@@ -198,7 +198,7 @@ get_survey_object <- function(country,
   }
   
   # select period ####
-  if(daytype %in% names(opt_day_type[4:5])){
+  if(daytype %in% names(opt_day_type[4:6])){
     if(!any(data_part$holiday)){
       load('data/holiday_all.RData')
       country_iso3 <- countrycode(unlist(country), 'country.name', 'iso3c')

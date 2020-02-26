@@ -37,7 +37,8 @@ opt_day_type <- list("All contacts",
                      "Monday-Friday",
                      "Saturday-Sunday",
                      "Monday-Friday (holidays)",
-                     "Monday-Friday (excl. holidays)") 
+                     "Monday-Friday (excl. holidays)",
+                     "All contacts (excl. holidays)") 
 
 opt_touch    <- list("All contacts", "Physical contacts","Non-physical contacts")
 opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes","More than 15 minutes","More than 1 hour","More than 4 hours")

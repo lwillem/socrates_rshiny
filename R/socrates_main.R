@@ -25,8 +25,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                       bool_exclusive  = FALSE,
                                       max_part_weight = max_part_weight)
   
-  warnings_all <- warnings()
- 
   # CLI
   fct_out <- cnt_matrix_ui
   
@@ -88,11 +86,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     } # end else (no NA's present) 
   }# end if intervention
   
- # add warnings to function output
-  warnings_all  <- names(warnings())
-  warnings_all  <- unique(warnings_all)
-  fct_out$notes <- c(warnings_all,fct_out$notes)
-
      return(fct_out)
 }
 

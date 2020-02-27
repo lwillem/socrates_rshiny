@@ -112,6 +112,11 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   age_breaks_num <- unique(age_breaks_num[age_breaks_num>=0])
   age_breaks_num <- sort(age_breaks_num)
   
+  # if no breaks specified, group all participants
+  if(length(age_breaks_num)==0){
+    age_breaks_num <- 0
+  }
+  
   bool_reciprocal      <- opt_matrix_features[[1]]  %in% cnt_matrix_features
   bool_weigh_age_group <- opt_matrix_features[[2]]  %in% cnt_matrix_features
   bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features

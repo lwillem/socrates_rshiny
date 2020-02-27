@@ -238,10 +238,15 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
                                 breaks = part.age.group.breaks,
                                 right = FALSE)]
     age.groups <- survey$participants[, levels(age.group)]
-    # age.groups[length(age.groups)] <-
-    #     paste0(max(survey$participants$lower.age.limit, na.rm=TRUE), "+")
-    # survey$participants[, age.group :=
-    #                         factor(age.group, levels=levels(age.group), labels=age.groups)]
+    age.groups[length(age.groups)] <-
+        paste0(max(survey$participants$lower.age.limit, na.rm=TRUE), "+")
+    survey$participants[, age.group :=
+                            factor(age.group, levels=levels(age.group), labels=age.groups)]
+    
+    # add upper age limit
+    survey$participants[, upper.age.limit := 
+                            c(part.age.group.breaks,max.age)[as.factor(survey$participants$lower.age.limit)+1]]
+    
     
     ## if split or symmetric requested, get demographic data (survey population)
     need.survey.pop <- split || symmetric || weigh.age.group
@@ -662,8 +667,10 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         survey.pop <-
             merge(survey.pop,
                   unique(survey$participants[, list(lower.age.limit, age.group)]))
-        survey.pop <- survey.pop[, list(age.group, population,
-                                        proportion=population/sum(population), year)]
+        survey.pop <- survey.pop[, list(age.group, 
+                                        population,
+                                        proportion, 
+                                        year)]
     }
 
     ## get number of participants in each age group
@@ -675,6 +682,11 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
     part.pop <- data.table(table(survey$participants[, age.group], useNA = useNA))
     setnames(part.pop, c("age.group", "participants"))
     part.pop[, proportion := participants / sum(participants)]
+    
+    # add age limits
+    part.pop$lower.age.limit <- part.age.group.breaks[-length(part.age.group.breaks)]
+    part.pop$upper.age.limit <- part.age.group.breaks[-1]
+    
 
     if (length(ret) > 1) { return_value <- list(matrices = ret)
     } else return_value <- ret[[1]]
@@ -695,7 +707,7 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
             survey$participants[, weekday := dayofweek %in% 1:5]
             fmla <- paste(fmla, '+  weekday')
         }
-        # end with 'weight'... for sorting reasons
+        # end with 'lower.age.limit'... for sorting reasons
         fmla <- paste(fmla, '+  weight + lower.age.limit') 
         
         # add dummy column to participants... and aggregate        
@@ -704,6 +716,9 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
                                     data = survey$participants,
                                     sum)
     
+        # remove lower.age.limit
+        weight_summary$lower.age.limit <- NULL
+        
         # add to return value
         return_value[["weights"]] <- weight_summary
     }

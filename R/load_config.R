@@ -51,10 +51,10 @@ polymod_countries <- survey_countries(polymod,quiet = T)
 
 # add other dataset (and reference)
 opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
-                        'Peru (Grijalva 2011)',
+                        'Peru (Grijalva 2015)',
                         'Zimbabwe (Melegaro 2013)',
-                        'France (Beraud 2012)',
-                        'Hong Kong (Lyung 2015)',
+                        'France (Beraud 2015)',
+                        'Hong Kong (Leung 2017)',
                         'Vietnam (Horby 2007)',
                         'United Kingdom (van Hoek 2012)',
                         'Russia (Litvinova 2019)',

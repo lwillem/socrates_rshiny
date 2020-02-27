@@ -71,19 +71,23 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix)
       #print(model_comparison)
       
-      fct_out <- c(cnt_matrix_ui,model_comparison)
-      
       # add note(s)
-      fct_out <- c(fct_out,notes="ratio = with intervention / without intervention")
+      model_comparison <- c(model_comparison,notes="ratio = with intervention / without intervention")
       if(bool_schools_closed) { 
-        fct_out$notes <- rbind(fct_out$notes,"All schools are closed")
+        model_comparison$notes <- rbind(model_comparison$notes,"All schools are closed")
         }
       if(bool_telework) {   
-        fct_out$notes <- rbind(fct_out$notes, paste0("Increased telework (",
+        model_comparison$notes <- rbind(model_comparison$notes, paste0("Increased telework (",
                                                     telework_target,'% instead of ',
                                                     telework_reference,'%)'))
       } # end add note
-    } # end else (no NA's present) 
+    
+      # combine cnt matrix and comparison
+      fct_out <- c(cnt_matrix_ui[1],
+                   model_comparison,
+                   cnt_matrix_ui[-1])
+      
+      } # end else (no NA's present) 
   }# end if intervention
   
      return(fct_out)
@@ -98,6 +102,9 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   if(bool_schools_closed){
     cnt_location <- cnt_location[!grepl('School',cnt_location)]
   }
+  
+  # make sure age_breaks_text is a character string
+  age_breaks_text <- as.character(age_breaks_text)
   
   # set age intervals
   age_breaks_num <- as.numeric(unlist(strsplit(age_breaks_text,",")))

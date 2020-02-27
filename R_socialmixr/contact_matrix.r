@@ -243,11 +243,6 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
     survey$participants[, age.group :=
                             factor(age.group, levels=levels(age.group), labels=age.groups)]
     
-    # add upper age limit
-    survey$participants[, upper.age.limit := 
-                            c(part.age.group.breaks,max.age)[as.factor(survey$participants$lower.age.limit)+1]]
-    
-    
     ## if split or symmetric requested, get demographic data (survey population)
     need.survey.pop <- split || symmetric || weigh.age.group
     if (need.survey.pop)
@@ -687,6 +682,9 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
     part.pop$lower.age.limit <- part.age.group.breaks[-length(part.age.group.breaks)]
     part.pop$upper.age.limit <- part.age.group.breaks[-1]
     
+    # add total number of contacts
+    cont.count <- data.table(table(survey$contacts[, age.group], useNA = useNA))
+    part.pop$contacts_reported <- cont.count$N
 
     if (length(ret) > 1) { return_value <- list(matrices = ret)
     } else return_value <- ret[[1]]

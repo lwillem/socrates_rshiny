@@ -148,7 +148,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   if(nrow(survey_object$contacts) == 0){
     return(list(matrix=NA,
                 participants = NA,
-                warning="Contact selection too strict... not data left!")
+                warning="Contact selection too strict... no data left!")
     )
   }
   
@@ -294,12 +294,15 @@ get_survey_object <- function(country,
     # fix: change data.table to data.frame
     data_cnt_tmp <- data.frame(data_cnt)
     
-    # get column names
-    cnt_location_colnames <- c(paste0('cnt_',tolower(cnt_location)))
-    
     # add missing location to "other"
     data_cnt_tmp$cnt_loc_missing <- rowSums(data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))],na.rm=T) == 0
     data_cnt_tmp$cnt_otherplace <- data_cnt_tmp$cnt_otherplace | data_cnt_tmp$cnt_loc_missing
+    
+    # replace value 'NA' for a location to 'false' (=not-present)
+    data_cnt_tmp[is.na(data_cnt_tmp)] <- FALSE
+    
+    # get column names
+    cnt_location_colnames <- c(paste0('cnt_',tolower(cnt_location)))
     
     # select columns
     if(length(cnt_location)>1){
@@ -322,7 +325,7 @@ get_survey_object <- function(country,
     
     # add warning
     if(!any(bool_location)){
-      print("WARNING: NO LOCATIONS LEFT AFTER LOCATION SELECTION...")
+      print("WARNING: NO CONTACTS LEFT AFTER LOCATION SELECTION...")
     } 
   }
       

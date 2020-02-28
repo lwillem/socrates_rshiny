@@ -40,7 +40,7 @@ survey_opt <- c("polymod",'peru','zimbabwe','france','hong_kong',
 survey_meta_data <- rbind(survey_meta_data,survey_meta_data[8,],survey_meta_data[8,])
   
 # get dataset from ZENODO and save as RDS
-i <- 4
+i <- 3
 for(i in 7:nrow(survey_meta_data)){
   survey_data <- get_survey(survey_meta_data$url[i])
   
@@ -146,6 +146,13 @@ for(i in 7:nrow(survey_meta_data)){
     
     # include year (from paper)
     survey_data$participants$year <- 2013
+    dim(survey_data$participants)
+    dim(survey_data$contacts)
+    names(survey_data$contacts)  
+    
+    names(survey_data$participants)
+    
+    
   }
   
   saveRDS(survey_data, file=paste0('data/survey_',survey_opt[i],'.rds'))
@@ -158,18 +165,27 @@ library(httr)
 library(jsonlite)
 library(XML)
 library(curl)
+source('R/socrates_main.R')
 
 data_dir  <- '../socrates_covid/data/datasets_full/'
 survey_opt <- dir(data_dir)
-i <- 3
+i <- 12
 for(i in 1:length(survey_opt)){
   survey_data <- get_survey(survey = dir(file.path(data_dir,survey_opt[i]),pattern = '.csv',full.names = T),quiet = T)
   
   
   if(tolower(survey_opt[i]) == 'zimbabwe'){
-    # include year (from paper)
-    survey_data$participants$year <- 2013
-  }
+    names(survey_data$contacts)
+    bool_day_one <- survey_data$contacts$sday_part_number == 1
+    table(bool_day_one)
+    survey_data$contacts <- survey_data$contacts[bool_day_one,]
+    
+    survey_data$participants
+    part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek')])
+    survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
+    
+    
+   }
   
   if(tolower(survey_opt[i]) == 'china'){
     # include year (from paper)
@@ -186,6 +202,11 @@ for(i in 1:length(survey_opt)){
     survey_data$participants
     part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek')])
     survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
+    
+    table(survey_data$contacts$cnt_school)
+    table(survey_data$contacts$cnt_transport)
+    
+    
   }
   
   
@@ -195,3 +216,6 @@ for(i in 1:length(survey_opt)){
 
 range(survey_data$participants$part_age,na.rm=T)
 
+data_fr <- read.table('../socrates_covid/data/datasets_full/France/ComesF_contacts.txt',sep=';',header=T)
+table(data_fr$cnt_school)
+table(data_fr$cnt_transport)

@@ -30,7 +30,10 @@ library(curl)
 ##  UI PANEL OPTIONS    ####
 #__________________________#
 
-# set all options
+# set deault age breaks (string)
+opt_age_breaks <- "0,18,60"
+
+# set all 'select input' options (list)
 # note: the first is the default
 opt_gender   <- list("All","Female-Female",'Female-Male','Male-Female',"Male-Male")
 opt_day_type <- list("All contacts",
@@ -76,21 +79,23 @@ opt_country_admin <- data.frame(name = opt_country,
 opt_country_admin$has_holiday_data <- TRUE
 opt_country_admin$has_holiday_data[opt_country_admin$country %in% c('Italy','Netherlands','Poland',
                                                                     'Russia','South Africa','Vietnam',
-                                                                    'Zambia')] <- FALSE
+                                                                    'Zambia','Zimbabwe')] <- FALSE
 opt_country_admin$has_holiday_data[opt_country_admin$dataset %in% c('hong_kong')] <- FALSE
-
-# complete filenames with relative path
-opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')
 
 # complete with holiday boolean
 opt_country_admin$has_dayofweek_data <- TRUE
 opt_country_admin$has_dayofweek_data[opt_country_admin$country %in% c('Russia')] <- FALSE
 
 
+# complete filenames with relative path
+opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')
+
 # exclude some datasets (TEMP)
 opt_country <- opt_country[!grepl('van Hoek',opt_country)]
 #opt_country <- opt_country[!grepl('Beraud',opt_country)]
-opt_country <- opt_country[!grepl('Zimbabwe',opt_country)]
+#opt_country <- opt_country[!grepl('Zimbabwe',opt_country)]
+opt_country <- opt_country[!grepl('China',opt_country)]
+
 
 # reformat and sort opt_country
 opt_country <- sort(opt_country)

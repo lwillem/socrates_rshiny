@@ -90,6 +90,11 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       } # end else (no NA's present) 
   }# end if intervention
   
+  # Add relative incidence
+  fct_out$relative_incidence        <- standardize_RI(eigen(cnt_matrix_ui$matrix)$vectors[,1])
+  names(fct_out$relative_incidence) <- colnames(cnt_matrix_ui$matrix)
+  
+  
      return(fct_out)
 }
 

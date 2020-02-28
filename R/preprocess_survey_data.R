@@ -168,6 +168,8 @@ library(curl)
 source('R/socrates_main.R')
 
 data_dir  <- '../socrates_covid/data/datasets_full/'
+data_dir  <- '../socrates_covid/data/datasets_28_Feb/'
+dir(data_dir)
 survey_opt <- dir(data_dir)
 i <- 12
 for(i in 1:length(survey_opt)){
@@ -176,7 +178,8 @@ for(i in 1:length(survey_opt)){
   
   if(tolower(survey_opt[i]) == 'zimbabwe'){
     names(survey_data$contacts)
-    bool_day_one <- survey_data$contacts$sday_part_number == 1
+    #bool_day_one <- survey_data$contacts$sday_part_number == 1
+    bool_day_one <- survey_data$contacts$sday_part_id == 1
     table(bool_day_one)
     survey_data$contacts <- survey_data$contacts[bool_day_one,]
     

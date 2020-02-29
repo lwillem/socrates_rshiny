@@ -171,23 +171,26 @@ data_dir  <- '../socrates_covid/data/datasets_full/'
 data_dir  <- '../socrates_covid/data/datasets_28_Feb/'
 dir(data_dir)
 survey_opt <- dir(data_dir)
-i <- 12
+i <- 11
 for(i in 1:length(survey_opt)){
   survey_data <- get_survey(survey = dir(file.path(data_dir,survey_opt[i]),pattern = '.csv',full.names = T),quiet = T)
   
   
   if(tolower(survey_opt[i]) == 'zimbabwe'){
     names(survey_data$contacts)
-    #bool_day_one <- survey_data$contacts$sday_part_number == 1
-    bool_day_one <- survey_data$contacts$sday_part_id == 1
+    bool_day_one <- grepl('-1',survey_data$contacts$diary_id)
     table(bool_day_one)
     survey_data$contacts <- survey_data$contacts[bool_day_one,]
     
     survey_data$participants
+    bool_day_one <- grepl('-1',survey_data$participants$diary_id)
+    table(bool_day_one)
+    survey_data$participants<- survey_data$participants[bool_day_one,]
+    
     part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek')])
     survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
     
-    
+    lapply(survey_data,dim)
    }
   
   if(tolower(survey_opt[i]) == 'china'){

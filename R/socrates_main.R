@@ -72,7 +72,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       #print(model_comparison)
       
       # add note(s)
-      model_comparison <- c(model_comparison,notes="ratio = with intervention / without intervention")
+      
       if(bool_schools_closed) { 
         model_comparison$notes <- rbind(model_comparison$notes,"All schools are closed")
         }
@@ -90,9 +90,11 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       } # end else (no NA's present) 
   }# end if intervention
   
-  # Add relative incidence
-  fct_out$relative_incidence        <- standardize_RI(eigen(cnt_matrix_ui$matrix)$vectors[,1])
-  names(fct_out$relative_incidence) <- colnames(cnt_matrix_ui$matrix)
+  # Add relative incidence (if possible)
+  if(!any(is.na(cnt_matrix_ui$matrix))){
+    fct_out$relative_incidence        <- standardize_RI(eigen(cnt_matrix_ui$matrix)$vectors[,1])
+    names(fct_out$relative_incidence) <- colnames(cnt_matrix_ui$matrix)
+  }
   
   
      return(fct_out)
@@ -349,7 +351,7 @@ compare_contact_matrices <- function(mija,mijb){
   
   if(any(is.na(mija))|any(is.na(mijb))){
     warning('Social contact matrix contains NA... no comparison possible!')
-    out <- NULL
+    out <- list(notes='Social contact matrix contains NA... no comparison possible!')
   } else{
     R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)
     mij_ratio     <- mija/mijb
@@ -361,7 +363,8 @@ compare_contact_matrices <- function(mija,mijb){
     names(RI_ratio) <- colnames(mija)
     
     #output 
-    out <- list(R0_ratio=R0_ratio,mij_ratio=mij_ratio,RI_ratio=RI_ratio)
+    out <- list(R0_ratio=R0_ratio,mij_ratio=mij_ratio,RI_ratio=RI_ratio,
+                notes="ratio = with intervention / without intervention")
     
     # fix NA-results
     if(identical(mija,mijb)){ # set 1 if mija == mijb

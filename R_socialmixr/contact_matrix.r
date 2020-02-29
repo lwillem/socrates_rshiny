@@ -378,11 +378,11 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
             {
                 # get proportion weekdays in the survey data 
                 sample.weekday.num  <- sum(survey[[table]][,dayofweek %in% 1:5])
-                sample.weekday.prop <- sample.weekday.num / nrow(survey[[table]])
+                sample.weekend.num  <- nrow(survey[[table]]) - sample.weekday.num
                 
                 # get weight based on reference (5x week & 2x weekend) AND proportion in sample
-                survey[[table]][dayofweek %in% 1:5, weight := (5/7) / sample.weekday.prop ]
-                survey[[table]][!(dayofweek %in% 1:5), weight := (2/7) / (1-sample.weekday.prop)]
+                survey[[table]][dayofweek %in% 1:5, weight := 5 / sample.weekday.num ]
+                survey[[table]][!(dayofweek %in% 1:5), weight := 2 / sample.weekend.num]
                 found.dayofweek <- TRUE
             }
         }
@@ -400,10 +400,9 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
             if ("age.group" %in% colnames(survey[[table]]))
             {
                 sample.pop <- data.frame(table(survey[[table]][,lower.age.limit]),stringsAsFactors = F)
-                sample.pop$lower.age.limit  <- as.numeric(levels(sample.pop$Var1))
-                sample.pop$proportion       <- sample.pop$Freq / sum(sample.pop$Freq)
-                sample.pop$weight.age.group  <- survey.pop$proportion / sample.pop$proportion
-   
+                sample.pop$lower.age.limit   <- as.numeric(levels(sample.pop$Var1))
+                sample.pop$weight.age.group  <- survey.pop$population / sample.pop$Freq
+                
                 survey[[table]] <- merge(survey[[table]],sample.pop[,c("lower.age.limit","weight.age.group")],by='lower.age.limit')
                 survey[[table]][, weight := weight * weight.age.group]
             }

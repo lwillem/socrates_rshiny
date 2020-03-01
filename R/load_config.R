@@ -49,7 +49,7 @@ opt_location          <- c("Home","Work","School","Transport","Leisure","Otherpl
 
 # TEMP remove age-weights from the application
 #opt_matrix_features   <- c("Reciprocal","Weighted by age","Weighted by week/weekend")
-opt_matrix_features   <- c("Reciprocal","Weighted by week/weekend")
+opt_matrix_features   <- c("Reciprocal","Weigh by week/weekend")
 
 
 # get polymod countries

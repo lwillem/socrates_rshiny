@@ -132,8 +132,8 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   }
   
   bool_reciprocal      <- opt_matrix_features[[1]]  %in% cnt_matrix_features
-  bool_weigh_age_group <- opt_matrix_features[[2]]  %in% cnt_matrix_features
-  bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features
+  bool_weigh_age_group <- FALSE #opt_matrix_features[[2]]  %in% cnt_matrix_features
+  bool_weigh_dayofweek <- opt_matrix_features[[2]]  %in% cnt_matrix_features
   
   # get specific social_mixr survey object
   survey_object <- get_survey_object(country      = country,

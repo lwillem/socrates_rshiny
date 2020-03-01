@@ -46,7 +46,10 @@ opt_day_type <- list("All contacts",
 opt_touch    <- list("All contacts", "Physical contacts","Non-physical contacts")
 opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes","More than 15 minutes","More than 1 hour","More than 4 hours")
 opt_location          <- c("Home","Work","School","Transport","Leisure","Otherplace")
-opt_matrix_features   <- c("Reciprocal","Weighted by age","Weighted by week/weekend")
+
+# TEMP remove age-weights from the application
+#opt_matrix_features   <- c("Reciprocal","Weighted by age","Weighted by week/weekend")
+opt_matrix_features   <- c("Reciprocal","Weighted by week/weekend")
 
 
 # get polymod countries

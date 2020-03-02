@@ -2,4 +2,4 @@
 
 The acronym stands for **S**ocial **C**ontact  **RATES**
  
- For more info, please go to  [socialcontactdata.org](http://http://www.socialcontactdata.org).
+ For more info, please go to  [socialcontactdata.org](http://www.socialcontactdata.org).

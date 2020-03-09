@@ -50,10 +50,8 @@ opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes
 # at multiple locations, we use only the first location in this sequence 
 opt_location          <- c("Home","Work","School","Transport","Leisure","Otherplace")
 
-# TEMP remove age-weights from the application
-#opt_matrix_features   <- c("Reciprocal","Weighted by age","Weighted by week/weekend")
-opt_matrix_features   <- c("Reciprocal","Weigh by week/weekend")
-
+# contact reformatting and weights
+opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend")
 
 # get polymod countries
 polymod_countries <- survey_countries(polymod,quiet = T)

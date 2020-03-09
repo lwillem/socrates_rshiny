@@ -22,7 +22,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
                                       cnt_location,cnt_matrix_features,age_breaks_text,
                                       bool_schools_closed,
-                                      bool_exclusive  = FALSE,
                                       max_part_weight = max_part_weight)
   
   # CLI
@@ -41,7 +40,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                            cnt_matrix_features,
                                            age_breaks_text,
                                            bool_schools_closed = FALSE,
-                                           bool_exclusive      = FALSE,
                                            max_part_weight     = max_part_weight)
       
       if(bool_telework){
@@ -53,7 +51,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                                      cnt_matrix_features,
                                                      age_breaks_text,
                                                      bool_schools_closed = FALSE,
-                                                     bool_exclusive      = FALSE,
                                                      max_part_weight     = max_part_weight)$matrix
         } else{
           cnt_matrix_work_excl <- cnt_matrix_ui$matrix * 0
@@ -75,19 +72,19 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       
       if(bool_schools_closed) { 
         model_comparison$notes <- rbind(model_comparison$notes,"All schools are closed")
-        }
+      }
       if(bool_telework) {   
         model_comparison$notes <- rbind(model_comparison$notes, paste0("Increased telework (",
-                                                    telework_target,'% instead of ',
-                                                    telework_reference,'%)'))
+                                                                       telework_target,'% instead of ',
+                                                                       telework_reference,'%)'))
       } # end add note
-    
+      
       # combine cnt matrix and comparison
       fct_out <- c(cnt_matrix_ui[1],
                    model_comparison,
                    cnt_matrix_ui[-1])
       
-      } # end else (no NA's present) 
+    } # end else (no NA's present) 
   }# end if intervention
   
   # Add relative incidence (if possible)
@@ -97,13 +94,13 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   }
   
   
-     return(fct_out)
+  return(fct_out)
 }
 
 ## MAIN FUNCTION ####
 get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                cnt_location,cnt_matrix_features,age_breaks_text,
-                               bool_schools_closed,bool_exclusive,max_part_weight){
+                               bool_schools_closed,max_part_weight){
   
   # REACTIVE STRATEGY: SCHOOL CLOSURE
   if(bool_schools_closed){
@@ -142,14 +139,13 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      duration     = duration,
                                      gender       = gender,
                                      cnt_location = cnt_location,
-                                     bool_reciprocal  = bool_reciprocal,
-                                     bool_exclusive   = bool_exclusive)  # remove contacts at multiple loations
+                                     bool_reciprocal  = bool_reciprocal)
   
   if(nrow(survey_object$participants)==0){
     return(list(matrix=NA,
                 participants = NA,
                 warning="Participant selection too strict... no data left!")
-           )
+    )
   }
   
   if(nrow(survey_object$contacts) == 0){
@@ -159,14 +155,14 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
     )
   }
   
-    # run social_mixr function
+  # run social_mixr function
   matrix_out <- contact_matrix(survey           = survey_object, 
-                                age.limits      = age_breaks_num,
-                                symmetric       = bool_reciprocal,
-                                weigh.age.group = bool_weigh_age_group,
-                                weigh.dayofweek = bool_weigh_dayofweek,
-                                max.part.weight = max_part_weight,
-                                quiet           = TRUE)
+                               age.limits      = age_breaks_num,
+                               symmetric       = bool_reciprocal,
+                               weigh.age.group = bool_weigh_age_group,
+                               weigh.dayofweek = bool_weigh_dayofweek,
+                               max.part.weight = max_part_weight,
+                               quiet           = TRUE)
   # return
   matrix_out
 }
@@ -178,8 +174,7 @@ get_survey_object <- function(country,
                               duration,
                               gender,
                               cnt_location,
-                              bool_reciprocal,
-                              bool_exclusive){
+                              bool_reciprocal){
   
   # select dataset filename and load #####
   sel_dataset <- opt_country_admin[opt_country_admin$name == country,]
@@ -221,12 +216,12 @@ get_survey_object <- function(country,
                                 ,'%d/%m/%Y')
       data_part$holiday <- data_part$date %in% country_holiday_data$date
     }
-      
+    
     if(daytype == opt_day_type[[4]]){
       # if(!any(data_part$is_holiday)){ # if no holiday period data
       #   print("NO HOLIDAY DATA... USE REGULAR PERIOD DATA")
       # } else{ # select holiday period data
-        data_part <- data_part[data_part$holiday,]
+      data_part <- data_part[data_part$holiday,]
       # }
     } else{ # select regular period data
       data_part <- data_part[!data_part$holiday,]
@@ -238,7 +233,7 @@ get_survey_object <- function(country,
   # select contact duration ####
   if(duration != opt_duration[[1]]){
     print(duration)
-  
+    
     duration_code <- which(opt_duration == duration)-1
     
     if(duration %in% names(opt_duration[2:3]) ){
@@ -282,8 +277,8 @@ get_survey_object <- function(country,
       data_cnt       <- data_cnt[bool_gender_diff,]
     } else {
       if(gender == opt_gender[[3]]){                # female-male
-      data_cnt       <- data_cnt[bool_gender_diff,]
-      data_part      <- data_part[bool_part_female,]
+        data_cnt       <- data_cnt[bool_gender_diff,]
+        data_part      <- data_part[bool_part_female,]
       } else if(gender == opt_gender[[4]]){         # male-female
         data_cnt       <- data_cnt[bool_gender_diff,]
         data_part      <- data_part[!bool_part_female,]
@@ -291,7 +286,7 @@ get_survey_object <- function(country,
     }
   }
   
-  #select location
+  #select location ####
   if(length(cnt_location)==0){
     print("WARNING: NO LOCATIONS SPECIFIED...")
     data_cnt <- data_cnt[0,]
@@ -303,7 +298,7 @@ get_survey_object <- function(country,
     
     # add missing location to "other"
     data_cnt_tmp$cnt_loc_missing <- rowSums(data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))],na.rm=T) == 0
-    data_cnt_tmp$cnt_otherplace <- data_cnt_tmp$cnt_otherplace | data_cnt_tmp$cnt_loc_missing
+    data_cnt_tmp$cnt_otherplace  <- data_cnt_tmp$cnt_otherplace | data_cnt_tmp$cnt_loc_missing
     
     # replace value 'NA' for a location to 'false' (=not-present)
     data_cnt_tmp[is.na(data_cnt_tmp)] <- FALSE
@@ -311,21 +306,28 @@ get_survey_object <- function(country,
     # get column names
     cnt_location_colnames <- c(paste0('cnt_',tolower(cnt_location)))
     
+    #__________________________________________________________________________
+    # adjust for multiple locations
+    # 1. copy contact location data and calculate cumulative sum (from left to right)
+    tmp_loc        <- data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))]
+    tmp_loc_cumsum <- t(apply(tmp_loc,1,cumsum))
+    
+    # 2. set locations with cummulative sum >1 (== not unique and not the "main location") to 0
+    tmp_loc[tmp_loc_cumsum>1] <- 0
+    
+    # 3. copy adjusted location data back
+    data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))] <- tmp_loc
+    #__________________________________________________________________________
+    
     # select columns
     if(length(cnt_location)>1){
       is_present <- rowSums(data_cnt_tmp[,cnt_location_colnames] == 1,na.rm=T)
     } else{
       is_present <- data_cnt_tmp[,cnt_location_colnames]
     }
-      
+    
     # select contact at specified location(s) 
     bool_location <- is_present > 0
-    
-    # option to select only exclusive contacts
-    if(bool_exclusive){
-      bool_exclusive <- rowSums(data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))]) == 1
-      bool_location  <- bool_location & bool_exclusive
-    }
     
     # select
     data_cnt <- data_cnt[bool_location,]
@@ -335,7 +337,7 @@ get_survey_object <- function(country,
       print("WARNING: NO CONTACTS LEFT AFTER LOCATION SELECTION...")
     } 
   }
-      
+  
   # create new survey object
   mixr_survey <- survey(data_part, data_cnt)
   

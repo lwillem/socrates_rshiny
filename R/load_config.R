@@ -45,6 +45,9 @@ opt_day_type <- list("All contacts",
 
 opt_touch    <- list("All contacts", "Physical contacts","Non-physical contacts")
 opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes","More than 15 minutes","More than 1 hour","More than 4 hours")
+
+# location note: this sequence affects the "contact hierarchy", as such, if a contact is reported 
+# at multiple locations, we use only the first location in this sequence 
 opt_location          <- c("Home","Work","School","Transport","Leisure","Otherplace")
 
 # TEMP remove age-weights from the application

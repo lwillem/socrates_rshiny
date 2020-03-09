@@ -332,8 +332,9 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         }
         ## adjust age groups by interpolating, in case they don't match between
         ## demographic and survey data
-        survey.pop <- data.table(pop_age(survey.pop, part.age.group.breaks, ...))
-
+        survey.pop.all <- data.table(pop_age(survey.pop, seq(0,max(part.age.group.breaks+1)), ...))
+        survey.pop     <- data.table(pop_age(survey.pop, part.age.group.breaks, ...))
+        
         ## possibly adjust age groups according to maximum age (so as not to have empty age groups)
         survey.pop[, lower.age.limit := reduce_agegroups(lower.age.limit, part.age.group.breaks)]
         survey.pop <- survey.pop[, list(population = sum(population)), by=lower.age.limit]
@@ -355,6 +356,7 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         
         # set proportions
         survey.pop[, proportion := survey.pop$population/sum(survey.pop$population)]
+        survey.pop.all[, proportion := survey.pop.all$population / sum(survey.pop.all$population)]
         
         # lower.upper.age.limits <-
         #     data.table(lower.age.limit = present.lower.age.limits,
@@ -399,11 +401,29 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         {
             if ("age.group" %in% colnames(survey[[table]]))
             {
+                # get denominator => participants per age group
                 sample.pop <- data.frame(table(survey[[table]][,lower.age.limit]),stringsAsFactors = F)
                 sample.pop$lower.age.limit   <- as.numeric(levels(sample.pop$Var1))
-                sample.pop$weight.age.group  <- survey.pop$population / sample.pop$Freq
+                sample.pop$age.group.count   <- sample.pop$Freq
+                survey[[table]] <- merge(survey[[table]],sample.pop[,c("lower.age.limit","age.group.count")],by='lower.age.limit')
                 
-                survey[[table]] <- merge(survey[[table]],sample.pop[,c("lower.age.limit","weight.age.group")],by='lower.age.limit')
+                # get weight by age based on reference population
+                sample.pop.all <- hist(survey[[table]][,part_age],survey.pop.all$lower.age.limit,plot=F,right=F)
+                sample.pop.all <- data.frame(part_age = sample.pop.all$breaks,
+                                                counts   = c(sample.pop.all$counts,0))
+                sample.pop.all$proportion        <- sample.pop.all$counts / sum(sample.pop.all$counts)
+                sample.pop.all$weight.age.group  <- survey.pop.all$proportion / sample.pop.all$proportion
+                survey[[table]] <- merge(survey[[table]],sample.pop.all[,c("part_age","weight.age.group")],by='part_age')
+               
+                # sum weights per age group
+                weight.age.group.sum           <- aggregate(weight.age.group ~ age.group, data= survey[[table]], sum)
+                names(weight.age.group.sum)[2] <- 'weight.age.group.sum'
+                survey[[table]] <- merge(survey[[table]],weight.age.group.sum,by='age.group')
+                
+                # normalize age weights, given the current sum and the denominator
+                survey[[table]][, weight.age.group := weight.age.group / weight.age.group.sum * age.group.count]
+                
+                # add 'age.weight' to 'weight'
                 survey[[table]][, weight := weight * weight.age.group]
             }
         }
@@ -444,7 +464,7 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         merge(survey$contacts, survey$participants, by = columns[["id"]], all = F,
               allow.cartesian = T, suffixes=c(".cont", ".part"))
     survey$contacts[, weight := weight.cont * weight.part]
-    survey$contacts[, weight := weight / sum(weight) * .N]
+    #survey$contacts[, weight := weight / sum(weight) * .N]  # normalisation is not valid here
     setkeyv(survey$contacts, columns[["id"]])
 
     ## sample contacts

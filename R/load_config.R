@@ -118,5 +118,6 @@ names(opt_matrix_features) <- unlist(opt_matrix_features)
 ## MAXIMUM WEIGHT
 max_part_weight <- 3
 
-
+## DIGITS
+format_num_digits <- 2
 

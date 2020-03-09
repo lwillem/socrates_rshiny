@@ -10,9 +10,6 @@
 library('shiny')
 source('R/socrates_main.R')
 
-# controls the number of digits to print when printing numeric values
-options(digits = 3)
-
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {
   

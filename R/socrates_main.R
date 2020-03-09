@@ -93,7 +93,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     names(fct_out$relative_incidence) <- colnames(cnt_matrix_ui$matrix)
   }
   
-  
+  # return
   return(fct_out)
 }
 
@@ -163,6 +163,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                weigh.dayofweek = bool_weigh_dayofweek,
                                max.part.weight = max_part_weight,
                                quiet           = TRUE)
+  
   # return
   matrix_out
 }

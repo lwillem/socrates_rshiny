@@ -34,8 +34,7 @@ plot_cnt_matrix <- function(mij){
   
   # get grid centers and add value
   e_grid <- expand.grid(plt_ticks,plt_ticks)
-  text(e_grid, labels = format(round(mij, digits = 2),nsmall=2))
-  
+  text(e_grid, labels = format(round(mij, digits = format_num_digits)))
 }
 
 

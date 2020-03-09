@@ -408,7 +408,10 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
                 survey[[table]] <- merge(survey[[table]],sample.pop[,c("lower.age.limit","age.group.count")],by='lower.age.limit')
                 
                 # get weight by age based on reference population
-                sample.pop.all <- hist(survey[[table]][,part_age],survey.pop.all$lower.age.limit,plot=F,right=F)
+                # note: make last age interval open ended, to prevent 'histogram' issues
+                part_ages <- survey[[table]][,part_age]
+                part_ages[part_ages > max(survey.pop.all$lower.age.limit) ] <- max(survey.pop.all$lower.age.limit)
+                sample.pop.all <- hist(part_ages,survey.pop.all$lower.age.limit,plot=F,right=F)
                 sample.pop.all <- data.frame(part_age = sample.pop.all$breaks,
                                                 counts   = c(sample.pop.all$counts,0))
                 sample.pop.all$proportion        <- sample.pop.all$counts / sum(sample.pop.all$counts)

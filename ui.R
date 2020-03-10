@@ -17,11 +17,12 @@ source('R/socrates_main.R')
 shinyUI(pageWithSidebar(
   
   # Application title
-  headerPanel("Social Contact Rates (Socrates) Data Tool"),
+  headerPanel("Social Contact Rates (SOCRATES) Data Tool",
+              windowTitle = paste0('SOCRATES (',version_id,')')),
   
   # Sidebar with controls
   sidebarPanel(
-   
+ 
     selectInput("country", "Country",
                 opt_country),
     
@@ -84,8 +85,13 @@ shinyUI(pageWithSidebar(
     
     
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),
-    downloadButton('download_all',"Download all results (.RData)",style = "width:99%;")
+    downloadButton('download_all',"Download all results (.RData)",style = "width:99%;"),
 
+    # add version and link to project website
+    headerPanel(""),
+    uiOutput("project_website"),
+    helpText('SOCRATES',version_id)
+    
   ),
   
   mainPanel(

@@ -102,6 +102,12 @@ shinyServer(function(input, output, session) {
         saveRDS(object = out, file)
       }
     )
+    
+    output$project_website <- renderUI({
+      tagList("More info:", url)
+    })
+  
+    
   })
   
   

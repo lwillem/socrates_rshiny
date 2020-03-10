@@ -137,7 +137,12 @@ max_part_weight <- 3
 ##  FORMATTING          ####
 #__________________________#
 
+# version number
+version_id <- paste0('v',read.table('./DESCRIPTION.txt',nrows=1,sep=' ')[2])
 
-## DIGITS
+# project website url
+url        <- a("socialcontactdata.org", href="http://www.socialcontactdata.org")
+
+# number of digits to round
 format_num_digits <- 2
 

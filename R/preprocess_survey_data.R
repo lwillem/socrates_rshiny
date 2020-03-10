@@ -40,7 +40,7 @@ survey_opt <- c("polymod",'peru','zimbabwe','france','hong_kong',
 survey_meta_data <- rbind(survey_meta_data,survey_meta_data[8,],survey_meta_data[8,])
   
 # get dataset from ZENODO and save as RDS
-i <- 3
+i <- 4
 for(i in 7:nrow(survey_meta_data)){
   survey_data <- get_survey(survey_meta_data$url[i])
   
@@ -82,6 +82,12 @@ for(i in 7:nrow(survey_meta_data)){
     survey_data$contacts$cnt_school <- survey_data$contacts$cnt_transport
     survey_data$contacts$cnt_transport <- cnt_tmp
     
+    survey_data$contacts$dayofweek <- NULL
+    survey_data$contacts$day       <- NULL
+    survey_data$contacts$month     <- NULL
+    survey_data$contacts$year      <- NULL
+    survey_data$contacts$holiday   <- NULL
+  
     }
   
   if(survey_opt[i] == 'zambia_south_africa'){
@@ -171,7 +177,7 @@ data_dir  <- '../socrates_covid/data/datasets_full/'
 data_dir  <- '../socrates_covid/data/datasets_28_Feb/'
 dir(data_dir)
 survey_opt <- dir(data_dir)
-i <- 11
+i <- 3
 for(i in 1:length(survey_opt)){
   survey_data <- get_survey(survey = dir(file.path(data_dir,survey_opt[i]),pattern = '.csv',full.names = T),quiet = T)
   
@@ -200,7 +206,7 @@ for(i in 1:length(survey_opt)){
     survey_data$contacts$cnt_otherpublicplace <- NULL
   }
   
-  if(survey_opt[i] == 'france'){
+  if(tolower(survey_opt[i]) == 'france'){
     survey_data$participants
     bool_day_one <- survey_data$contacts$sday_part_number == 1
     survey_data$contacts <- survey_data$contacts[bool_day_one,]

@@ -16,7 +16,8 @@ source('R/plot_social_contact_matrix.R')
 
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
-                                        bool_schools_closed,telework_reference,telework_target,max_part_weight){
+                                        bool_schools_closed,telework_reference,telework_target,max_part_weight,
+                                        bool_transmission_param,age_susceptibility_text,age_infectivity_text){
   
   # get social contact matrix, using all features
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
@@ -65,8 +66,10 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
         cnt_matrix_ui$matrix <- cnt_matrix_ui$matrix - cnt_matrix_work_reduction
       }
       
-      model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix)
-      #print(model_comparison)
+      # calculate impact on transmission
+      model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix,
+                                                   bool_transmission_param,
+                                                   age_susceptibility_text,age_infectivity_text)
       
       # add note(s)
       
@@ -87,10 +90,21 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     } # end else (no NA's present) 
   }# end if intervention
   
+
   # Add relative incidence (if possible)
   if(!any(is.na(cnt_matrix_ui$matrix))){
-    fct_out$relative_incidence        <- standardize_RI(eigen(cnt_matrix_ui$matrix)$vectors[,1])
-    names(fct_out$relative_incidence) <- colnames(cnt_matrix_ui$matrix)
+    # adjust for age-specific transmission?
+    mij <- cnt_matrix_ui$matrix
+    if(bool_transmission_param){
+      mij <- adjust_mij_transmission(mij,age_susceptibility_text,age_infectivity_text)
+    }
+    relative_incidence        <- standardize_RI(eigen(mij)$vectors[,1])
+    names(relative_incidence) <- colnames(cnt_matrix_ui$matrix)
+    
+    # add relative incidence to output list
+    fct_out <- c(fct_out[1],
+                 relative_incidence=list(relative_incidence),
+                 fct_out[-1])
   }
   
   # return
@@ -107,21 +121,8 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
     cnt_location <- cnt_location[!grepl('School',cnt_location)]
   }
   
-  # make sure age_breaks_text is a character string
-  age_breaks_text <- as.character(age_breaks_text)
-  
-  # set age intervals
-  age_breaks_num <- as.numeric(unlist(strsplit(age_breaks_text,",")))
-  
-  # remove missing values (eg. by typing ',,')
-  age_breaks_num <- age_breaks_num[!is.na(age_breaks_num)]
-  
-  # make sure the ages are postive, unique and increasing 
-  if(any(age_breaks_num<0)){
-    warning('Negative age breaks are removed')
-  }
-  age_breaks_num <- unique(age_breaks_num[age_breaks_num>=0])
-  age_breaks_num <- sort(age_breaks_num)
+  # parse age intervals
+  age_breaks_num <- parse_age_values(age_breaks_text,bool_unique = TRUE)
   
   # if no breaks specified, group all participants
   if(length(age_breaks_num)==0){
@@ -350,14 +351,23 @@ get_survey_object <- function(country,
 
 #mija <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45,65))$matrix*c(1,0.5,0.6,1)
 #mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45, 65))$matrix
-compare_contact_matrices <- function(mija,mijb){
+compare_contact_matrices <- function(mija,mijb,
+                                     bool_transmission_param,age_susceptibility_text,age_infectivity_text){
+  
+  # mij ratio
+  mij_ratio     <- mija/mijb
+  
+  # adjust for age-specific transmission?
+  if(bool_transmission_param){
+    mija <- adjust_mij_transmission(mija,age_susceptibility_text,age_infectivity_text)
+    mijb <- adjust_mij_transmission(mijb,age_susceptibility_text,age_infectivity_text)
+  }
   
   if(any(is.na(mija))|any(is.na(mijb))){
     warning('Social contact matrix contains NA... no comparison possible!')
     out <- list(notes='Social contact matrix contains NA... no comparison possible!')
   } else{
     R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)
-    mij_ratio     <- mija/mijb
     
     # relative incidence 
     RIa             <- standardize_RI(eigen(mija)$vectors[,1])
@@ -386,3 +396,53 @@ compare_contact_matrices <- function(mija,mijb){
 
 # help function to standardize the relative incidence
 standardize_RI<-function(vec){return(vec/sum(vec))}
+
+
+# convert character string with age-specific values into (positive) numeric values
+parse_age_values <- function(age_values_text,bool_unique = TRUE){
+  
+  # make sure age_values_text is a character string
+  age_values_text <- as.character(age_values_text)
+  
+  # set age intervals
+  age_values_num <- as.numeric(unlist(strsplit(age_values_text,",")))
+  
+  # remove missing values (eg. by typing ',,')
+  age_values_num <- age_values_num[!is.na(age_values_num)]
+  
+  # make sure the ages are postive, unique and increasing 
+  if(any(age_values_num<0)){
+    warning('Negative values are removed')
+  }
+  
+  if(bool_unique){
+    age_values_num <- unique(age_values_num[age_values_num>=0])
+    age_values_num <- sort(age_values_num)    
+  }
+
+  return(age_values_num)
+}
+
+
+# adjust mij for transmission parameters (if possible)
+adjust_mij_transmission <- function(mij,age_susceptibility_text,age_infectivity_text){
+  
+  # parse transmission parameters
+  age_susceptibility_num <- parse_age_values(age_susceptibility_text,bool_unique = FALSE)
+  age_infectivity_num    <- parse_age_values(age_infectivity_text,bool_unique = FALSE)
+  
+  # check dimensions
+  if(nrow(mij) == length(age_susceptibility_num) && 
+     nrow(mij) == length(age_infectivity_num)){
+    
+    num_age_groups        <- length(age_infectivity_num)
+    susceptibility_matrix <- matrix(rep(age_susceptibility_num,num_age_groups),ncol=num_age_groups,byrow =F)
+    infectivity_matrix    <- matrix(rep(age_infectivity_num,num_age_groups),ncol=num_age_groups,byrow =T)
+    
+    mij <- mij * susceptibility_matrix * infectivity_matrix
+  } else {
+    warning("Transmission parameters do not align with age groups")
+  }
+  
+  return(mij)
+}

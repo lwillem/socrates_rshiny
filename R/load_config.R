@@ -30,7 +30,7 @@ library(curl)
 ##  UI PANEL OPTIONS    ####
 #__________________________#
 
-# set deault age breaks (string)
+# set default age breaks (string)
 opt_age_breaks <- "0,18,60"
 
 # set all 'select input' options (list)
@@ -113,8 +113,30 @@ names(opt_country)  <- unlist(opt_country)
 names(opt_location) <- unlist(opt_location)
 names(opt_matrix_features) <- unlist(opt_matrix_features)
 
+
+#_________________________________#
+##  TRANSMISSION FEATURES      ####
+#_________________________________#
+
+# set default susceptiblity by age (string)
+opt_age_susceptibility <- "1,1,1"
+
+# set default infectivity by age (string)
+opt_age_infectivity <- "1,1,1"
+
+
+#__________________________#
+##  WEIGHTS             ####
+#__________________________#
+
 ## MAXIMUM WEIGHT
 max_part_weight <- 3
+
+
+#__________________________#
+##  FORMATTING          ####
+#__________________________#
+
 
 ## DIGITS
 format_num_digits <- 2

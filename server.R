@@ -42,6 +42,11 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session,"daytype", choices = opt_day_type[1])
     }
     
+    # Update 'transmission parameters' if not shown
+    if(!input$bool_transmission_param){
+      updateTextInput(session,"age_susceptibility_text",value=opt_age_susceptibility)
+      updateTextInput(session,"age_infectivity_text",value=opt_age_infectivity)
+    }
   })
  
   ## UPDATE CONTENT ####
@@ -58,7 +63,10 @@ shinyServer(function(input, output, session) {
                                        bool_schools_closed = input$bool_schools_closed,
                                        telework_reference  = input$telework_reference,
                                        telework_target     = input$telework_target,
-                                       max_part_weight     = max_part_weight)
+                                       max_part_weight     = max_part_weight,
+                                       bool_transmission_param = input$bool_transmission_param,
+                                       age_susceptibility_text = input$age_susceptibility_text,
+                                       age_infectivity_text    = input$age_infectivity_text)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({

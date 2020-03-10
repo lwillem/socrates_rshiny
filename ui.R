@@ -74,14 +74,9 @@ shinyUI(pageWithSidebar(
     
     conditionalPanel(
       condition = "input.bool_transmission_param == true",
-      textInput(inputId="age_susceptibility_text",
-                label="Age specific susceptibility (comma delimited)",
-                value=opt_age_susceptibility),
-      textInput(inputId="age_infectivity_text",
-                label="Age specific infectivity (comma delimited)",
-                value=opt_age_infectivity)
+      uiOutput("sliders_susceptibility"),
+      uiOutput("sliders_infectivity")
     ),
-    
     
     
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),

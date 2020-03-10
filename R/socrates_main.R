@@ -446,3 +446,27 @@ adjust_mij_transmission <- function(mij,age_susceptibility_text,age_infectivity_
   
   return(mij)
 }
+
+parse_input_list <- function(input_list,column_tag){
+  
+  # get column names
+  sel_colnames <- c(names(input_list)[grepl(column_tag,names(input_list))])
+  
+  # aggregate
+  if(length(sel_colnames)==0){
+    age_out <- 1
+  } else{
+    age_out <- NULL
+    for (i in sel_colnames) {
+      age_out <- c(age_out, input_list[[i]])
+    }
+  }
+  
+  # make string
+  age_out <- paste(age_out,collapse=',')
+  
+  # return
+  return(age_out)
+}
+
+

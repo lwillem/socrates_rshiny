@@ -13,6 +13,9 @@ source('R/socrates_main.R')
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {
   
+  # create memory variable for the transmission param sliders
+  bool_update <- reactiveValues(age_breaks_text = '')
+  
   # Update UI panel(s) ####
   observe({
     
@@ -47,11 +50,53 @@ shinyServer(function(input, output, session) {
       updateTextInput(session,"age_susceptibility_text",value=opt_age_susceptibility)
       updateTextInput(session,"age_infectivity_text",value=opt_age_infectivity)
     }
+    
+    #update tranmission sliders, if the age groups have changed
+    if(bool_update$age_breaks_text != input$age_breaks_text){
+      
+      # adjust memory variable
+      bool_update$age_breaks_text <- input$age_breaks_text
+      
+      # get age groups
+      age_groups <- parse_age_values(input$age_breaks_text)
+      num_age_groups <- length(age_groups)
+      age_groups_label <- paste0('[',age_groups,'-',c(age_groups[-1],'+'),')')
+      age_groups_label[num_age_groups] <- paste0(age_groups[num_age_groups],'+')
+      
+      # update sliders: susceptibility
+      output$sliders_susceptibility <- renderUI({
+        
+        lapply(seq(age_groups), function(i) {
+          sliderInput(inputId = paste0("s_susceptibility",i),
+                      label = paste('Susceptibility:',age_groups_label[i]),
+                      min = 0, max = 2, value = 1,step=0.1)
+        })
+      })
+      
+      # update sliders: infectivity
+      output$sliders_infectivity <- renderUI({
+        
+        lapply(seq(age_groups), function(i) {
+          sliderInput(inputId = paste0("s_infectivity",i),
+                      label = paste('Infectivity:',age_groups_label[i]),
+                      min = 0, max = 2, value = 1,step=0.1)
+        })
+      })
+      
+    }
+    
   })
  
+  
+  
   ## UPDATE CONTENT ####
   observe({
     
+    # parse transmission parameters
+    age_susceptibility_text <- parse_input_list(input,'s_susceptibility')
+    age_infectivity_text    <- parse_input_list(input,'s_infectivity')
+     
+    # run social contact analysis
     out <- run_social_contact_analysis(country      = input$country,
                                        daytype      = input$daytype,
                                        touch        = input$touch,
@@ -65,8 +110,9 @@ shinyServer(function(input, output, session) {
                                        telework_target     = input$telework_target,
                                        max_part_weight     = max_part_weight,
                                        bool_transmission_param = input$bool_transmission_param,
-                                       age_susceptibility_text = input$age_susceptibility_text,
-                                       age_infectivity_text    = input$age_infectivity_text)
+                                       age_susceptibility_text = age_susceptibility_text,
+                                       # age_infectivity_text    = input$age_infectivity_text,
+                                       age_infectivity_text    = age_infectivity_text)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
@@ -103,12 +149,14 @@ shinyServer(function(input, output, session) {
       }
     )
     
+    # create url link
     output$project_website <- renderUI({
       tagList("More info:", url)
     })
-  
+    
     
   })
+  
   
   
   

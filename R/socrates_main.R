@@ -340,6 +340,14 @@ get_survey_object <- function(country,
     } 
   }
   
+  
+  # remove temporal data from contact data.frame
+  if('dayofweek' %in% names(data_cnt)){
+    data_cnt$dayofweek <- NULL
+  }
+ 
+  
+  
   # create new survey object
   mixr_survey <- survey(data_part, data_cnt)
   

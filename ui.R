@@ -78,7 +78,6 @@ shinyUI(pageWithSidebar(
       uiOutput("sliders_infectivity")
     ),
     
-    
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),
     downloadButton('download_all',"Download all results (.RData)",style = "width:99%;"),
 

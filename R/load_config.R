@@ -114,17 +114,6 @@ names(opt_location) <- unlist(opt_location)
 names(opt_matrix_features) <- unlist(opt_matrix_features)
 
 
-#_________________________________#
-##  TRANSMISSION FEATURES      ####
-#_________________________________#
-
-# set default susceptiblity by age (string)
-opt_age_susceptibility <- "1,1,1"
-
-# set default infectivity by age (string)
-opt_age_infectivity <- "1,1,1"
-
-
 #__________________________#
 ##  WEIGHTS             ####
 #__________________________#

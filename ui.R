@@ -75,7 +75,7 @@ shinyUI(pageWithSidebar(
     conditionalPanel(
       condition = "input.bool_transmission_param == true",
       uiOutput("sliders_susceptibility"),
-      uiOutput("sliders_infectivity")
+      uiOutput("sliders_infectiousness")
     ),
     
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),

@@ -17,7 +17,7 @@ source('R/plot_social_contact_matrix.R')
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
                                         bool_schools_closed,telework_reference,telework_target,max_part_weight,
-                                        bool_transmission_param,age_susceptibility_text,age_infectivity_text){
+                                        bool_transmission_param,age_susceptibility_text,age_infectiousness_text){
   
   # get social contact matrix, using all features
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
@@ -69,7 +69,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       # calculate impact on transmission
       model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix,
                                                    bool_transmission_param,
-                                                   age_susceptibility_text,age_infectivity_text)
+                                                   age_susceptibility_text,age_infectiousness_text)
       
       # add note(s)
       
@@ -96,7 +96,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     # adjust for age-specific transmission?
     mij <- cnt_matrix_ui$matrix
     if(bool_transmission_param){
-      mij <- adjust_mij_transmission(mij,age_susceptibility_text,age_infectivity_text)
+      mij <- adjust_mij_transmission(mij,age_susceptibility_text,age_infectiousness_text)
     }
     relative_incidence        <- standardize_RI(eigen(mij)$vectors[,1])
     names(relative_incidence) <- colnames(cnt_matrix_ui$matrix)
@@ -360,15 +360,15 @@ get_survey_object <- function(country,
 #mija <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45,65))$matrix*c(1,0.5,0.6,1)
 #mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45, 65))$matrix
 compare_contact_matrices <- function(mija,mijb,
-                                     bool_transmission_param,age_susceptibility_text,age_infectivity_text){
+                                     bool_transmission_param,age_susceptibility_text,age_infectiousness_text){
   
   # mij ratio
   mij_ratio     <- mija/mijb
   
   # adjust for age-specific transmission?
   if(bool_transmission_param){
-    mija <- adjust_mij_transmission(mija,age_susceptibility_text,age_infectivity_text)
-    mijb <- adjust_mij_transmission(mijb,age_susceptibility_text,age_infectivity_text)
+    mija <- adjust_mij_transmission(mija,age_susceptibility_text,age_infectiousness_text)
+    mijb <- adjust_mij_transmission(mijb,age_susceptibility_text,age_infectiousness_text)
   }
   
   if(any(is.na(mija))|any(is.na(mijb))){
@@ -433,21 +433,21 @@ parse_age_values <- function(age_values_text,bool_unique = TRUE){
 
 
 # adjust mij for transmission parameters (if possible)
-adjust_mij_transmission <- function(mij,age_susceptibility_text,age_infectivity_text){
+adjust_mij_transmission <- function(mij,age_susceptibility_text,age_infectiousness_text){
   
   # parse transmission parameters
   age_susceptibility_num <- parse_age_values(age_susceptibility_text,bool_unique = FALSE)
-  age_infectivity_num    <- parse_age_values(age_infectivity_text,bool_unique = FALSE)
+  age_infectiousness_num    <- parse_age_values(age_infectiousness_text,bool_unique = FALSE)
   
   # check dimensions
   if(nrow(mij) == length(age_susceptibility_num) && 
-     nrow(mij) == length(age_infectivity_num)){
+     nrow(mij) == length(age_infectiousness_num)){
     
-    num_age_groups        <- length(age_infectivity_num)
+    num_age_groups        <- length(age_infectiousness_num)
     susceptibility_matrix <- matrix(rep(age_susceptibility_num,num_age_groups),ncol=num_age_groups,byrow =F)
-    infectivity_matrix    <- matrix(rep(age_infectivity_num,num_age_groups),ncol=num_age_groups,byrow =T)
+    infectiousness_matrix    <- matrix(rep(age_infectiousness_num,num_age_groups),ncol=num_age_groups,byrow =T)
     
-    mij <- mij * susceptibility_matrix * infectivity_matrix
+    mij <- mij * susceptibility_matrix * infectiousness_matrix
   } else {
     warning("Transmission parameters do not align with age groups")
   }

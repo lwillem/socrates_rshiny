@@ -167,8 +167,8 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   
   
   # add per capita contact rate (if demography data)
-  if('demography' %in% names(matrix_out)){
-    num_age_groups <- length(age_breaks_num)
+  if('demography' %in% names(matrix_out) && !any(is.na(matrix_out$matrix))){
+    num_age_groups <- nrow(matrix_out$demography)
     pop_matrix <- matrix(rep(matrix_out$demography$population,num_age_groups),ncol=num_age_groups,byrow = T)
     matrix_out$matrix_per_capita <- matrix_out$matrix / pop_matrix
   }

@@ -9,7 +9,7 @@
 
 #mij <- contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))$matrix
 #mij <- matrix_out$matrix
-plot_cnt_matrix <- function(mij){
+plot_cnt_matrix <- function(mij,plot_title_extra = ''){
   if(all(is.na(mij))){
     return(NA)
   }
@@ -24,7 +24,7 @@ plot_cnt_matrix <- function(mij){
              cex.main=1.2, 
              las=0.1,
              col=redc, 
-             main="Average number of contacts / day", 
+             main=paste("Average number of contacts per day",plot_title_extra), 
              xaxt="n", 
              yaxt="n")
   # set axis 
@@ -34,7 +34,7 @@ plot_cnt_matrix <- function(mij){
   
   # get grid centers and add value
   e_grid <- expand.grid(plt_ticks,plt_ticks)
-  text(e_grid, labels = format(round(mij, digits = format_num_digits)))
+  text(e_grid, labels = format(mij, digits = format_num_digits))
 }
 
 

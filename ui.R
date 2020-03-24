@@ -44,9 +44,18 @@ shinyUI(pageWithSidebar(
                 opt_gender),
     
     checkboxGroupInput('cnt_matrix_features',
-                       label = 'Matrix options',
+                       label = 'Contact features',
                        choices = opt_matrix_features,
                        selected = opt_matrix_features),
+    
+    helpText("Transmission features"),
+    checkboxInput("bool_transmission_param", "Age-specific transmission?",value = FALSE),
+    
+    conditionalPanel(
+      condition = "input.bool_transmission_param == true",
+      uiOutput("sliders_susceptibility"),
+      uiOutput("sliders_infectiousness")
+    ),
     
     checkboxInput("bool_location", "Include all locations",value = TRUE),
     
@@ -58,7 +67,6 @@ shinyUI(pageWithSidebar(
                          selected = opt_location)
     ),
     
-    
     helpText("Reactive strategies"),
     checkboxInput("bool_schools_closed","Close all schools"),
     
@@ -69,14 +77,7 @@ shinyUI(pageWithSidebar(
       sliderInput("telework_target","Target % telework",min=0,max=99,value=5)
     ),
     
-    helpText("Transmission parameters"),
-    checkboxInput("bool_transmission_param", "Include transmission parameters",value = FALSE),
     
-    conditionalPanel(
-      condition = "input.bool_transmission_param == true",
-      uiOutput("sliders_susceptibility"),
-      uiOutput("sliders_infectiousness")
-    ),
     
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),
     downloadButton('download_all',"Download all results (.RData)",style = "width:99%;"),

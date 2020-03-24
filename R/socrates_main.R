@@ -157,7 +157,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   }
   
   # run social_mixr function
-  matrix_out <- contact_matrix(survey           = survey_object, 
+  matrix_out <- contact_matrix(survey          = survey_object, 
                                age.limits      = age_breaks_num,
                                symmetric       = bool_reciprocal,
                                weigh.age.group = bool_weigh_age_group,
@@ -165,6 +165,21 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                max.part.weight = max_part_weight,
                                quiet           = TRUE)
   
+  
+  # add per capita contact rate (if demography data)
+  if('demography' %in% names(matrix_out)){
+    num_age_groups <- length(age_breaks_num)
+    pop_matrix <- matrix(rep(matrix_out$demography$population,num_age_groups),ncol=num_age_groups,byrow = T)
+    matrix_out$matrix_per_capita <- matrix_out$matrix / pop_matrix
+  }
+  
+  ## TMP: remove weights from output
+  if('weights' %in% names(matrix_out)){
+    tmp <- matrix_out$weights
+    matrix_out$weights <- NULL
+    matrix_out$weights <- tmp
+    
+  }
   # return
   matrix_out
 }

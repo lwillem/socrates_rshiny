@@ -103,7 +103,8 @@ get_survey <- function(survey, quiet=FALSE, ...)
         ## we have to fiddle the ID columns a bit -- most ID columns on Zenodo
         ## end on _id, but 'sday' is an exception: "sday_id" is not an ID column
         ## across multiple tables, but "sday_part_number" and "wave" are instead 
-        additional_id_identifiers <- c("sday_part_number", "wave")
+        # additional_id_identifiers <- c("sday_part_number", "wave")
+        additional_id_identifiers <- c("sday_part_number")
         non_id_identifiers <- "sday_id"
         id_regex <- paste0("^(", paste(additional_id_identifiers, collapse="|"), "|.*_id)$")
         file_id_cols <- lapply(seq_along(files), function(x)

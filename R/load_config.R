@@ -67,16 +67,17 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Russia (Litvinova 2019)',
                         'China (Zhang 2019)',
                         'Zambia (Dodd 2011)',
-                        'South Africa (Dodd 2011)')
+                        'South Africa (Dodd 2011)',
+                        'France incl. SPC (Beraud 2018)')
 
 # set country admin => filenames and country names
 opt_country_admin <- data.frame(name = opt_country,
                                 dataset = c(rep("polymod",8),'peru','zimbabwe','france',
                                             'hong_kong','vietnam','uk',
-                                            'russia','china','zambia_south_africa','zambia_south_africa'),
+                                            'russia','china','zambia_south_africa','zambia_south_africa','france_SPC'),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',
-                                             'Russia','China','Zambia','South Africa'),
+                                             'Russia','China','Zambia','South Africa','France'),
                                 stringsAsFactors = FALSE)
 
 # add with holiday and dayofweek boolean

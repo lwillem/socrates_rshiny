@@ -210,18 +210,23 @@ for(i in 1:length(survey_opt)){
   }
   
   if(grepl('france',tolower(survey_opt[i]))){
-    
-    part_data          <- survey_data$participants
-    part_data          <- part_data[order(part_data$sday_id),]
-    part_data          <- part_data[!duplicated(part_data$part_id), ]
-    selection_diary_id <- part_data$diary_id
-    
-    # create subset for each data set
-    survey_data$participants     <- survey_data$participants[survey_data$participants$diary_id %in% selection_diary_id,]
-    survey_data$contacts         <- survey_data$contacts[survey_data$contacts$diary_id %in% selection_diary_id,]
+
+    # OLD: select one diary per participant
+    # part_data          <- survey_data$participants
+    # part_data          <- part_data[order(part_data$sday_id),]
+    # part_data          <- part_data[!duplicated(part_data$part_id), ]
+    # selection_diary_id <- part_data$diary_id
+    # 
+    # # create subset for each data set
+    # survey_data$participants     <- survey_data$participants[survey_data$participants$diary_id %in% selection_diary_id,]
+    # survey_data$contacts         <- survey_data$contacts[survey_data$contacts$diary_id %in% selection_diary_id,]
+
+    # NEW: assume every diary to be from a "unique participant"
+    survey_data$participants$part_id <- survey_data$participants$diary_id
+    survey_data$contacts$part_id     <- survey_data$contacts$diary_id 
     
     # convert holiday variable into boolean
-    survey_data$participants$holiday == 1
+    survey_data$participants$holiday <- survey_data$participants$holiday == 1
 
     table(survey_data$contacts$cnt_school)
     table(survey_data$contacts$cnt_transport)
@@ -233,8 +238,9 @@ for(i in 1:length(survey_opt)){
     lapply(survey_data,dim)
   }
   
-  
+  # store survey object
   saveRDS(survey_data, file=paste0('data/survey_',tolower(survey_opt[i]),'.rds'))
+  
 }
 
 

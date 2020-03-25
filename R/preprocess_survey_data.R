@@ -180,7 +180,7 @@ source('R/socrates_main.R')
 data_dir  <- '../socrates_covid/data/datasets_28_Feb/'
 dir(data_dir)
 survey_opt <- dir(data_dir)
-i <- 4
+i <- 3
 for(i in 1:length(survey_opt)){
   survey_data <- get_survey(survey = dir(file.path(data_dir,survey_opt[i]),pattern = '.csv',full.names = T),quiet = T)
   
@@ -211,19 +211,19 @@ for(i in 1:length(survey_opt)){
   
   if(grepl('france',tolower(survey_opt[i]))){
 
-    # OLD: select one diary per participant
-    # part_data          <- survey_data$participants
-    # part_data          <- part_data[order(part_data$sday_id),]
-    # part_data          <- part_data[!duplicated(part_data$part_id), ]
-    # selection_diary_id <- part_data$diary_id
-    # 
-    # # create subset for each data set
-    # survey_data$participants     <- survey_data$participants[survey_data$participants$diary_id %in% selection_diary_id,]
-    # survey_data$contacts         <- survey_data$contacts[survey_data$contacts$diary_id %in% selection_diary_id,]
+    # Conservative approach: select one diary per participant
+    part_data          <- survey_data$participants
+    part_data          <- part_data[order(part_data$sday_id),]
+    part_data          <- part_data[!duplicated(part_data$part_id), ]
+    selection_diary_id <- part_data$diary_id
 
-    # NEW: assume every diary to be from a "unique participant"
-    survey_data$participants$part_id <- survey_data$participants$diary_id
-    survey_data$contacts$part_id     <- survey_data$contacts$diary_id 
+    # create subset for each data set
+    survey_data$participants     <- survey_data$participants[survey_data$participants$diary_id %in% selection_diary_id,]
+    survey_data$contacts         <- survey_data$contacts[survey_data$contacts$diary_id %in% selection_diary_id,]
+
+    # # # ALL: assume every diary to be from a "unique participant"
+    # survey_data$participants$part_id <- survey_data$participants$diary_id
+    # survey_data$contacts$part_id     <- survey_data$contacts$diary_id 
     
     # convert holiday variable into boolean
     survey_data$participants$holiday <- survey_data$participants$holiday == 1

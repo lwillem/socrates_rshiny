@@ -10,6 +10,7 @@
 source('R/load_config.R')
 source('R/contact_matrix_fix.R')
 source('R/plot_social_contact_matrix.R')
+source('R/survey_data_description.R')
 
 # example
 #contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))

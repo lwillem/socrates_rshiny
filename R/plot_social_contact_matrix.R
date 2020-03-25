@@ -32,9 +32,15 @@ plot_cnt_matrix <- function(mij,plot_title_extra = ''){
   axis(2, at=plt_ticks, labels = c(colnames(mij)),cex.axis=0.9,tick = FALSE,las=1)
   axis(1, at=plt_ticks, labels = c(colnames(mij)),cex.axis=0.9,tick = FALSE)
   
+  # format results (rounding/scientific)
+  if(any(mij>1)){
+    mij <- round(mij,digits=format_num_digits)
+  } else{
+    mij <- format(mij,digits = format_num_digits)
+  }
   # get grid centers and add value
   e_grid <- expand.grid(plt_ticks,plt_ticks)
-  text(e_grid, labels = format(mij, digits = format_num_digits))
+  text(e_grid, labels = mij)
 }
 
 

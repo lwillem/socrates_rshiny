@@ -78,7 +78,6 @@ shinyUI(pageWithSidebar(
     ),
     
     
-    
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),
     downloadButton('download_all',"Download all results (.RData)",style = "width:99%;"),
 
@@ -91,8 +90,13 @@ shinyUI(pageWithSidebar(
   
   mainPanel(
     
-    plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
- 
-    verbatimTextOutput("social_contact_analysis")
+    # use tabs
+    tabsetPanel(type = "tabs",
+                tabPanel("Figures", plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
+                                    plotOutput('plot_cnt_matrix_per_capita',width = "80%", height = "300px")),
+                tabPanel("Results", verbatimTextOutput("social_contact_analysis")),
+                tabPanel("Data",    verbatimTextOutput("social_contact_data"))
+    )
+    
   )
 ))

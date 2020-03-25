@@ -113,6 +113,13 @@ shinyServer(function(input, output, session) {
       plot_cnt_matrix(out$matrix)
     })
     
+    # plot social contact matrix per capita
+    output$plot_cnt_matrix_per_capita <- renderPlot({
+      if('matrix_per_capita' %in% names(out)){
+        plot_cnt_matrix(out$matrix_per_capita, 'per capita')
+      }
+    })
+    
     # print results
     output$social_contact_analysis <- renderPrint({
       out
@@ -148,8 +155,13 @@ shinyServer(function(input, output, session) {
       tagList("More info:", url)
     })
     
+    # add social contact data info
+    output$social_contact_data <- renderPrint({
+      data_description
+    })
     
   })
+  
   
   
   

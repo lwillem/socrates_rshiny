@@ -19,6 +19,7 @@ library('socialmixr')
 library('npsp')
 library('countrycode')
 library('data.table')
+library(shiny)
 
 # temporary to use the get_survey script outside the SocialMixr package
 library(httr)
@@ -51,7 +52,7 @@ opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes
 opt_location          <- c("Home","Work","School","Transport","Leisure","Otherplace")
 
 # contact reformatting and weights
-opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend")
+opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend","Suppl. professional contacts? (see 'Data sets' tab)")
 
 # get polymod countries
 polymod_countries <- survey_countries(polymod,quiet = T)
@@ -60,7 +61,7 @@ polymod_countries <- survey_countries(polymod,quiet = T)
 opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Peru (Grijalva 2015)',
                         'Zimbabwe (Melegaro 2013)',
-                        'France (Beraud 2015)',
+                        'France* (Beraud 2015)',
                         'Hong Kong (Leung 2017)',
                         'Vietnam (Horby 2007)',
                         'United Kingdom (van Hoek 2012)',
@@ -68,21 +69,19 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'China (Zhang 2019)',
                         'Zambia (Dodd 2011)',
                         'South Africa (Dodd 2011)',
-                        'France incl. SPC (Beraud 2018)',
-                        'France* (Beraud 2018)',
-                        'France* incl. SPC (Beraud 2018)'
+                        'Belgium* 2010 (in preparation)'
                        )
 
 # set country admin => filenames and country names
 opt_country_admin <- data.frame(name = opt_country,
-                                dataset = c(rep("polymod",8),'peru','zimbabwe','france',
+                                dataset = c(rep("polymod",8),'peru','zimbabwe','france_spc',
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
-                                            'france_spc','france_all','france_spc_all'),
+                                            'belgium2010'),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',
                                              'Russia','China','Zambia','South Africa',
-                                             'France','France','France'),
+                                             'Belgium'),
                                 stringsAsFactors = FALSE)
 
 # add with holiday and dayofweek boolean
@@ -96,6 +95,9 @@ opt_country_admin$has_holiday_data[opt_country_admin$dataset %in% c('hong_kong')
 opt_country_admin$has_dayofweek_data <- TRUE
 opt_country_admin$has_dayofweek_data[opt_country_admin$country %in% c('Russia')] <- FALSE
 
+# add "supplementary professional contacts" boolean
+opt_country_admin$has_suppl_professional_cnt_data <- FALSE
+opt_country_admin$has_suppl_professional_cnt_data[grepl('\\*',opt_country_admin$name)] <- TRUE
 
 # complete filenames with relative path
 opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')

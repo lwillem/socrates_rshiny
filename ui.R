@@ -92,10 +92,11 @@ shinyUI(pageWithSidebar(
     
     # use tabs
     tabsetPanel(type = "tabs",
+                tabPanel("Results", verbatimTextOutput("social_contact_analysis")),
                 tabPanel("Figures", plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
                                     plotOutput('plot_cnt_matrix_per_capita',width = "80%", height = "300px")),
-                tabPanel("Results", verbatimTextOutput("social_contact_analysis")),
-                tabPanel("Data",    verbatimTextOutput("social_contact_data"))
+                tabPanel("Data sets",    dataTableOutput("social_contact_data"),
+                                         helpText('More info on the data will follow soon...'))
     )
     
   )

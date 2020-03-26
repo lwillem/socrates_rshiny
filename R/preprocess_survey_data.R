@@ -178,9 +178,11 @@ source('R/socrates_main.R')
 
 #data_dir  <- '../socrates_covid/data/datasets_full/'
 data_dir  <- '../socrates_covid/data/datasets_28_Feb/'
-dir(data_dir)
-survey_opt <- dir(data_dir)
-i <- 3
+survey_opt <- dir(data_dir)                        # get file and directory names
+survey_opt <- survey_opt[!grepl('\\.',survey_opt)] # remove file names (with an extension)
+survey_opt
+
+i <- 4
 for(i in 1:length(survey_opt)){
   survey_data <- get_survey(survey = dir(file.path(data_dir,survey_opt[i]),pattern = '.csv',full.names = T),quiet = T)
   
@@ -228,6 +230,8 @@ for(i in 1:length(survey_opt)){
     # convert holiday variable into boolean
     survey_data$participants$holiday <- survey_data$participants$holiday == 1
 
+    tail(survey_data$contacts)
+    
     table(survey_data$contacts$cnt_school)
     table(survey_data$contacts$cnt_transport)
     table(survey_data$contacts$cnt_home)
@@ -236,6 +240,17 @@ for(i in 1:length(survey_opt)){
     head(survey_data$contacts)
 
     lapply(survey_data,dim)
+  }
+  
+  ## ADD FLAG FOR IMPUTED CONTACTS FOR FRENCH DATASET
+  if(grepl('france_spc',tolower(survey_opt[i]))){
+    
+    # load original data
+    survey_fr <- readRDS('./data/survey_france.rds')
+    
+    # compare
+    original_cnt <- survey_data$contacts$cont_id %in% survey_fr$contacts$cont_id
+    survey_data$contacts$is_imputed <- !original_cnt
   }
   
   # store survey object

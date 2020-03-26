@@ -19,6 +19,17 @@ shinyServer(function(input, output, session) {
   # Update UI panel(s) ####
   observe({
     
+    # Update the "supplementary professional contacts" option
+    if(opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]){
+      updateCheckboxGroupInput(session,'cnt_matrix_features',
+                                selected = opt_matrix_features,
+                                choices = opt_matrix_features)
+    } else{
+      updateCheckboxGroupInput(session,'cnt_matrix_features',
+                               selected = opt_matrix_features[-4],
+                               choices = opt_matrix_features[-4])
+    }
+      
     #Update the minimum "telework target" (at least the observed value)
     updateSliderInput(session, "telework_target", min = input$telework_reference)
     
@@ -156,9 +167,13 @@ shinyServer(function(input, output, session) {
     })
     
     # add social contact data info
-    output$social_contact_data <- renderPrint({
-      data_description
-    })
+    output$social_contact_data <- renderDataTable({
+    data_table_description
+    },
+    options = list(
+      autoWidth = TRUE,
+      columnDefs = list(list(width = '170px', targets = 0))
+    ))
     
   })
   

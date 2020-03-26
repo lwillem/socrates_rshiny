@@ -133,6 +133,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   bool_reciprocal      <- opt_matrix_features[[1]]  %in% cnt_matrix_features
   bool_weigh_age_group <- opt_matrix_features[[2]]  %in% cnt_matrix_features
   bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features
+  bool_suppl_professional_cnt <- opt_matrix_features[[4]]  %in% cnt_matrix_features
   
   # get specific social_mixr survey object
   survey_object <- get_survey_object(country      = country,
@@ -141,7 +142,8 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      duration     = duration,
                                      gender       = gender,
                                      cnt_location = cnt_location,
-                                     bool_reciprocal  = bool_reciprocal)
+                                     bool_reciprocal  = bool_reciprocal,
+                                     bool_suppl_professional_cnt =  bool_suppl_professional_cnt)
   
   if(nrow(survey_object$participants)==0){
     return(list(matrix=NA,
@@ -192,15 +194,16 @@ get_survey_object <- function(country,
                               duration,
                               gender,
                               cnt_location,
-                              bool_reciprocal){
+                              bool_reciprocal,
+                              bool_suppl_professional_cnt){
   
   # select dataset filename and load #####
   sel_dataset <- opt_country_admin[opt_country_admin$name == country,]
   
   # get original data
   survey_data <- readRDS(sel_dataset$dataset)
-  data_part <- survey_data$participants
-  data_cnt  <- survey_data$contacts
+  data_part   <- survey_data$participants
+  data_cnt    <- survey_data$contacts
   
   # option to select country-specific participant and contact data
   if(nchar(sel_dataset$country)>0){
@@ -362,7 +365,12 @@ get_survey_object <- function(country,
     data_cnt$dayofweek <- NULL
   }
  
-  
+  # suppl. professional contact? ####
+  # ==>> remove imputed supplementary professional contacts?
+  if('is_imputed' %in% names(data_cnt) && !is.na(bool_suppl_professional_cnt) && 
+     bool_suppl_professional_cnt == FALSE){
+    data_cnt <- data_cnt[data_cnt$is_imputed == 0,]
+  }
   
   # create new survey object
   mixr_survey <- survey(data_part, data_cnt)

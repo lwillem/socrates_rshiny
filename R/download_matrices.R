@@ -34,17 +34,14 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
       if(sel_location == 'total'){
         sel_location <- opt_location
       }
-      print(sel_location)
-      
+
       # disable reciprocity if needed
       sel_matrix_features <- opt_matrix_features
       if(!exp_design$reciprocal[i_loc]){
         sel_matrix_features <- sel_matrix_features[!grepl('reciprocal',sel_matrix_features,ignore.case = T)]
       }
-      print(sel_matrix_features)
-      
+
       suppressWarnings(
-    
       # run SOCRATES-app main function
       out_all <- run_social_contact_analysis(country  = country,
                                              daytype  = daytype,

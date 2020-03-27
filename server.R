@@ -20,14 +20,17 @@ shinyServer(function(input, output, session) {
   observe({
     
     # Update the "supplementary professional contacts" option
+    tmp_matrix_features <- input$cnt_matrix_features
+    print(tmp_matrix_features)
     if(opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]){
+      
       updateCheckboxGroupInput(session,'cnt_matrix_features',
-                                selected = opt_matrix_features,
-                                choices = opt_matrix_features)
+                                selected = input$cnt_matrix_features,
+                                choices  = opt_matrix_features)
     } else{
       updateCheckboxGroupInput(session,'cnt_matrix_features',
-                               selected = opt_matrix_features[-4],
-                               choices = opt_matrix_features[-4])
+                               selected = input$cnt_matrix_features[-4],
+                               choices  = opt_matrix_features[-4])
     }
       
     #Update the minimum "telework target" (at least the observed value)

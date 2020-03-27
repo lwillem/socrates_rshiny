@@ -25,6 +25,9 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
                              )
     exp_design$name <- tolower(paste0(exp_design$location,ifelse(exp_design$reciprocal,'_reciprocal','')))
     
+    # disable reciprocity by default
+    cnt_matrix_features <- cnt_matrix_features[!grepl('reciprocal',cnt_matrix_features,ignore.case = T)]
+    
     i_loc <- 1
     # loop over all contact locations
     for(i_loc in 1:nrow(exp_design)){
@@ -35,13 +38,13 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
         sel_location <- opt_location
       }
 
-      # disable reciprocity if needed
-      sel_matrix_features <- opt_matrix_features
-      if(!exp_design$reciprocal[i_loc]){
-        sel_matrix_features <- sel_matrix_features[!grepl('reciprocal',sel_matrix_features,ignore.case = T)]
-      }
-
-      suppressWarnings(
+      # add reciprocity if needed
+      sel_matrix_features <- cnt_matrix_features
+      if(exp_design$reciprocal[i_loc]){
+        sel_matrix_features <- c(sel_matrix_features,opt_matrix_features[grepl('reciprocal',opt_matrix_features,ignore.case = T)])
+      } 
+print(sel_matrix_features)
+      #suppressWarnings(
       # run SOCRATES-app main function
       out_all <- run_social_contact_analysis(country  = country,
                                              daytype  = daytype,
@@ -58,7 +61,7 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
                                              bool_transmission_param = bool_transmission_param,
                                              age_susceptibility_text = age_susceptibility_text,
                                              age_infectiousness_text = age_infectiousness_text)
-    )
+    #)
     # add matrix to list
     location_matrices[i_loc]            <- list(out_all$matrix)
     location_matrices_per_capita[i_loc] <- list(out_all$matrix_per_capita)

@@ -20,8 +20,6 @@ shinyServer(function(input, output, session) {
   observe({
     
     # Update the "supplementary professional contacts" option
-    tmp_matrix_features <- input$cnt_matrix_features
-    print(tmp_matrix_features)
     if(opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]){
       
       updateCheckboxGroupInput(session,'cnt_matrix_features',

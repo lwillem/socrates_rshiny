@@ -52,7 +52,7 @@ opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes
 opt_location          <- c("Home","Work","School","Transport","Leisure","Otherplace")
 
 # contact reformatting and weights
-opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend","Suppl. professional contacts? (see 'Data sets' tab)")
+opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend","Suppl. professional contacts (see 'Data sets' tab)")
 
 # get polymod countries
 polymod_countries <- survey_countries(polymod,quiet = T)

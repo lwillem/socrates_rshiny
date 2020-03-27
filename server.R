@@ -116,8 +116,7 @@ shinyServer(function(input, output, session) {
                                        max_part_weight     = max_part_weight,
                                        bool_transmission_param = input$bool_transmission_param,
                                        age_susceptibility_text = age_susceptibility_text,
-                                       # age_infectiousness_text    = input$age_infectiousness_text,
-                                       age_infectiousness_text    = age_infectiousness_text)
+                                       age_infectiousness_text = age_infectiousness_text)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
@@ -157,7 +156,22 @@ shinyServer(function(input, output, session) {
         paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_analysis.RData")
       },
       content = function(file) {
-        saveRDS(object = out, file)
+        download_contact_matrices(  country      = input$country,
+                                    daytype      = input$daytype,
+                                    touch        = input$touch,
+                                    duration     = input$duration,
+                                    gender       = input$gender,
+                                    cnt_location = input$cnt_location,
+                                    cnt_matrix_features = input$cnt_matrix_features,
+                                    age_breaks_text     = input$age_breaks_text,
+                                    bool_schools_closed = input$bool_schools_closed,
+                                    telework_reference  = input$telework_reference,
+                                    telework_target     = input$telework_target,
+                                    max_part_weight     = max_part_weight,
+                                    bool_transmission_param = input$bool_transmission_param,
+                                    age_susceptibility_text = age_susceptibility_text,
+                                    age_infectiousness_text = age_infectiousness_text,
+                                    filename = file)
       }
     )
     

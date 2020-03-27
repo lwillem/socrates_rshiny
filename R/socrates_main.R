@@ -7,6 +7,7 @@
 #___________________________________________________________________________
 
 # load packages and help functions
+source('R/download_matrices.R')
 source('R/load_config.R')
 source('R/contact_matrix_fix.R')
 source('R/plot_social_contact_matrix.R')
@@ -73,7 +74,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                                    age_susceptibility_text,age_infectiousness_text)
       
       # add note(s)
-      
       if(bool_schools_closed) { 
         model_comparison$notes <- rbind(model_comparison$notes,"All schools are closed")
       }
@@ -107,6 +107,28 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                  relative_incidence=list(relative_incidence),
                  fct_out[-1])
   }
+  
+  # add meta data on matrix parameters
+  meta_data <- data.frame(data_set = country,
+                          day_type = unlist(daytype),
+                          contact_intensity = unlist(touch),
+                          contact_duration = unlist(duration),
+                          contact_gender = unlist(gender),
+                          contact_locations = paste(cnt_location,collapse=', '),
+                          contact_features = paste(cnt_matrix_features,collapse=', '),
+                          age_breaks = age_breaks_text,
+                          max_part_weight = max_part_weight,
+                          bool_schools_closed = bool_schools_closed,
+                          row.names=NULL)
+  
+  if(telework_reference != telework_target){
+    meta_data$telework_reference <- telework_reference
+    meta_data$telework_target    <- telework_target
+  }
+  
+  fct_out$meta_data <- data.frame(parameter = names(meta_data),
+                                  value = t(meta_data),
+                                  row.names=NULL)
   
   # return
   return(fct_out)

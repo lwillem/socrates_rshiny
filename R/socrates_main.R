@@ -19,7 +19,8 @@ source('R/survey_data_description.R')
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
                                         bool_schools_closed,telework_reference,telework_target,max_part_weight,
-                                        bool_transmission_param,age_susceptibility_text,age_infectiousness_text){
+                                        bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
+                                        cnt_reduction){
   
   # get social contact matrix, using all features
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
@@ -33,7 +34,10 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # include telework features?
   bool_telework <- telework_target > telework_reference
   
-  if(bool_schools_closed | bool_telework){
+  # include social distancing?
+  bool_social_distancing <- any(cnt_reduction!=0)
+  
+  if(bool_schools_closed | bool_telework | bool_social_distancing){
     if(any(is.na(cnt_matrix_ui$matrix))){
       fct_out$notes <- "Contact matrix contains NA, no further analysis possible."
     } else {
@@ -68,6 +72,39 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
         cnt_matrix_ui$matrix <- cnt_matrix_ui$matrix - cnt_matrix_work_reduction
       }
       
+      if(bool_social_distancing){
+        matrix_loc <- get_location_matrices(country,daytype,touch,duration,gender,
+                                            cnt_location,
+                                            cnt_matrix_features,
+                                            age_breaks_text,
+                                            bool_schools_closed = FALSE,
+                                            max_part_weight)
+
+        # unlist contact reduction parameter
+        cnt_reduction <- unlist(cnt_reduction)
+   
+        # get sum, account for the reduction
+        matrix_total <- NULL
+        i_loc <- cnt_location[2]
+        for(i_loc in cnt_location){
+
+          # get relative contact reduction
+          relative_reduction <- ifelse(i_loc %in% names(cnt_reduction),cnt_reduction[i_loc],0)
+
+          # get remaining contacts
+          reduction_factor  <- (1 - relative_reduction)
+          
+          if(is.null(matrix_total)){
+            matrix_total <- matrix_loc[[i_loc]] * reduction_factor
+          } else{
+            matrix_total <- matrix_total + matrix_loc[[i_loc]] * reduction_factor
+          }
+        }
+
+        cnt_matrix_ui$matrix <- matrix_total
+      }
+      
+      
       # calculate impact on transmission
       model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix,
                                                    bool_transmission_param,
@@ -81,7 +118,18 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
         model_comparison$notes <- rbind(model_comparison$notes, paste0("Increased telework (",
                                                                        telework_target,'% instead of ',
                                                                        telework_reference,'%)'))
-      } # end add note
+      } 
+      if(bool_social_distancing){
+        distancing_notes <- paste0("Social distancing for ",
+                                   paste0(names(cnt_reduction),': ',
+                                   cnt_reduction*100,"% reduction"))
+        
+        distancing_notes <- distancing_notes[cnt_reduction>0]
+        
+        model_comparison$notes <- matrix(c(model_comparison$notes, distancing_notes),ncol=1)
+      }# end add note
+      
+      
       
       # combine cnt matrix and comparison
       fct_out <- c(cnt_matrix_ui[1],
@@ -523,4 +571,33 @@ parse_input_list <- function(input_list,column_tag){
   return(age_out)
 }
 
+
+get_location_matrices <- function(country,daytype,touch,duration,gender,
+                                  cnt_location,
+                                  cnt_matrix_features,
+                                  age_breaks_text,
+                                  bool_schools_closed,
+                                  max_part_weight){
+  
+  
+  # location specific ==> NOT reciprocal
+  sel_cnt_matrix_features <- cnt_matrix_features[!grepl('recipocal',cnt_matrix_features,ignore.case = T)]
+  
+  # initialise list
+  matrix_list <- list()
+  
+  for(i_loc in 1:length(cnt_location)){
+    matrix_list[i_loc] <- list(get_contact_matrix(country,daytype,touch,duration,gender,
+                                                  cnt_location = cnt_location[i_loc],
+                                                  sel_cnt_matrix_features,
+                                                  age_breaks_text,
+                                                  bool_schools_closed,
+                                                  max_part_weight)$matrix)
+  }
+  
+  # add location names
+  names(matrix_list) <- cnt_location
+  
+  return(matrix_list)
+}
 

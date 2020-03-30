@@ -42,6 +42,13 @@ shinyServer(function(input, output, session) {
     if(!input$bool_telework)
       updateSliderInput(session, "telework_target", value = input$telework_reference)
     
+    # if social distancing slider are not displayed => set all to 0
+    if(!input$bool_social_distancing){
+      updateSliderInput(session, "cnt_reduction_transport", value = 0)
+      updateSliderInput(session, "cnt_reduction_leisure", value = 0)
+      updateSliderInput(session, "cnt_reduction_otherplace", value = 0)
+    }
+      
     # Update 'daytype' input, by default 'all contacts' to prevent warnings/errors  
     # Options can be extended based on data availability
     flag_country <- input$country == opt_country_admin$name
@@ -57,7 +64,7 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session,"daytype", choices = opt_day_type[1])
     }
     
-    #update tranmission sliders, if the age groups have changed
+    #update transmission sliders, if the age groups have changed
     if(bool_update$age_breaks_text != input$age_breaks_text){
       
       # adjust memory variable
@@ -99,9 +106,18 @@ shinyServer(function(input, output, session) {
   observe({
     
     # parse transmission parameters
-    age_susceptibility_text <- parse_input_list(input,'s_susceptibility')
+    age_susceptibility_text    <- parse_input_list(input,'s_susceptibility')
     age_infectiousness_text    <- parse_input_list(input,'s_infectiousness')
-     
+    
+    print(input$cnt_reduction_transport)
+  
+    # combine contact reductions
+    # TODO: use notation from opt_location (capitals etc.)
+    cnt_reduction <- data.frame(Transport  = input$cnt_reduction_transport/100,
+                                Leisure    = input$cnt_reduction_leisure/100,
+                                Otherplace = input$cnt_reduction_otherplace/100)
+
+    
     # run social contact analysis
     out <- run_social_contact_analysis(country      = input$country,
                                        daytype      = input$daytype,
@@ -117,7 +133,8 @@ shinyServer(function(input, output, session) {
                                        max_part_weight     = max_part_weight,
                                        bool_transmission_param = input$bool_transmission_param,
                                        age_susceptibility_text = age_susceptibility_text,
-                                       age_infectiousness_text = age_infectiousness_text)
+                                       age_infectiousness_text = age_infectiousness_text,
+                                       cnt_reduction           = cnt_reduction)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
@@ -134,6 +151,11 @@ shinyServer(function(input, output, session) {
     # print results
     output$social_contact_analysis <- renderPrint({
       out
+    })
+    
+    # print results
+    output$social_distancing <- renderPrint({
+      out[names(out) %in% c('matrix','mij_ratio','notes')]
     })
     
     # download matrix

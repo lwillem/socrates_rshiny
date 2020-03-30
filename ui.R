@@ -67,15 +67,7 @@ shinyUI(pageWithSidebar(
                          selected = opt_location)
     ),
     
-    helpText("Reactive strategies"),
-    checkboxInput("bool_schools_closed","Close all schools"),
-    
-    checkboxInput("bool_telework","Telework"),
-    conditionalPanel(
-      condition = "input.bool_telework == true",
-      sliderInput("telework_reference","Observed % telework",min=0,max=99,value=5),
-      sliderInput("telework_target","Target % telework",min=0,max=99,value=5)
-    ),
+   
     
     
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),
@@ -96,7 +88,26 @@ shinyUI(pageWithSidebar(
                 tabPanel("Figures", plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
                                     plotOutput('plot_cnt_matrix_per_capita',width = "80%", height = "300px")),
                 tabPanel("Data sets",    dataTableOutput("social_contact_data"),
-                                         helpText('More info on the data will follow soon...'))
+                                         helpText('More info on the data will follow soon...')),
+                tabPanel("Distancing",  helpText("Social distancing (beta version)"),
+                                        verbatimTextOutput("social_distancing"),
+                                        checkboxInput("bool_schools_closed","Close all schools"),
+                                         
+                                        checkboxInput("bool_telework","Telework"),
+                                        conditionalPanel(
+                                           condition = "input.bool_telework == true",
+                                           sliderInput("telework_reference","Observed % telework",min=0,max=99,value=5),
+                                           sliderInput("telework_target","Target % telework",min=0,max=99,value=5)
+                                         ),
+                                        checkboxInput("bool_social_distancing","Social distancing"),
+                                        conditionalPanel(
+                                           condition = "input.bool_social_distancing == true",
+                                           sliderInput("cnt_reduction_transport","Reduce 'transport' contacts (%)",min=0,max=99,value=0),
+                                           sliderInput("cnt_reduction_leisure","Reduce 'lesiure' contacts (%)",min=0,max=99,value=0),
+                                           sliderInput("cnt_reduction_otherplace","Reduce 'otherplace' contacts (%)",min=0,max=99,value=0)
+                                       )
+                         )
+                
     )
     
   )

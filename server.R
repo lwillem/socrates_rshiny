@@ -109,8 +109,6 @@ shinyServer(function(input, output, session) {
     age_susceptibility_text    <- parse_input_list(input,'s_susceptibility')
     age_infectiousness_text    <- parse_input_list(input,'s_infectiousness')
     
-    print(input$cnt_reduction_transport)
-  
     # combine contact reductions
     # TODO: use notation from opt_location (capitals etc.)
     cnt_reduction <- data.frame(Transport  = input$cnt_reduction_transport/100,

@@ -1,10 +1,13 @@
 #___________________________________________________________________________
 # This file is part of the SOcial Contact RATES (SOCRATES) modelling project
 # 
-# => MAIN SCRIPT FOR THE R-SHINY USER INTERFACE
+# => R-SHINY USER INTERFACE
 #
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
+# # FYI: To run SOCRATES via Github (latest version!)
+# library('shiny')
+# runGitHub('socrates_rshiny','lwillem')
 
 # clear workspace
 rm(list=ls(all=TRUE))
@@ -102,9 +105,9 @@ shinyUI(pageWithSidebar(
                                         checkboxInput("bool_social_distancing","Social distancing"),
                                         conditionalPanel(
                                            condition = "input.bool_social_distancing == true",
-                                           sliderInput("cnt_reduction_transport","Reduce 'transport' contacts (%)",min=0,max=99,value=0),
-                                           sliderInput("cnt_reduction_leisure","Reduce 'lesiure' contacts (%)",min=0,max=99,value=0),
-                                           sliderInput("cnt_reduction_otherplace","Reduce 'otherplace' contacts (%)",min=0,max=99,value=0)
+                                           sliderInput("cnt_reduction_transport","Reduce 'transport' contacts (%)",min=0,max=100,value=0),
+                                           sliderInput("cnt_reduction_leisure","Reduce 'lesiure' contacts (%)",min=0,max=100,value=0),
+                                           sliderInput("cnt_reduction_otherplace","Reduce 'otherplace' contacts (%)",min=0,max=100,value=0)
                                        )
                          )
                 

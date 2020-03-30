@@ -265,7 +265,9 @@ get_survey_object <- function(country,
                               gender,
                               cnt_location,
                               bool_reciprocal,
-                              bool_suppl_professional_cnt){
+                              bool_suppl_professional_cnt,
+                              missing.contact.age = "remove",  # adopted from socialmixr package
+                              quiet = FALSE){
   
   # select dataset filename and load #####
   sel_dataset <- opt_country_admin[opt_country_admin$name == country,]
@@ -280,6 +282,26 @@ get_survey_object <- function(country,
     bool_country <- (data_part$country == sel_dataset$country)
     data_part    <- data_part[bool_country,]
     data_cnt     <- data_cnt[data_cnt$part_id %in% data_part$part_id,]
+  }
+  
+  # missing contact age ####
+  # remove participants with missing contact age
+  if (missing.contact.age == "remove") {
+    if (!quiet)
+    {
+      message("Removing participants that have contacts without age information. ",
+              "To change this behaviour, set the 'missing.contact.age' option")
+    }
+
+  cnt_ages            <- cbind(data_cnt$cnt_age_exact, data_cnt$cnt_age_min, data_cnt$cnt_age_est_max)
+  bool_missing_age    <- rowSums(is.na(cnt_ages)) == ncol(cnt_ages)
+  part_id_missing_age <- unique(data_cnt$part_id[bool_missing_age])
+
+  data_part <- data_part[!data_part$part_id %in% part_id_missing_age,]
+  data_cnt  <- data_cnt[!data_cnt$part_id %in% part_id_missing_age,]
+
+  } else {
+    message("The specified missing.contact.age unknown")
   }
   
   # select type of day ####
@@ -377,6 +399,37 @@ get_survey_object <- function(country,
     }
   }
   
+  
+  #__________________________________________________________________________
+  # adjust location data: missing and multiple locations ####
+  if(nrow(data_cnt)>0){
+    # set data.table to data.frame
+    data_cnt_tmp <- data.frame(data_cnt)
+    
+    # select all location-specific columns
+    cnt_location_colnames <- c(paste0('cnt_',tolower(opt_location)))
+    data_cnt_tmp <- data_cnt_tmp[,cnt_location_colnames]
+    dim(data_cnt_tmp)
+    
+    # replace value 'NA' for a location to 'false' (=not-present)
+    data_cnt_tmp[is.na(data_cnt_tmp)] <- 0
+    
+    # add missing location to "other"
+    cnt_loc_missing <- rowSums(data_cnt_tmp,na.rm=T) == 0
+    data_cnt_tmp$cnt_otherplace  <- as.numeric(data_cnt_tmp$cnt_otherplace | cnt_loc_missing)
+    
+    # 1. calculate cumulative sum (from left to right)
+    tmp_loc_cumsum <- t(apply(data_cnt_tmp,1,cumsum))
+    
+    # 2. set locations with cummulative sum >1 (== not unique and not the "main location") to 0
+    data_cnt_tmp[tmp_loc_cumsum>1] <- 0
+    
+    # 3. copy adjusted location data back
+    data_cnt[,cnt_location_colnames] <- data_cnt_tmp
+  }
+
+  #__________________________________________________________________________
+  
   #select location ####
   if(length(cnt_location)==0){
     print("WARNING: NO LOCATIONS SPECIFIED...")
@@ -384,31 +437,11 @@ get_survey_object <- function(country,
   } else if(!identical(as.character(cnt_location),as.character(opt_location))
             && nrow(data_cnt)>0){
     
-    # fix: change data.table to data.frame
+    # set data.table to data.frame
     data_cnt_tmp <- data.frame(data_cnt)
     
-    # add missing location to "other"
-    data_cnt_tmp$cnt_loc_missing <- rowSums(data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))],na.rm=T) == 0
-    data_cnt_tmp$cnt_otherplace  <- data_cnt_tmp$cnt_otherplace | data_cnt_tmp$cnt_loc_missing
-    
-    # replace value 'NA' for a location to 'false' (=not-present)
-    data_cnt_tmp[is.na(data_cnt_tmp)] <- FALSE
-    
-    # get column names
+    # select requested location-specific columns
     cnt_location_colnames <- c(paste0('cnt_',tolower(cnt_location)))
-    
-    #__________________________________________________________________________
-    # adjust for multiple locations
-    # 1. copy contact location data and calculate cumulative sum (from left to right)
-    tmp_loc        <- data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))]
-    tmp_loc_cumsum <- t(apply(tmp_loc,1,cumsum))
-    
-    # 2. set locations with cummulative sum >1 (== not unique and not the "main location") to 0
-    tmp_loc[tmp_loc_cumsum>1] <- 0
-    
-    # 3. copy adjusted location data back
-    data_cnt_tmp[,c(paste0('cnt_',tolower(opt_location)))] <- tmp_loc
-    #__________________________________________________________________________
     
     # select columns
     if(length(cnt_location)>1){

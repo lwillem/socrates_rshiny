@@ -192,6 +192,7 @@ shinyServer(function(input, output, session) {
                                     bool_transmission_param = input$bool_transmission_param,
                                     age_susceptibility_text = age_susceptibility_text,
                                     age_infectiousness_text = age_infectiousness_text,
+                                    cnt_reduction           = cnt_reduction,
                                     filename = file)
       }
     )

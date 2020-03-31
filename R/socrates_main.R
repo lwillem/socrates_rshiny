@@ -36,7 +36,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   
   # include social distancing?
   bool_social_distancing <- any(cnt_reduction!=0)
-  
+  print(cnt_reduction)
   if(bool_schools_closed | bool_telework | bool_social_distancing){
     if(any(is.na(cnt_matrix_ui$matrix))){
       fct_out$notes <- "Contact matrix contains NA, no further analysis possible."
@@ -51,28 +51,16 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       
       if(bool_telework){
         
-        # get contact matrix with work-contacts (exclusive)
-        if('Work' %in% cnt_location){
-          cnt_matrix_work_excl <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                                     cnt_location = "Work",
-                                                     cnt_matrix_features,
-                                                     age_breaks_text,
-                                                     bool_schools_closed = FALSE,
-                                                     max_part_weight     = max_part_weight)$matrix
-        } else{
-          cnt_matrix_work_excl <- cnt_matrix_ui$matrix * 0
-        }
-        
-        # apply reduction
+        # calculate reduction
         telework_increase  <- telework_target/100 - telework_reference/100
         telework_reduction <- telework_increase / (1-telework_reference/100)
-        cnt_matrix_work_reduction <- cnt_matrix_work_excl * telework_reduction
-        
-        # calculate final matrix
-        cnt_matrix_ui$matrix <- cnt_matrix_ui$matrix - cnt_matrix_work_reduction
+
+        # add to cnt_reduction
+        cnt_reduction$Work = telework_reduction
       }
       
-      if(bool_social_distancing){
+      if(bool_social_distancing | bool_telework){
+        print(cnt_reduction)
         matrix_loc <- get_location_matrices(country,daytype,touch,duration,gender,
                                             cnt_location,
                                             cnt_matrix_features,

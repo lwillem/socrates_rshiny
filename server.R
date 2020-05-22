@@ -44,6 +44,7 @@ shinyServer(function(input, output, session) {
     
     # if social distancing slider are not displayed => set all to 0
     if(!input$bool_social_distancing){
+      updateSliderInput(session, "cnt_reduction_school", value = 0)
       updateSliderInput(session, "cnt_reduction_transport", value = 0)
       updateSliderInput(session, "cnt_reduction_leisure", value = 0)
       updateSliderInput(session, "cnt_reduction_otherplace", value = 0)
@@ -111,7 +112,8 @@ shinyServer(function(input, output, session) {
     
     # combine contact reductions
     # TODO: use notation from opt_location (capitals etc.)
-    cnt_reduction <- data.frame(Transport  = input$cnt_reduction_transport/100,
+    cnt_reduction <- data.frame(School     = input$cnt_reduction_school/100,
+                                Transport  = input$cnt_reduction_transport/100,
                                 Leisure    = input$cnt_reduction_leisure/100,
                                 Otherplace = input$cnt_reduction_otherplace/100)
 
@@ -125,7 +127,6 @@ shinyServer(function(input, output, session) {
                                        cnt_location = input$cnt_location,
                                        cnt_matrix_features = input$cnt_matrix_features,
                                        age_breaks_text     = input$age_breaks_text,
-                                       bool_schools_closed = input$bool_schools_closed,
                                        telework_reference  = input$telework_reference,
                                        telework_target     = input$telework_target,
                                        max_part_weight     = max_part_weight,
@@ -185,7 +186,6 @@ shinyServer(function(input, output, session) {
                                     cnt_location = input$cnt_location,
                                     cnt_matrix_features = input$cnt_matrix_features,
                                     age_breaks_text     = input$age_breaks_text,
-                                    bool_schools_closed = input$bool_schools_closed,
                                     telework_reference  = input$telework_reference,
                                     telework_target     = input$telework_target,
                                     max_part_weight     = max_part_weight,

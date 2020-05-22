@@ -85,17 +85,18 @@ shinyUI(pageWithSidebar(
   
   mainPanel(
     
+    # allways show matrix with contact rates
+    plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
+    
     # use tabs
     tabsetPanel(type = "tabs",
                 tabPanel("Results", verbatimTextOutput("social_contact_analysis")),
-                tabPanel("Figures", plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
-                                    plotOutput('plot_cnt_matrix_per_capita',width = "80%", height = "300px")),
+                tabPanel("Per Capita",   plotOutput('plot_cnt_matrix_per_capita',width = "80%", height = "300px")),
                 tabPanel("Data sets",    dataTableOutput("social_contact_data"),
                                          helpText('More info on the data will follow soon...')),
                 tabPanel("Distancing",  helpText("Social distancing (beta version)"),
                                         verbatimTextOutput("social_distancing"),
-                                        checkboxInput("bool_schools_closed","Close all schools"),
-                                         
+
                                         checkboxInput("bool_telework","Telework"),
                                         conditionalPanel(
                                            condition = "input.bool_telework == true",
@@ -105,6 +106,7 @@ shinyUI(pageWithSidebar(
                                         checkboxInput("bool_social_distancing","Social distancing"),
                                         conditionalPanel(
                                            condition = "input.bool_social_distancing == true",
+                                           sliderInput("cnt_reduction_school","Reduce 'school' contacts (%)",min=0,max=100,value=0),
                                            sliderInput("cnt_reduction_transport","Reduce 'transport' contacts (%)",min=0,max=100,value=0),
                                            sliderInput("cnt_reduction_leisure","Reduce 'lesiure' contacts (%)",min=0,max=100,value=0),
                                            sliderInput("cnt_reduction_otherplace","Reduce 'otherplace' contacts (%)",min=0,max=100,value=0)

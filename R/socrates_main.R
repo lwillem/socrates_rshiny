@@ -30,6 +30,9 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # CLI
   fct_out <- cnt_matrix_ui
   
+  # create option to add notes
+  fct_out$notes <- NULL
+  
   # include telework features?
   bool_telework <- telework_target > telework_reference
   if(bool_telework){
@@ -64,26 +67,42 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       # unlist contact reduction parameter
       cnt_reduction_df <- unlist(cnt_reduction)
       print(cnt_reduction_df)
-      
+     
       # account for the location-specific reductions
-      matrix_total <- NULL
+      matrix_total            <- NULL
       matrix_per_capita_total <- NULL
-      i_loc <- cnt_location[2]
+      i_loc <- cnt_location[1]
       for(i_loc in cnt_location){
 
-        # get relative contact reduction
-        relative_reduction <- ifelse(i_loc %in% names(cnt_reduction_df),cnt_reduction_df[i_loc],0)
-
-        # get remaining contacts
-        reduction_factor  <- (1 - relative_reduction)
+        # check if dataset contains a matrix for this location
+        if(all(is.na(matrix_loc[[i_loc]]$matrix))){
+          # add UI note that this reduction is not possible
+          fct_out$notes <- c(fct_out$notes,paste0("Social distancing for ",i_loc,' not possible (category not present)'))  
+        } else {
         
-        if(is.null(matrix_total)){
-          matrix_total <- matrix_loc[[i_loc]]$matrix * reduction_factor
-          matrix_per_capita_total <- matrix_loc[[i_loc]]$matrix_per_capita * reduction_factor
-        } else{
-          matrix_total <- matrix_total + matrix_loc[[i_loc]]$matrix * reduction_factor
-          matrix_per_capita_total <- matrix_per_capita_total + matrix_loc[[i_loc]]$matrix_per_capita * reduction_factor
+          # get relative contact reduction
+          relative_reduction <- ifelse(i_loc %in% names(cnt_reduction_df),cnt_reduction_df[i_loc],0)
+  
+          # add UI note on reduction if > 0
+          if(relative_reduction>0){
+            fct_out$notes <- c(fct_out$notes,paste0("Social distancing for ",i_loc,': ',
+                                                    round(relative_reduction*100),"% reduction"))  
           }
+          
+          # get remaining contacts
+          reduction_factor  <- (1 - relative_reduction)
+          
+          if(is.null(matrix_total)){
+              matrix_total <- matrix_loc[[i_loc]]$matrix * reduction_factor
+              matrix_per_capita_total <- matrix_loc[[i_loc]]$matrix_per_capita * reduction_factor
+          } else{
+              matrix_total <- matrix_total + matrix_loc[[i_loc]]$matrix * reduction_factor
+              matrix_per_capita_total <- matrix_per_capita_total + matrix_loc[[i_loc]]$matrix_per_capita * reduction_factor
+          } # end if-else  
+        
+        } #end if-clause: does location matrix exists?
+        
+        print(matrix_total)
       }
 
       # update UI results
@@ -102,15 +121,12 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                                                        telework_target,'% instead of ',
                                                                        telework_reference,'%)'))
       } 
-      if(bool_social_distancing){
-        distancing_notes <- paste0("Social distancing for ",
-                                   paste0(names(cnt_reduction),': ',
-                                   cnt_reduction*100,"% reduction"))
-        
-        distancing_notes <- distancing_notes[cnt_reduction>0]
-        
-        model_comparison$notes <- matrix(c(model_comparison$notes, distancing_notes),ncol=1)
-      }# end add note
+      
+      # copy notes
+      if(length(fct_out$notes)>0){
+        model_comparison$notes <- rbind(model_comparison$notes,
+                                    matrix(fct_out$notes,ncol=1))
+      }
       
       # combine cnt matrix and comparison
       fct_out <- c(cnt_matrix_ui[1],
@@ -120,7 +136,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     } # end else (no NA's present) 
   }# end if intervention
   
-
   # Add relative incidence (if possible)
   if(!any(is.na(cnt_matrix_ui$matrix))){
     # adjust for age-specific transmission?
@@ -149,25 +164,12 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                           max_part_weight = max_part_weight,
                           row.names=NULL)
   
-  # add telework info?
-  if(bool_telework){
-    meta_data$telework_reference <- telework_reference
-    meta_data$telework_target    <- telework_target
-  }
   
-  # add contact reduction info?
-  if(any(cnt_reduction>0))
-  {
-    # add reduction values
-    meta_data_notes <- cnt_reduction[cnt_reduction>0]
-    
-    # change names
-    names(meta_data_notes) <-  paste0("contact reduction for '",names(cnt_reduction)[cnt_reduction>0],"'")
-    
-    # add to meta_data
-    meta_data[,names(meta_data_notes)] <- meta_data_notes
+  # add distancing info, if present
+  if(length(fct_out$notes)>0){
+    meta_data[,paste('distancing info',1:length(fct_out$notes))] <- fct_out$notes
   }
-  
+
   # add meta_data to function output
   fct_out$meta_data <- data.frame(parameter = names(meta_data),
                                   value = t(meta_data),

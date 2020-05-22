@@ -25,7 +25,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # get social contact matrix, using all features
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
                                       cnt_location,cnt_matrix_features,age_breaks_text,
-                                      bool_schools_closed,
+                                      FALSE,
                                       max_part_weight = max_part_weight)
   
   # CLI
@@ -34,9 +34,13 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # include telework features?
   bool_telework <- telework_target > telework_reference
   
+  if(bool_schools_closed){
+    # add to cnt_reduction
+    cnt_reduction$School = 1
+  }
+  
   # include social distancing?
   bool_social_distancing <- any(cnt_reduction!=0)
-  print(cnt_reduction)
   if(bool_schools_closed | bool_telework | bool_social_distancing){
     if(any(is.na(cnt_matrix_ui$matrix))){
       fct_out$notes <- "Contact matrix contains NA, no further analysis possible."
@@ -69,27 +73,32 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                             max_part_weight)
 
         # unlist contact reduction parameter
-        cnt_reduction <- unlist(cnt_reduction)
-   
+        cnt_reduction_df <- unlist(cnt_reduction)
+        print(cnt_reduction_df)
+        
         # get sum, account for the reduction
         matrix_total <- NULL
         i_loc <- cnt_location[2]
+        matrix_per_capita_total <- NULL
         for(i_loc in cnt_location){
 
           # get relative contact reduction
-          relative_reduction <- ifelse(i_loc %in% names(cnt_reduction),cnt_reduction[i_loc],0)
+          relative_reduction <- ifelse(i_loc %in% names(cnt_reduction_df),cnt_reduction_df[i_loc],0)
 
           # get remaining contacts
           reduction_factor  <- (1 - relative_reduction)
           
           if(is.null(matrix_total)){
-            matrix_total <- matrix_loc[[i_loc]] * reduction_factor
+            matrix_total <- matrix_loc[[i_loc]]$matrix * reduction_factor
+            matrix_per_capita_total <- matrix_loc[[i_loc]]$matrix_per_capita * reduction_factor
           } else{
-            matrix_total <- matrix_total + matrix_loc[[i_loc]] * reduction_factor
-          }
+            matrix_total <- matrix_total + matrix_loc[[i_loc]]$matrix * reduction_factor
+            matrix_per_capita_total <- matrix_per_capita_total + matrix_loc[[i_loc]]$matrix_per_capita * reduction_factor
+            }
         }
 
         cnt_matrix_ui$matrix <- matrix_total
+        cnt_matrix_ui$matrix_per_capita <- matrix_per_capita_total
       }
       
       
@@ -613,7 +622,7 @@ get_location_matrices <- function(country,daytype,touch,duration,gender,
                                                   sel_cnt_matrix_features,
                                                   age_breaks_text,
                                                   bool_schools_closed,
-                                                  max_part_weight)$matrix)
+                                                  max_part_weight))
   }
   
   # add location names

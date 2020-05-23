@@ -16,21 +16,22 @@ shinyServer(function(input, output, session) {
   # create memory variable for the transmission param sliders
   bool_update <- reactiveValues(age_breaks_text = '')
   
+  # create bool to show the SPC checkbox
+  output$panelStatus <- reactive({
+    opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]
+  })
+  outputOptions(output, "panelStatus", suspendWhenHidden = FALSE)
+  
   # Update UI panel(s) ####
   observe({
-    
-    # Update the "supplementary professional contacts" option
-    if(opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]){
-      
-      updateCheckboxGroupInput(session,'cnt_matrix_features',
-                                selected = input$cnt_matrix_features,
-                                choices  = opt_matrix_features)
-    } else{
-      updateCheckboxGroupInput(session,'cnt_matrix_features',
-                               selected = input$cnt_matrix_features[-4],
-                               choices  = opt_matrix_features[-4])
+  
+    # if the SCP checkbox is not shown (nor used), set as "TRUE" 
+    # MESSAGE ==>> "SCP are never excluded if the checkbox is not shown"
+    show_spc_panel <- opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]
+    if(!show_spc_panel){
+      updateCheckboxInput(session,"bool_spc", value = TRUE)
     }
-      
+    
     #Update the minimum "telework target" (at least the observed value)
     updateSliderInput(session, "telework_target", min = input$telework_reference)
     
@@ -94,18 +95,24 @@ shinyServer(function(input, output, session) {
           sliderInput(inputId = paste0("s_infectiousness",i),
                       label = paste('infectiousness:',age_groups_label[i]),
                       min = 0, max = 2, value = 1,step=0.1)
-        })
-      })
+        }) # end: lapply
+      }) # end= renderUI
       
-    }
+    } # end if-clause: update transmission sliders
     
-  })
+  }) # end: observe
  
   
   
   ## UPDATE CONTENT ####
   observe({
-    
+
+    # combine general options
+    features_select <- c(input$bool_reciprocal,
+                        input$bool_weigh_age,
+                        input$bool_weigh_week,
+                        input$bool_spc)
+
     # parse transmission parameters
     age_susceptibility_text    <- parse_input_list(input,'s_susceptibility')
     age_infectiousness_text    <- parse_input_list(input,'s_infectiousness')
@@ -117,7 +124,6 @@ shinyServer(function(input, output, session) {
                                 Leisure    = input$cnt_reduction_leisure/100,
                                 Otherplace = input$cnt_reduction_otherplace/100)
 
-    
     # run social contact analysis
     out <- run_social_contact_analysis(country      = input$country,
                                        daytype      = input$daytype,
@@ -125,7 +131,7 @@ shinyServer(function(input, output, session) {
                                        duration     = input$duration,
                                        gender       = input$gender,
                                        cnt_location = input$cnt_location,
-                                       cnt_matrix_features = input$cnt_matrix_features,
+                                       cnt_matrix_features = opt_matrix_features[features_select],
                                        age_breaks_text     = input$age_breaks_text,
                                        telework_reference  = input$telework_reference,
                                        telework_target     = input$telework_target,
@@ -187,7 +193,7 @@ shinyServer(function(input, output, session) {
                                     duration     = input$duration,
                                     gender       = input$gender,
                                     cnt_location = input$cnt_location,
-                                    cnt_matrix_features = input$cnt_matrix_features,
+                                    cnt_matrix_features = cnt_matrix_features[features_select],
                                     age_breaks_text     = input$age_breaks_text,
                                     telework_reference  = input$telework_reference,
                                     telework_target     = input$telework_target,

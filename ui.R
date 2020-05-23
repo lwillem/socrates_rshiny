@@ -47,48 +47,49 @@ shinyUI(pageWithSidebar(
                 opt_gender),
     
     tabsetPanel(type = "tabs",
-                tabPanel("Options",checkboxGroupInput('cnt_matrix_features',
-                                                       label = 'Contact features',
-                                                       choices = opt_matrix_features,
-                                                       selected = opt_matrix_features)
-                         ),
-                tabPanel("Location", checkboxInput("bool_location", "Include all locations",value = TRUE),
-                                     conditionalPanel(
-                                       condition = "input.bool_location == false",
-                                       checkboxGroupInput('cnt_location',
-                                                          label = 'Included locations',
-                                                          choices = opt_location,
-                                                          selected = opt_location)
-                                     )
-                         ),
+                tabPanel("General",
+                         checkboxInput("bool_reciprocal", "Reciprocity",value = TRUE),
+                         checkboxInput("bool_weigh_age", "Weigh by age",value = TRUE),
+                         checkboxInput("bool_weigh_week", "Weigh by week/weekend",value = TRUE),
+                        
+                         # SPC (optional)
+                         conditionalPanel(
+                           condition = 'output.panelStatus',
+                           checkboxInput("bool_spc", "Supplemental professional contacts (SPC)",value = TRUE)),
+                         
+                         checkboxInput("bool_location", "Include all locations",value = TRUE),
+                         conditionalPanel(
+                           condition = "input.bool_location == false",
+                           checkboxGroupInput('cnt_location',
+                                              label = 'Included locations',
+                                              choices = opt_location,
+                                              selected = opt_location))
+                        ),
                 tabPanel("Distancing", checkboxInput("bool_telework","Include telework"),
                                        conditionalPanel(
                                          condition = "input.bool_telework == true",
                                          sliderInput("telework_reference","Observed % telework",min=0,max=99,value=5),
-                                         sliderInput("telework_target","Target % telework",min=0,max=99,value=5)
-                                       ),
+                                         sliderInput("telework_target","Target % telework",min=0,max=99,value=5)),
                                        checkboxInput("bool_social_distancing","Include social distancing"),
                                        conditionalPanel(
                                          condition = "input.bool_social_distancing == true",
                                          sliderInput("cnt_reduction_school","Reduce 'school' contacts (%)",min=0,max=100,value=0),
                                          sliderInput("cnt_reduction_transport","Reduce 'transport' contacts (%)",min=0,max=100,value=0),
                                          sliderInput("cnt_reduction_leisure","Reduce 'lesiure' contacts (%)",min=0,max=100,value=0),
-                                         sliderInput("cnt_reduction_otherplace","Reduce 'otherplace' contacts (%)",min=0,max=100,value=0)
-                                       )
+                                         sliderInput("cnt_reduction_otherplace","Reduce 'otherplace' contacts (%)",min=0,max=100,value=0))
                          ),
                 tabPanel("Transmission",checkboxInput("bool_transmission_param", "Age-specific transmission",value = FALSE),
                                         conditionalPanel(
                                           condition = "input.bool_transmission_param == true",
                                           uiOutput("sliders_susceptibility"),
-                                          uiOutput("sliders_infectiousness")
-                                        )
+                                          uiOutput("sliders_infectiousness"))
                         )
                 ),
     
     hr(),
     helpText('DOWNLOAD'),
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),
-    downloadButton('download_all',"Download all results (.RData)",style = "width:99%;"),
+    downloadButton('download_all',"Download results (.RData)",style = "width:99%;"),
     
     # add version and link to project website
     headerPanel(""),

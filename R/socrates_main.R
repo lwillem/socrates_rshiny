@@ -66,8 +66,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
 
       # unlist contact reduction parameter
       cnt_reduction_df <- unlist(cnt_reduction)
-      print(cnt_reduction_df)
-     
+      
       # account for the location-specific reductions
       matrix_total            <- NULL
       matrix_per_capita_total <- NULL
@@ -101,8 +100,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
           } # end if-else  
         
         } #end if-clause: does location matrix exists?
-        
-        print(matrix_total)
       }
 
       # update UI results

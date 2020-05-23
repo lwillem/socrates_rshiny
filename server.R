@@ -142,6 +142,7 @@ shinyServer(function(input, output, session) {
     
     # plot social contact matrix per capita
     output$plot_cnt_matrix_per_capita <- renderPlot({
+      
       if('matrix_per_capita' %in% names(out)){
         plot_cnt_matrix(out$matrix_per_capita, 'per capita')
       }
@@ -149,7 +150,9 @@ shinyServer(function(input, output, session) {
     
     # print results
     output$social_contact_analysis <- renderPrint({
-      out
+      # exclude results with separate tab
+      list_exclude <- c('weights','participants')
+      out[!names(out) %in% list_exclude]
     })
     
     # print results
@@ -205,6 +208,28 @@ shinyServer(function(input, output, session) {
     # add social contact data info
     output$social_contact_data <- renderDataTable({
     data_table_description
+    },
+    options = list(
+      autoWidth = TRUE,
+      columnDefs = list(list(width = '170px', targets = 0))
+    ))
+    
+    # add weights table
+    output$table_weights <- renderDataTable({
+      if(any(is.null(out$weights))){
+        data.table('No weights selected' = '')
+      } else {
+        out$weights
+      }
+    },
+    options = list(
+      autoWidth = TRUE,
+      columnDefs = list(list(width = '170px', targets = 0))
+     ))
+    
+    # add weights table
+    output$table_participants <- renderDataTable({
+        out$participants
     },
     options = list(
       autoWidth = TRUE,

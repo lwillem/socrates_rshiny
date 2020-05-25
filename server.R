@@ -152,13 +152,8 @@ shinyServer(function(input, output, session) {
     # print results
     output$social_contact_analysis <- renderPrint({
       # exclude results with separate tab
-      list_exclude <- c('weights','participants')
+      list_exclude <- c('weights','participants','meta_data')
       out[!names(out) %in% list_exclude]
-    })
-    
-    # print results
-    output$social_distancing <- renderPrint({
-      out[names(out) %in% c('matrix','mij_ratio','notes')]
     })
     
     # download matrix

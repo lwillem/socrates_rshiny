@@ -78,10 +78,18 @@ db_contacts       <- data.frame(part_id         = cnt_data$local_id,
                                 cnt_data[,c("cnt_home","cnt_work","cnt_school",
                                             "cnt_transport","cnt_leisure","cnt_otherplace","is_imputed")])
 
+# add contact info on intensity, duration, frequency and gender
+db_contacts$phys_contact    <- cnt_data$cnt_touch == 'Y'
+db_contacts$frequency_multi <- cnt_data$cnt_frequency
+db_contacts$duration_multi  <- cnt_data$cnt_duration
+db_contacts$cnt_gender      <- cnt_data$cnt_sex
+
+names(cnt_data)
 names(db_contacts)
 head(db_contacts)
 names(db_participants)
 head(db_participants)
+
 
 # get socialmixr 'survey' object
 survey_flanders2010 <- survey(participants = db_participants,
@@ -92,7 +100,4 @@ survey_flanders2010 <- survey(participants = db_participants,
 saveRDS(survey_flanders2010, file=paste0('data/survey_belgium2010.rds'))
 
 cite(survey_flanders2010)
-
-names(db_contacts)
-colSums(db_contacts[,-(1:4)])
 

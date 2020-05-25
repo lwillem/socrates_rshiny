@@ -38,134 +38,24 @@ survey_opt <- c("polymod",'peru','zimbabwe','france','hong_kong',
 
 # duplicate the zambia & South Africa reference... to split them
 survey_meta_data <- rbind(survey_meta_data,survey_meta_data[8,],survey_meta_data[8,])
-  
+
+## ZENODO DATA ----  
+
+ind_data_zenodo <- c(1)
+
 # get dataset from ZENODO and save as RDS
-i <- 4
-for(i in 7:nrow(survey_meta_data)){
+i <- 2
+for(i in ind_data_zenodo){
+  
+  # load data
   survey_data <- get_survey(survey_meta_data$url[i])
   
-  # head(survey_data$participants)
-  # table(survey_data$participants$country)
-  # head(survey_data$contacts)
-  # table(survey_data$contacts$cnt_age_est_max)
-  # table(survey_data$contacts$cnt_age_est_min)
-  # table(survey_data$contacts$cnt_age_exact)
-  # typeof(survey_data$contacts$cnt_age_est_max)
-  # typeof(survey_data$contacts$cnt_age_est_min)
-  # typeof(survey_data$contacts$cnt_age_exact)
-  # 
-  
-  # if(survey_opt[i] == 'france'){
-  #   survey_data$participants
-  #   # select first day
-  #   bool_day_one <- survey_data$contacts$sday_part_number == 1
-  #   survey_data$contacts <- survey_data$contacts[bool_day_one,]
-  #   
-  #   # select his/her first wave
-  #   part_id_wave_1 <- unique(survey_data$contacts$part_id[survey_data$contacts$wave == 1])
-  #   part_id_wave_2 <- unique(survey_data$contacts$part_id[survey_data$contacts$wave == 2])
-  #   exclude_wave_2 <- part_id_wave_2[part_id_wave_2 %in% part_id_wave_1]
-  #   bool_two_waves <- survey_data$contacts$wave == 2 & survey_data$contacts$part_id %in% exclude_wave_2
-  #   survey_data$contacts <- survey_data$contacts[!bool_two_waves,]
-  #   table(bool_two_waves)
-  #   
-  #   # convert holiday variable into boolean
-  #   survey_data$contacts$holiday <- survey_data$contacts$holiday == 1
-  # 
-  #   part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek','holiday')])
-  #   survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
-  #   
-  #   table(survey_data$contacts$cnt_school,survey_data$contacts$wave)
-  #   table(survey_data$contacts$cnt_school)
-  #   table(survey_data$contacts$cnt_transport)
-  #   cnt_tmp <- survey_data$contacts$cnt_school
-  #   survey_data$contacts$cnt_school <- survey_data$contacts$cnt_transport
-  #   survey_data$contacts$cnt_transport <- cnt_tmp
-  #   
-  #   survey_data$contacts$dayofweek <- NULL
-  #   survey_data$contacts$day       <- NULL
-  #   survey_data$contacts$month     <- NULL
-  #   survey_data$contacts$year      <- NULL
-  #   survey_data$contacts$holiday   <- NULL
-  # 
-  #   table(survey_data$contacts$cnt_home>=0)
-  #   length(unique(survey_data$contacts$cont_id))
-  #   }
-  
-  if(survey_opt[i] == 'zambia_south_africa'){
-    typeof(survey_data$contacts$cnt_age_exact)
-    table(is.na(survey_data$contacts$cnt_age_exact))
-    survey_data$contacts$cnt_age_exact <- NULL
-    survey_data$contacts$cnt_age_exact <- NA_integer_
-  }
-  
-  if(survey_opt[i] == 'uk'){
-   next
-  }
-  
-  if(survey_opt[i] == 'russia'){
-    table(survey_data$contacts$cnt_age_est_max)
-    table(survey_data$contacts$cnt_age_est_min)
-    table(survey_data$contacts$cnt_age_exact)
-    
-    cnt_age_est_min <- gsub('-','',survey_data$contacts$cnt_age_est_min)
-    cnt_age_est_min <- as.integer(cnt_age_est_min)
-    survey_data$contacts$cnt_age_est_min <- NULL
-    survey_data$contacts$cnt_age_est_min <- cnt_age_est_min
-  
-    survey_data$participants$year <- 2016
-    #TODO: holiday
-    
-  }
-  
-  if(survey_opt[i] == 'vietnam'){
-    
-    # include year (from paper)
-    survey_data$participants$year <- 2007
-    
-    # other date info: unknown
-    survey_data$participants$day       <- NA
-    survey_data$participants$month     <- NA
-    survey_data$participants$dayofweek <- NA
-    
-    # transform age group into age min and max
-    levels(survey_data$contacts$cnt_age_group)
-    cnt_age_group_char <-  as.character(survey_data$contacts$cnt_age_group)
-    cnt_age_group_char[cnt_age_group_char == '65+'] <- '65-90' # arbitrary!!
-    age_min_max <- strsplit(cnt_age_group_char,"-")
-    age_min_max <- matrix(unlist(age_min_max),ncol=2,byrow = T)
-    typeof(survey_data$contacts$cnt_age_est_min)
-    survey_data$contacts$cnt_age_est_min <- as.integer(age_min_max[,1])
-    survey_data$contacts$cnt_age_est_max <- as.integer(age_min_max[,2])
-    survey_data$contacts$cnt_age_exact <- NULL
-    survey_data$contacts$cnt_age_exact <- NA_integer_
-  }
-  
-  if(survey_opt[i] == 'china'){
-    survey_data$participants$country <- 'China'
-    survey_data$contacts$cnt_otherplace <- survey_data$contacts$cnt_other
-    survey_data$contacts$cnt_age_exact  <- as.integer(floor(survey_data$contacts$cnt_age_exact))
-    survey_data$contacts$cnt_leisure <- NULL
-    survey_data$contacts$cnt_leisure <- 0
-    head(survey_data$contacts)
-  }
-  
-  if(survey_opt[i] == 'zimbabwe'){
-    
-    # include year (from paper)
-    survey_data$participants$year <- 2013
-    dim(survey_data$participants)
-    dim(survey_data$contacts)
-    names(survey_data$contacts)  
-    
-    names(survey_data$participants)
-    
-    
-  }
-  
+  # save as .rds file
   saveRDS(survey_data, file=paste0('data/survey_',survey_opt[i],'.rds'))
 }
 
+## ADJUSTED DATA  ----
+# note: to be updated on Zenodo
 
 # finished
 library(shiny)
@@ -177,12 +67,18 @@ library(curl)
 source('R/socrates_main.R')
 
 #data_dir  <- '../socrates_covid/data/datasets_full/'
-data_dir  <- '../socrates_covid/data/datasets_28_Feb/'
+#data_dir  <- '../socrates_covid/data/datasets_28_Feb/'
+data_dir  <- '../socrates_covid/data/datasets_23_May/'
+
 survey_opt <- dir(data_dir)                        # get file and directory names
 survey_opt <- survey_opt[!grepl('\\.',survey_opt)] # remove file names (with an extension)
+
+survey_opt <- survey_opt[!grepl('Belgium',survey_opt)] # remove Belgium2010 data (for now)
+survey_opt <- survey_opt[!grepl('France',survey_opt)] # remove French data (for now)
+
 survey_opt
 
-i <- 4
+i <-2
 for(i in 1:length(survey_opt)){
   survey_data <- get_survey(survey = dir(file.path(data_dir,survey_opt[i]),pattern = '.csv',full.names = T),quiet = T)
   
@@ -201,17 +97,13 @@ for(i in 1:length(survey_opt)){
     part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek')])
     survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
     
+    names(survey_data$contacts)
+    summary(survey_data$contacts)
+    
     lapply(survey_data,dim)
    }
   
-  if(tolower(survey_opt[i]) == 'china'){
-    # include year (from paper)
-    names(survey_data$contacts)
-    survey_data$contacts$cnt_otherplace <- survey_data$contacts$cnt_otherplace | survey_data$contacts$cnt_otherpublicplace
-    survey_data$contacts$cnt_otherpublicplace <- NULL
-  }
-  
-  if(grepl('france',tolower(survey_opt[i]))){
+ if(grepl('france',tolower(survey_opt[i]))){
 
     # Conservative approach: select one diary per participant
     part_data          <- survey_data$participants
@@ -223,35 +115,23 @@ for(i in 1:length(survey_opt)){
     survey_data$participants     <- survey_data$participants[survey_data$participants$diary_id %in% selection_diary_id,]
     survey_data$contacts         <- survey_data$contacts[survey_data$contacts$diary_id %in% selection_diary_id,]
 
-    # # # ALL: assume every diary to be from a "unique participant"
-    # survey_data$participants$part_id <- survey_data$participants$diary_id
-    # survey_data$contacts$part_id     <- survey_data$contacts$diary_id 
-    
     # convert holiday variable into boolean
     survey_data$participants$holiday <- survey_data$participants$holiday == 1
-
-    tail(survey_data$contacts)
     
-    table(survey_data$contacts$cnt_school)
-    table(survey_data$contacts$cnt_transport)
-    table(survey_data$contacts$cnt_home)
-    table(survey_data$contacts$cnt_work)
-    table(survey_data$contacts$cnt_other)
-    head(survey_data$contacts)
-
-    lapply(survey_data,dim)
-  }
+    # convert is_imputed variable into boolean
+    survey_data$contacts$is_imputed <- survey_data$contacts$is_imputed == 'Y'
+    
+    # converst location columns into boolean
+    col_names <- paste0('cnt_',tolower(opt_location))
+    survey_data$contacts[, cnt_home:= cnt_home=="true",]
+    survey_data$contacts[, cnt_work:= cnt_home=="true",]
+    survey_data$contacts[, cnt_school:= cnt_home=="true",]
+    survey_data$contacts[, cnt_transport:= cnt_transport=="true",]
+    survey_data$contacts[, cnt_leisure:= cnt_leisure=="true",]
+    survey_data$contacts[, cnt_otherplace:= cnt_otherplace=="true",]
+    survey_data$contacts[,..col_names]  
+    
   
-  ## ADD FLAG FOR IMPUTED CONTACTS FOR FRENCH DATASET
-  if(grepl('france_spc',tolower(survey_opt[i]))){
-    
-    # load original data
-    survey_fr <- readRDS('./data/survey_france.rds')
-    
-    # compare
-    original_cnt <- survey_data$contacts$cont_id %in% survey_fr$contacts$cont_id
-    survey_data$contacts$is_imputed <- !original_cnt
-  }
   
   # store survey object
   saveRDS(survey_data, file=paste0('data/survey_',tolower(survey_opt[i]),'.rds'))
@@ -259,34 +139,20 @@ for(i in 1:length(survey_opt)){
 }
 
 
-range(survey_data$participants$part_age,na.rm=T)
+# ## COMPARE DATA SETS ----
+# 
+# data_new <- readRDS('data/survey_france.rds')
+# data_prev <- readRDS('data/survey_france_spc.rds')
+# 
+# lapply(data_new,dim)
+# lapply(data_prev,dim)
+# 
+# table(data_new$participants == data_prev$participants)
+# table(data_new$contacts == data_prev$contacts)
+# 
+# summary(data_new$contacts)
+# summary(data_prev$contacts)
 
-data_fr <- read.table('../socrates_covid/data/datasets_full/France/ComesF_contacts.txt',sep=';',header=T)
-dim(data_fr)
-length(unique(data_fr$local_id))
-table(data_fr$FR_vague)
-table(data_fr$cnt_home)
-table(data_fr$cnt_school)
-table(data_fr$cnt_transport)
-table(data_fr$cnt_work)
-names(data_fr)
-table(data_fr$FR_cnt_WorkandYouth_places)
 
-data_fr <- read.table('../socrates_covid/data/datasets_28_Feb/France/2015_Beraud_France_contact_common_prof_cont_incl.csv',sep=',',header=T)
-dim(data_fr)
-names(data_fr)
-table(data_fr$cnt_school)
-table(data_fr$cnt_transport)
-table(data_fr$cnt_work)
-table(data_fr$FR_cnt_Place_OthersClosed) + table(data_fr$FR_cnt_Place_OpenSpaces)
-head(data_fr$FR_studyDay)
 
-france_orig <- readRDS(file=paste0('data/survey_',tolower(survey_opt[i]),'.rds'))
-france_new <- readRDS(file=paste0('data/survey_',tolower(survey_opt[i]),'2.rds'))
-lapply(france_orig,dim)
-lapply(france_new,dim)
 
-table(france_orig$contacts$cnt_home)
-table(france_new$contacts$cnt_home)
-length(unique(france_new$contacts$part_id))
-length(unique(france_new$participants$part_id))

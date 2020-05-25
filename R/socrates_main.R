@@ -18,7 +18,7 @@ source('R/survey_data_description.R')
 
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
-                                        telework_reference,telework_target,max_part_weight,
+                                        max_part_weight,
                                         bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
                                         cnt_reduction){
   
@@ -33,20 +33,9 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # create option to add notes
   fct_out$notes <- NULL
   
-  # include telework features?
-  bool_telework <- telework_target > telework_reference
-  if(bool_telework){
-    # calculate reduction
-    telework_increase  <- telework_target/100 - telework_reference/100
-    telework_reduction <- telework_increase / (1-telework_reference/100)
-    
-    # add to cnt_reduction
-    cnt_reduction$Work = telework_reduction
-  }
-  
-  # include social distancing?
-  bool_social_distancing <- any(cnt_reduction!=0)
-  if(bool_social_distancing){
+  # include physical distancing?
+  bool_physical_distancing <- any(cnt_reduction!=0)
+  if(bool_physical_distancing){
     if(any(is.na(cnt_matrix_ui$matrix))){
       fct_out$notes <- "Contact matrix contains NA, no further analysis possible."
     } else {
@@ -76,7 +65,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
         # check if dataset contains a matrix for this location
         if(all(is.na(matrix_loc[[i_loc]]$matrix))){
           # add UI note that this reduction is not possible
-          fct_out$notes <- c(fct_out$notes,paste0("Social distancing for ",i_loc,' not possible (category not present)'))  
+          fct_out$notes <- c(fct_out$notes,paste0("Physical distancing for ",i_loc,' not possible (category not present)'))  
         } else {
         
           # get relative contact reduction
@@ -84,7 +73,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   
           # add UI note on reduction if > 0
           if(relative_reduction>0){
-            fct_out$notes <- c(fct_out$notes,paste0("Social distancing for ",i_loc,': ',
+            fct_out$notes <- c(fct_out$notes,paste0("Physical distancing for ",i_loc,': ',
                                                     round(relative_reduction*100),"% reduction"))  
           }
           
@@ -111,13 +100,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix,
                                                    bool_transmission_param,
                                                    age_susceptibility_text,age_infectiousness_text)
-      
-      # add note(s)
-      if(bool_telework) {   
-        model_comparison$notes <- rbind(model_comparison$notes, paste0("Increased telework (",
-                                                                       telework_target,'% instead of ',
-                                                                       telework_reference,'%)'))
-      } 
       
       # copy notes
       if(length(fct_out$notes)>0){

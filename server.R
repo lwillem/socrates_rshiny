@@ -32,19 +32,14 @@ shinyServer(function(input, output, session) {
       updateCheckboxInput(session,"bool_spc", value = TRUE)
     }
     
-    #Update the minimum "telework target" (at least the observed value)
-    updateSliderInput(session, "telework_target", min = input$telework_reference)
-    
     # Update whether the location-specific checkboxes are displayed
     if(input$bool_location)
       updateCheckboxGroupInput(session, "cnt_location", selected = opt_location)
     
-    # Update whether the telework sliders are displayed
-    if(!input$bool_telework)
-      updateSliderInput(session, "telework_target", value = input$telework_reference)
-    
-    # if social distancing slider are not displayed => set all to 0
-    if(!input$bool_social_distancing){
+    # if physical distancing slider are not displayed => set all to 0
+    if(!input$bool_physical_distancing){
+      updateSliderInput(session, "cnt_reduction_home", value = 0)
+      updateSliderInput(session, "cnt_reduction_work", value = 0)
       updateSliderInput(session, "cnt_reduction_school", value = 0)
       updateSliderInput(session, "cnt_reduction_transport", value = 0)
       updateSliderInput(session, "cnt_reduction_leisure", value = 0)
@@ -119,7 +114,9 @@ shinyServer(function(input, output, session) {
     
     # combine contact reductions
     # TODO: use notation from opt_location (capitals etc.)
-    cnt_reduction <- data.frame(School     = input$cnt_reduction_school/100,
+    cnt_reduction <- data.frame(Home       = input$cnt_reduction_home/100,
+                                Work       = input$cnt_reduction_work/100,
+                                School     = input$cnt_reduction_school/100,
                                 Transport  = input$cnt_reduction_transport/100,
                                 Leisure    = input$cnt_reduction_leisure/100,
                                 Otherplace = input$cnt_reduction_otherplace/100)
@@ -133,8 +130,6 @@ shinyServer(function(input, output, session) {
                                        cnt_location = input$cnt_location,
                                        cnt_matrix_features = opt_matrix_features[features_select],
                                        age_breaks_text     = input$age_breaks_text,
-                                       telework_reference  = input$telework_reference,
-                                       telework_target     = input$telework_target,
                                        max_part_weight     = max_part_weight,
                                        bool_transmission_param = input$bool_transmission_param,
                                        age_susceptibility_text = age_susceptibility_text,
@@ -195,8 +190,6 @@ shinyServer(function(input, output, session) {
                                     cnt_location = input$cnt_location,
                                     cnt_matrix_features = cnt_matrix_features[features_select],
                                     age_breaks_text     = input$age_breaks_text,
-                                    telework_reference  = input$telework_reference,
-                                    telework_target     = input$telework_target,
                                     max_part_weight     = max_part_weight,
                                     bool_transmission_param = input$bool_transmission_param,
                                     age_susceptibility_text = age_susceptibility_text,

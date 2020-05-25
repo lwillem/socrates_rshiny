@@ -9,7 +9,7 @@
 
 download_contact_matrices <- function(country,daytype,touch,duration,gender,
                                       cnt_location,cnt_matrix_features,age_breaks_text,
-                                      telework_reference,telework_target,max_part_weight,
+                                      max_part_weight,
                                       bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
                                       cnt_reduction, filename){
   
@@ -54,8 +54,6 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
                                              cnt_location            = sel_location,
                                              cnt_matrix_features     = sel_matrix_features,
                                              age_breaks_text         = age_breaks_text,
-                                             telework_reference      = telework_reference,
-                                             telework_target         = telework_target,
                                              max_part_weight         = max_part_weight,
                                              bool_transmission_param = bool_transmission_param,
                                              age_susceptibility_text = age_susceptibility_text,

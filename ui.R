@@ -65,14 +65,11 @@ shinyUI(pageWithSidebar(
                                               choices = opt_location,
                                               selected = opt_location))
                         ),
-                tabPanel("Distancing", checkboxInput("bool_telework","Include telework"),
+                tabPanel("Distancing", checkboxInput("bool_physical_distancing","Include physical distancing"),
                                        conditionalPanel(
-                                         condition = "input.bool_telework == true",
-                                         sliderInput("telework_reference","Observed % telework",min=0,max=99,value=5),
-                                         sliderInput("telework_target","Target % telework",min=0,max=99,value=5)),
-                                       checkboxInput("bool_social_distancing","Include social distancing"),
-                                       conditionalPanel(
-                                         condition = "input.bool_social_distancing == true",
+                                         condition = "input.bool_physical_distancing == true",
+                                         sliderInput("cnt_reduction_home","Reduce 'home' contacts (%)",min=0,max=100,value=0),
+                                         sliderInput("cnt_reduction_work","Reduce 'work' contacts (%)",min=0,max=100,value=0),
                                          sliderInput("cnt_reduction_school","Reduce 'school' contacts (%)",min=0,max=100,value=0),
                                          sliderInput("cnt_reduction_transport","Reduce 'transport' contacts (%)",min=0,max=100,value=0),
                                          sliderInput("cnt_reduction_leisure","Reduce 'lesiure' contacts (%)",min=0,max=100,value=0),

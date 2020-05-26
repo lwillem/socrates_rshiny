@@ -16,7 +16,6 @@
 
 # Explicit loading of the packages (fix for www.shinyapps.io)
 library('socialmixr')
-library('npsp')
 library('countrycode')
 library('data.table')
 library(shiny)
@@ -26,6 +25,12 @@ library(httr)
 library(jsonlite)
 library(XML)
 library(curl)
+
+# Package ‘npsp’ was removed from the CRAN repository on 2020-04-23
+# ==>> include simage function directly
+source('R/npsp/simage.R')
+source('R/npsp/splot.R')
+
 
 #__________________________#
 ##  UI PANEL OPTIONS    ####

@@ -22,7 +22,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
                                         cnt_reduction){
   
-  # get social contact matrix, using all features
+  # get social contact matrix using all features, without interventions
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
                                       cnt_location,cnt_matrix_features,age_breaks_text,
                                       max_part_weight = max_part_weight)
@@ -39,13 +39,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     if(any(is.na(cnt_matrix_ui$matrix))){
       fct_out$notes <- "Contact matrix contains NA, no further analysis possible."
     } else {
-      # get reference social contact matrix (no intervention)
-      cnt_matrix_ref <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                           cnt_location,
-                                           cnt_matrix_features,
-                                           age_breaks_text,
-                                           max_part_weight     = max_part_weight)
-      
       # get location specific contact matrix (no intervention)
       matrix_loc <- get_location_matrices(country,daytype,touch,duration,gender,
                                           cnt_location,
@@ -87,19 +80,17 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
               matrix_total <- matrix_total + matrix_loc[[i_loc]]$matrix * reduction_factor
               matrix_per_capita_total <- matrix_per_capita_total + matrix_loc[[i_loc]]$matrix_per_capita * reduction_factor
           } # end if-else  
-        
         } #end if-clause: does location matrix exists?
       }
 
+      # calculate impact on transmission
+      model_comparison <- compare_contact_matrices(matrix_total,cnt_matrix_ui$matrix,
+                                                   bool_transmission_param,
+                                                   age_susceptibility_text,age_infectiousness_text)
+      
       # update UI results
       cnt_matrix_ui$matrix            <- matrix_total
       cnt_matrix_ui$matrix_per_capita <- matrix_per_capita_total
-      
-      
-      # calculate impact on transmission
-      model_comparison <- compare_contact_matrices(cnt_matrix_ui$matrix,cnt_matrix_ref$matrix,
-                                                   bool_transmission_param,
-                                                   age_susceptibility_text,age_infectiousness_text)
       
       # copy notes
       if(length(fct_out$notes)>0){

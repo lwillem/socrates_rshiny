@@ -102,6 +102,12 @@ shinyServer(function(input, output, session) {
   ## UPDATE CONTENT ####
   observe({
 
+    progress <- Progress$new(session, min=1, max=15)
+    on.exit(progress$close())
+    
+    progress$set(message = 'Calculation in progress',
+                 detail = 'This may take a while...')
+    
     # combine general options
     features_select <- c(input$bool_reciprocal,
                         input$bool_weigh_age,

@@ -105,8 +105,9 @@ shinyServer(function(input, output, session) {
     progress <- Progress$new(session, min=1, max=15)
     on.exit(progress$close())
     
-    progress$set(message = 'Calculation in progress',
-                 detail = 'This may take a while...')
+    progress$set(message = 'In progress...',
+                 detail = 'Please wait.',
+                )
     
     # combine general options
     features_select <- c(input$bool_reciprocal,
@@ -205,6 +206,11 @@ shinyServer(function(input, output, session) {
       tagList("More info:", url)
     })
     
+    # create url link
+    output$project_website_data <- renderUI({
+      tagList("More info on the social contact data initiative 
+              and links to the ZENODO repositories are provided at", url, ". Data sets marked with an * contain supplementary professional contacts (SPC) imputed from aggregated statistics.")
+    })
     # add social contact data info
     output$social_contact_data <- renderDataTable({
     data_table_description

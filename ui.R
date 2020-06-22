@@ -115,8 +115,9 @@ shinyUI(pageWithSidebar(
                          The United Nation’s World Population Prospects are used as reference. Weights are constraint to a maximum of 3 to limit the influence of single participants.'),
                          dataTableOutput('table_weights')),
                 tabPanel("Data sets",
-                         dataTableOutput("social_contact_data"),
-                         helpText('More info on the data will follow soon...'))
+                         
+                         uiOutput("project_website_data"),
+                         dataTableOutput("social_contact_data"))
         )
     
   )

@@ -66,7 +66,7 @@ polymod_countries <- survey_countries(polymod,quiet = T)
 opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Peru (Grijalva 2015)',
                         'Zimbabwe (Melegaro 2013)',
-                        'France* (Beraud 2015)',
+                        'France* (Béraud 2015)',
                         'Hong Kong (Leung 2017)',
                         'Vietnam (Horby 2007)',
                         'United Kingdom (van Hoek 2012)',
@@ -74,7 +74,7 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'China (Zhang 2019)',
                         'Zambia (Dodd 2011)',
                         'South Africa (Dodd 2011)',
-                        'Belgium* 2010 (in preparation)'
+                        'Belgium* 2010 (Willem 2012)'
                        )
 
 # set country admin => filenames and country names

@@ -61,6 +61,14 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session,"daytype", choices = opt_day_type[1])
     }
     
+    # update contact duration options
+    print(opt_country_admin[flag_country,])
+    if(opt_country_admin$has_cnt_duration_data[flag_country]){
+      updateSelectInput(session,"duration", choices = opt_duration, selected = input$duration)
+    } else{
+      updateSelectInput(session,"duration", choices = opt_duration[1], selected = opt_duration[1])
+    }
+    
     #update transmission sliders, if the age groups have changed
     if(bool_update$age_breaks_text != input$age_breaks_text){
       
@@ -209,7 +217,7 @@ shinyServer(function(input, output, session) {
     # create url link
     output$project_website_data <- renderUI({
       tagList("More info on the social contact data initiative 
-              and links to the ZENODO repositories are provided at", url, ". Data sets marked with an * contain supplementary professional contacts (SPC) imputed from aggregated statistics.")
+              and links to the ZENODO repositories are provided at", url, " and data sets marked with an * contain supplementary professional contacts (SPC) imputed from aggregated statistics.")
     })
     # add social contact data info
     output$social_contact_data <- renderDataTable({

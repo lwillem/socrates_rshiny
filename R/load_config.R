@@ -89,16 +89,20 @@ opt_country_admin <- data.frame(name = opt_country,
                                              'Belgium'),
                                 stringsAsFactors = FALSE)
 
-# add with holiday and dayofweek boolean
+# add with holiday boolean
 opt_country_admin$has_holiday_data <- TRUE
 opt_country_admin$has_holiday_data[opt_country_admin$country %in% c('Italy','Netherlands','Poland',
                                                                     'Russia','South Africa','Vietnam',
                                                                     'Zambia','Zimbabwe')] <- FALSE
 opt_country_admin$has_holiday_data[opt_country_admin$dataset %in% c('hong_kong')] <- FALSE
 
-# complete with holiday boolean
+# add dayofweek boolean
 opt_country_admin$has_dayofweek_data <- TRUE
 opt_country_admin$has_dayofweek_data[opt_country_admin$country %in% c('Russia')] <- FALSE
+
+# add contact duration boolean
+opt_country_admin$has_cnt_duration_data <- TRUE
+opt_country_admin$has_cnt_duration_data[opt_country_admin$country %in% c('Zimbabwe')] <- FALSE
 
 # add "supplementary professional contacts" boolean
 opt_country_admin$has_suppl_professional_cnt_data <- FALSE

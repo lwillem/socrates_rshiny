@@ -23,18 +23,19 @@ data_description[opt_country[grepl('Russia',opt_country)]] <- 'Litvinova M, Liu 
 data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- paste(data_description[opt_country[grepl('Zimbabwe',opt_country)]],'We selected one diary per participant.')
 
 # add info for France
-data_description[opt_country[grepl('France\\*',opt_country)]] <- paste(data_description[opt_country[grepl('France\\*',opt_country)]],'We selected one diary per participant and included SPC.')
+data_description[opt_country[grepl('France',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'We selected one diary per participant.')
 
 # add info for Belgium2010
-data_description[opt_country[grepl('Belgium\\* 2010',opt_country)]] <- 'The manuscript describing this survey in detail is in preparation and will be published soon. Currenlty, see Willem et al (2012, PLoS ONE) for more info.'
+data_description[opt_country[grepl('Belgium\\* 2010',opt_country)]] <- 'This dataset contains supplementary professional contacts (SPC). The manuscript describing this survey in detail is in preparation and will be published soon. Willem et al (2012, PLoS ONE) is the first publicaiton using this survey data.'
 
 # reformat to table
 data_description <- data.frame('Name' = names(data_description),
                                'Description' = unlist(data_description))
-# 
-# # add column names
-# names(data_description) <- c('Data set','Description')
 
+# sort
+data_description <- data_description[order(as.character(data_description$Name)),]
+
+# make data table
 data_table_description <- setDT(data_description)
 
 data_table_description

@@ -62,7 +62,6 @@ shinyServer(function(input, output, session) {
     }
     
     # update contact duration options
-    print(opt_country_admin[flag_country,])
     if(opt_country_admin$has_cnt_duration_data[flag_country]){
       updateSelectInput(session,"duration", choices = opt_duration, selected = input$duration)
     } else{
@@ -217,7 +216,7 @@ shinyServer(function(input, output, session) {
     # create url link
     output$project_website_data <- renderUI({
       tagList("More info on the social contact data initiative 
-              and links to the ZENODO repositories are provided at", url, " and data sets marked with an * contain supplementary professional contacts (SPC) imputed from aggregated statistics.")
+              and links to the ZENODO repositories are provided at", url)
     })
     # add social contact data info
     output$social_contact_data <- renderDataTable({

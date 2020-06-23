@@ -20,139 +20,58 @@ library(socialmixr)
 #saveRDS(survey_meta_data,file='data/survey_meta_data.rds')
 survey_meta_data <- readRDS('data/survey_meta_data.rds')
 
-# create tag: country + publiation
-survey_meta_data$survey_name <- c('Zambia & South Africa (Dodd 2011)',
-                                  'Russia (Litvinova 2019)',
-                                  'Hong Kong (Leung 2015)',
-                                  'Peru (Grijalva 2011)',
-                                  'Vietnam (Horby 2007)',
-                                  'POLYMOD (Mossong 2007)',
-                                  'China (Zhang 2019)',
-                                  'Zimbabwe (Melegaro 2013)',
-                                  'France (Béraud 2012)')
-                                  # 'United Kingdom (van Hoek 2012)',
-                                  
-# duplicate the zambia & South Africa reference... to split them
-survey_meta_data <- rbind(survey_meta_data,survey_meta_data[1,],survey_meta_data[1,])
-
-# list all datasets
-survey_opt <- c('zambia_south_africa','russia','hong_kong',
-                'peru','vietnam',"polymod",'china','zimbabwe',
-                'france','zambia','south_africa')
-                # 'uk'
-
-## ZENODO DATA ----  
-
-ind_data_zenodo <- seq(length(survey_opt))
-ind_data_zenodo <- ind_data_zenodo[-8] # temporarly remove Zimbabwe (use local data set)
-ind_data_zenodo <- ind_data_zenodo[-9] # temporarly remove France (use local data set)
+# add colum for country
+survey_meta_data[grepl('Peru',title),country:='peru']
+survey_meta_data[grepl('Hong Kong',title),country:='hong_kong']
+survey_meta_data[grepl('Russia',title),country:='russia']
+survey_meta_data[grepl('Vietnam',title),country:='vietnam']
+survey_meta_data[grepl('POLYMOD',title),country:='polymod']
+survey_meta_data[grepl('CODA',title),country:='zambia_south_africa']
+survey_meta_data[grepl('China',title),country:='china']
+survey_meta_data[grepl('Zimbabwe',title),country:='zimbabwe']
+survey_meta_data[grepl('France',title),country:='france']
+survey_meta_data[grepl('UK',title),country:='uk']
 
 # get dataset from ZENODO and save as RDS
-i <- 8
-for(i in ind_data_zenodo){
+i <- 10
+for(i in 1:nrow(survey_meta_data)){
   
   # load data
   survey_data <- get_survey(survey_meta_data$url[i])
   
+  if(survey_meta_data$country[i] == 'france'){
 
-  if(survey_opt[i] == 'zimbabwe'){
+    # note: one participant could have participated 2x in wave 1 and 2x in wave 2
+    # ==>> and can contain "surveyDay == 1" twice
 
-    # select first
+    # create diary id
+    survey_data$contacts[,diary_id:= paste(part_id,wave,studyDay,sep='_') ]
+    survey_data$participants[,diary_id:= paste(part_id,wave,studyDay,sep='_') ]
+    
+    # Conservative approach: select one diary per participant
+    table(table(survey_data$participants$part_id))
+    part_data              <- survey_data$participants
+    part_data              <- part_data[order(part_id),]
+    part_data              <- part_data[!duplicated(part_id), ]
+    table(table(part_data$part_id))
+    
+    # subset data
+    survey_data$participants     <- survey_data$participants[diary_id %in% part_data$diary_id,]
+    survey_data$contacts         <- survey_data$contacts[diary_id %in% part_data$diary_id,]
+
+  }
+
+  if(survey_meta_data$country[i] == 'zimbabwe'){
+
+    # select first survey day
     survey_data$participants     <- survey_data$participants[survey_data$participants$studyDay == 1,]
     survey_data$contacts         <- survey_data$contacts[survey_data$contacts$studyDay == 1,]
-    
-    #part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek')])
-    #survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
-    
   }
   
   # save as .rds file
-  saveRDS(survey_data, file=paste0('data/survey_',survey_opt[i],'.rds'))
+  saveRDS(survey_data, file=paste0('data/survey_',survey_meta_data$country[i],'.rds'))
 }
 
-## ADJUSTED DATA  ----
-# note: to be updated on Zenodo
-
-# finished
-library(shiny)
-library(data.table)
-library(httr)
-library(jsonlite)
-library(XML)
-library(curl)
-source('R/socrates_main.R')
-
-#data_dir  <- '../socrates_covid/data/datasets_full/'
-#data_dir  <- '../socrates_covid/data/datasets_28_Feb/'
-data_dir  <- '../socrates_covid/data/datasets_23_May/'
-
-survey_opt <- dir(data_dir)                        # get file and directory names
-survey_opt <- survey_opt[!grepl('\\.',survey_opt)] # remove file names (with an extension)
-
-survey_opt <- survey_opt[!grepl('Belgium',survey_opt)] # remove Belgium2010 data (for now)
-survey_opt <- survey_opt[!grepl('France',survey_opt)] # remove French data (for now)
-
-survey_opt
-
-i <-2
-for(i in 1:length(survey_opt)){
-  survey_data <- get_survey(survey = dir(file.path(data_dir,survey_opt[i]),pattern = '.csv',full.names = T),quiet = T)
-  
-  
-  if(tolower(survey_opt[i]) == 'zimbabwe'){
-    names(survey_data$contacts)
-    bool_day_one <- grepl('-1',survey_data$contacts$diary_id)
-    table(bool_day_one)
-    survey_data$contacts <- survey_data$contacts[bool_day_one,]
-    
-    survey_data$participants
-    bool_day_one <- grepl('-1',survey_data$participants$diary_id)
-    table(bool_day_one)
-    survey_data$participants<- survey_data$participants[bool_day_one,]
-    
-    part_date <- unique(survey_data$contacts[,c('part_id','day','month','year','dayofweek')])
-    survey_data$participants <- merge(survey_data$participants,part_date,by='part_id')
-    
-    names(survey_data$contacts)
-    summary(survey_data$contacts)
-    
-    lapply(survey_data,dim)
-   }
-  
- if(grepl('france',tolower(survey_opt[i]))){
-
-    # Conservative approach: select one diary per participant
-    part_data          <- survey_data$participants
-    part_data          <- part_data[order(part_data$sday_id),]
-    part_data          <- part_data[!duplicated(part_data$part_id), ]
-    selection_diary_id <- part_data$diary_id
-
-    # create subset for each data set
-    survey_data$participants     <- survey_data$participants[survey_data$participants$diary_id %in% selection_diary_id,]
-    survey_data$contacts         <- survey_data$contacts[survey_data$contacts$diary_id %in% selection_diary_id,]
-
-    # convert holiday variable into boolean
-    survey_data$participants$holiday <- survey_data$participants$holiday == 1
-    
-    # convert is_imputed variable into boolean
-    survey_data$contacts$is_imputed <- survey_data$contacts$is_imputed == 'Y'
-    
-    # converst location columns into boolean
-    col_names <- paste0('cnt_',tolower(opt_location))
-    survey_data$contacts[, cnt_home:= cnt_home=="true",]
-    survey_data$contacts[, cnt_work:= cnt_home=="true",]
-    survey_data$contacts[, cnt_school:= cnt_home=="true",]
-    survey_data$contacts[, cnt_transport:= cnt_transport=="true",]
-    survey_data$contacts[, cnt_leisure:= cnt_leisure=="true",]
-    survey_data$contacts[, cnt_otherplace:= cnt_otherplace=="true",]
-    survey_data$contacts[,..col_names]  
-    
- }
-  
-  # store survey object
-  saveRDS(survey_data, file=paste0('data/survey_',tolower(survey_opt[i]),'.rds'))
-  
-}
 
 
 # ## COMPARE DATA SETS ----

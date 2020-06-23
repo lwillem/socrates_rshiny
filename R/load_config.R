@@ -66,7 +66,7 @@ polymod_countries <- survey_countries(polymod,quiet = T)
 opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Peru (Grijalva 2015)',
                         'Zimbabwe (Melegaro 2013)',
-                        'France* (Béraud 2015)',
+                        'France (Béraud 2015)',
                         'Hong Kong (Leung 2017)',
                         'Vietnam (Horby 2007)',
                         'United Kingdom (van Hoek 2012)',
@@ -79,7 +79,7 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
 
 # set country admin => filenames and country names
 opt_country_admin <- data.frame(name = opt_country,
-                                dataset = c(rep("polymod",8),'peru','zimbabwe','france_spc',
+                                dataset = c(rep("polymod",8),'peru','zimbabwe','france',
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
                                             'belgium2010'),

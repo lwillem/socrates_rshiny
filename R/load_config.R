@@ -79,7 +79,7 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
 
 # set country admin => filenames and country names
 opt_country_admin <- data.frame(name = opt_country,
-                                dataset = c(rep("polymod",8),'peru','zimbabwe','france',
+                                dataset = c(rep("polymod",8),'peru','zimbabwe','france_spc',
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
                                             'belgium2010'),
@@ -102,7 +102,11 @@ opt_country_admin$has_dayofweek_data[opt_country_admin$country %in% c('Russia')]
 
 # add contact duration boolean
 opt_country_admin$has_cnt_duration_data <- TRUE
-opt_country_admin$has_cnt_duration_data[opt_country_admin$country %in% c('Zimbabwe')] <- FALSE
+opt_country_admin$has_cnt_duration_data[opt_country_admin$country %in% c('Zimbabwe','Russia')] <- FALSE
+
+# add contact intensity boolean
+opt_country_admin$has_cnt_touch_data <- TRUE
+opt_country_admin$has_cnt_touch_data[grepl('Dodd',opt_country_admin$name)] <- FALSE
 
 # add "supplementary professional contacts" boolean
 opt_country_admin$has_suppl_professional_cnt_data <- FALSE

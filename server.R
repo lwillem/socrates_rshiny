@@ -68,6 +68,13 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session,"duration", choices = opt_duration[1], selected = opt_duration[1])
     }
     
+    # update contact intensity options
+    if(opt_country_admin$has_cnt_touch_data[flag_country]){
+      updateSelectInput(session,"touch", choices = opt_touch, selected = input$touch)
+    } else{
+      updateSelectInput(session,"touch", choices = opt_touch[1], selected = opt_touch[1])
+    }
+    
     #update transmission sliders, if the age groups have changed
     if(bool_update$age_breaks_text != input$age_breaks_text){
       

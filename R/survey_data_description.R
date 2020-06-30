@@ -26,7 +26,7 @@ data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- paste(data_descr
 data_description[opt_country[grepl('France',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'We selected one diary per participant.')
 
 # add info for Belgium2010
-data_description[opt_country[grepl('Belgium\\* 2010',opt_country)]] <- 'This dataset contains supplementary professional contacts (SPC). The manuscript describing this survey in detail is in preparation and will be published soon. Willem et al (2012, PLoS ONE) is the first publicaiton using this survey data.'
+data_description[opt_country[grepl('Belgium\\* 2010',opt_country)]] <- 'This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member. The manuscript describing this survey in detail is in preparation and will be published soon. Willem et al (2012, PLoS ONE) is the first publicaiton using this survey data.'
 
 # reformat to table
 data_description <- data.frame('Name' = names(data_description),

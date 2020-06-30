@@ -170,6 +170,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   bool_weigh_age_group <- opt_matrix_features[[2]]  %in% cnt_matrix_features
   bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features
   bool_suppl_professional_cnt <- opt_matrix_features[[4]]  %in% cnt_matrix_features
+  bool_hhmatrix_selection    <- opt_matrix_features[[5]]  %in% cnt_matrix_features
   
   # get specific social_mixr survey object
   survey_object <- get_survey_object(country      = country,
@@ -178,8 +179,9 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      duration     = duration,
                                      gender       = gender,
                                      cnt_location = cnt_location,
-                                     bool_reciprocal  = bool_reciprocal,
-                                     bool_suppl_professional_cnt =  bool_suppl_professional_cnt)
+                                     bool_reciprocal   = bool_reciprocal,
+                                     bool_suppl_professional_cnt =  bool_suppl_professional_cnt,
+                                     bool_hhmatrix_selection = bool_hhmatrix_selection)
   
   if(nrow(survey_object$participants)==0){
     return(list(matrix=NA,
@@ -208,7 +210,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   # add per capita contact rate (if demography data)
   if('demography' %in% names(matrix_out) && !any(is.na(matrix_out$matrix))){
     num_age_groups <- nrow(matrix_out$demography)
-    pop_matrix <- matrix(rep(matrix_out$demography$population,num_age_groups),ncol=num_age_groups,byrow = T)
+    pop_matrix     <- matrix(rep(matrix_out$demography$population,num_age_groups),ncol=num_age_groups,byrow = T)
     matrix_out$matrix_per_capita <- matrix_out$matrix / pop_matrix
   }
   
@@ -232,6 +234,7 @@ get_survey_object <- function(country,
                               cnt_location,
                               bool_reciprocal,
                               bool_suppl_professional_cnt,
+                              bool_hhmatrix_selection,
                               missing.contact.age = "remove",  # adopted from socialmixr package
                               quiet = FALSE){
   
@@ -395,6 +398,14 @@ get_survey_object <- function(country,
   }
 
   #__________________________________________________________________________
+  
+  # household members: get matrix with only household members? ####
+  if('is_hh_member' %in% names(data_cnt) && !is.na(bool_hhmatrix_selection) && 
+     bool_hhmatrix_selection == TRUE){
+    flag_cnt_adapt                       <- data_cnt$cnt_home == 1 & data_cnt$is_hh_member == FALSE
+    data_cnt$cnt_home[flag_cnt_adapt]    <- 0
+    data_cnt$cnt_leisure[flag_cnt_adapt] <- 1
+  }
   
   #select location ####
   if(length(cnt_location)==0){

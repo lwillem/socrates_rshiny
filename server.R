@@ -21,7 +21,7 @@ shinyServer(function(input, output, session) {
     opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]
   })
   outputOptions(output, "panelStatus", suspendWhenHidden = FALSE)
-  
+
   # Update UI panel(s) ####
   observe({
   
@@ -30,6 +30,13 @@ shinyServer(function(input, output, session) {
     show_spc_panel <- opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]
     if(!show_spc_panel){
       updateCheckboxInput(session,"bool_spc", value = TRUE)
+    }
+    
+    # if the HH-member checkbox is not shown (nor used), set as "FALSE"
+    # MESSAGE ==>> "selection is never excluded if the checkbox is not shown"
+    show_hhmember_panel <- opt_country_admin$has_hhmember_cnt_data[opt_country_admin$name == as.character(input$country)]
+    if(!show_hhmember_panel){
+      updateCheckboxInput(session,"bool_hhmember_selection", value = FALSE)
     }
     
     # Update whether the location-specific checkboxes are displayed
@@ -127,7 +134,8 @@ shinyServer(function(input, output, session) {
     features_select <- c(input$bool_reciprocal,
                         input$bool_weigh_age,
                         input$bool_weigh_week,
-                        input$bool_spc)
+                        input$bool_spc,
+                        input$bool_hhmember_selection)
 
     # parse transmission parameters
     age_susceptibility_text    <- parse_input_list(input,'s_susceptibility')
@@ -204,7 +212,7 @@ shinyServer(function(input, output, session) {
                                     duration     = input$duration,
                                     gender       = input$gender,
                                     cnt_location = input$cnt_location,
-                                    cnt_matrix_features = cnt_matrix_features[features_select],
+                                    cnt_matrix_features = opt_matrix_features[features_select],
                                     age_breaks_text     = input$age_breaks_text,
                                     max_part_weight     = max_part_weight,
                                     bool_transmission_param = input$bool_transmission_param,

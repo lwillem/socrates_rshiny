@@ -55,7 +55,12 @@ shinyUI(pageWithSidebar(
                          # SPC (optional)
                          conditionalPanel(
                            condition = 'output.panelStatus',
-                           checkboxInput("bool_spc", "Supplemental professional contacts (SPC)",value = TRUE)),
+                           checkboxInput("bool_spc", "Include supplemental professional contacts (SPC)",value = TRUE)),
+                         
+                         # HH members (optional)
+                         conditionalPanel(
+                           condition = 'output.panelStatus',
+                           checkboxInput("bool_hhmember_selection", "Set contacts at 'Home' with non-household members as 'leisure contacts'",value = FALSE)),
                          
                          checkboxInput("bool_location", "Include all locations",value = TRUE),
                          conditionalPanel(

@@ -57,7 +57,9 @@ opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes
 opt_location          <- c("Home","Work","School","Transport","Leisure","Otherplace")
 
 # contact reformatting and weights
-opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend","Suppl. professional contacts (see 'Data sets' tab)")
+opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend",
+                           "Suppl. professional contacts (see 'Data sets' tab)",
+                           "Set contacts at Home with non-household members as Leisure")
 
 # get polymod countries
 polymod_countries <- survey_countries(polymod,quiet = T)
@@ -111,6 +113,11 @@ opt_country_admin$has_cnt_touch_data[grepl('Dodd',opt_country_admin$name)] <- FA
 # add "supplementary professional contacts" boolean
 opt_country_admin$has_suppl_professional_cnt_data <- FALSE
 opt_country_admin$has_suppl_professional_cnt_data[grepl('\\*',opt_country_admin$name)] <- TRUE
+
+# add "has household member contact info" boolean
+opt_country_admin$has_hhmember_cnt_data <- FALSE
+opt_country_admin$has_hhmember_cnt_data[grepl('\\*',opt_country_admin$name)] <- TRUE
+
 
 # complete filenames with relative path
 opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')

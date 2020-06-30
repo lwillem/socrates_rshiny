@@ -83,6 +83,7 @@ db_contacts$phys_contact    <- ifelse(cnt_data$cnt_touch == 'Y',1,2)
 db_contacts$frequency_multi <- cnt_data$cnt_frequency
 db_contacts$duration_multi  <- cnt_data$cnt_duration
 db_contacts$cnt_gender      <- cnt_data$cnt_sex
+db_contacts$is_hh_member    <- cnt_data$cnt_hh_member == 'Y'
 
 names(cnt_data)
 names(db_contacts)

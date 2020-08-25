@@ -76,7 +76,8 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'China (Zhang 2019)',
                         'Zambia (Dodd 2011)',
                         'South Africa (Dodd 2011)',
-                        'Belgium* 2010 (Willem 2012)'
+                        'Belgium* 2010 (Willem 2012)',
+                        paste('BE CoMix wave ',1:6,' (Coletti 2020)')
                        )
 
 # set country admin => filenames and country names
@@ -84,11 +85,13 @@ opt_country_admin <- data.frame(name = opt_country,
                                 dataset = c(rep("polymod",8),'peru','zimbabwe','france_spc',
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
-                                            'belgium2010'),
+                                            'belgium2010',
+                                            paste0('belgium2020_CoMix_wave_',1:6)),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',
                                              'Russia','China','Zambia','South Africa',
-                                             'Belgium'),
+                                             'Belgium',
+                                             rep('Belgium',6)),
                                 stringsAsFactors = FALSE)
 
 # add with holiday boolean
@@ -118,6 +121,12 @@ opt_country_admin$has_suppl_professional_cnt_data[grepl('\\*',opt_country_admin$
 opt_country_admin$has_hhmember_cnt_data <- FALSE
 opt_country_admin$has_hhmember_cnt_data[grepl('\\*',opt_country_admin$name)] <- TRUE
 
+## CoMix adjustments
+sel_comix <- grepl('CoMix',opt_country_admin$name)
+names(opt_country_admin)
+opt_country_admin$has_holiday_data[sel_comix]      <- FALSE
+opt_country_admin$has_cnt_touch_data[sel_comix]    <- FALSE
+opt_country_admin$has_cnt_duration_data[sel_comix] <- FALSE
 
 # complete filenames with relative path
 opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')

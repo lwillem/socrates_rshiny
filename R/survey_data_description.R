@@ -28,6 +28,10 @@ data_description[opt_country[grepl('France',opt_country)]] <- paste(data_descrip
 # add info for Belgium2010
 data_description[opt_country[grepl('Belgium\\* 2010',opt_country)]] <- 'This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member. The manuscript describing this survey in detail is in preparation and will be published soon. Willem et al (2012, PLoS ONE) is the first publicaiton using this survey data.'
 
+# add info for CoMix-BE
+data_description['BE CoMix (Coletti 2020)'] <- 'Coletti P, Wambua J, Gimma A, Willem L, Vercruysse S, Vanhoutte B, Jarvis CI, van Zandvoort K, Edmunds J, Beutels P, Hens N (2020) CoMix: comparing mixing patterns in the Belgian population during and after lockdown. medRxiv.'
+
+
 # reformat to table
 data_description <- data.frame('Name' = names(data_description),
                                'Description' = unlist(data_description))

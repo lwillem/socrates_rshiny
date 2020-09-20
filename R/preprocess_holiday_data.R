@@ -28,6 +28,8 @@ data.frame(iso3 = 'BEL',
                     seq(as.Date("2010-12-25"), as.Date("2011-01-09"), by="days")) # Winter break
 ) -> holiday_BEL
 
+#TODO: add 2020 holidays
+
 #2. Germany: January-February, May-July 2006
 #https://www.feiertagskalender.ch/ferien.php?geo=3062&jahr=2006&klasse=0&hl=en
 data.frame(iso3='DEU',

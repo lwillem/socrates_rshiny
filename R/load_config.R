@@ -64,6 +64,9 @@ opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend",
 # get polymod countries
 polymod_countries <- survey_countries(polymod,quiet = T)
 
+# number of BE COMIX datasets
+num_BE_comix <- 8
+
 # add other dataset (and reference)
 opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Peru (Grijalva 2015)',
@@ -77,7 +80,7 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Zambia (Dodd 2011)',
                         'South Africa (Dodd 2011)',
                         'Belgium* 2010 (Willem 2012)',
-                        paste('BE CoMix wave ',1:6,' (Coletti 2020)')
+                        paste('BE CoMix wave ',1:num_BE_comix,' (Coletti 2020)')
                        )
 
 # set country admin => filenames and country names
@@ -86,12 +89,12 @@ opt_country_admin <- data.frame(name = opt_country,
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
                                             'belgium2010',
-                                            paste0('belgium2020_CoMix_wave_',1:6)),
+                                            paste0('belgium2020_CoMix_wave_',1:num_BE_comix)),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',
                                              'Russia','China','Zambia','South Africa',
                                              'Belgium',
-                                             rep('Belgium',6)),
+                                             rep('Belgium',num_BE_comix)),
                                 stringsAsFactors = FALSE)
 
 # add with holiday boolean

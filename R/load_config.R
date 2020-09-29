@@ -80,7 +80,7 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Zambia (Dodd 2011)',
                         'South Africa (Dodd 2011)',
                         'Belgium* 2010 (Willem 2012)',
-                        paste('BE CoMix wave ',1:num_BE_comix,' (Coletti 2020)')
+                        paste0('BE CoMix wave ',1:num_BE_comix,' (Coletti 2020)')
                        )
 
 # set country admin => filenames and country names
@@ -139,7 +139,7 @@ opt_country <- opt_country[!grepl('van Hoek',opt_country)]
 #opt_country <- opt_country[!grepl('Beraud',opt_country)]
 #opt_country <- opt_country[!grepl('Zimbabwe',opt_country)]
 opt_country <- opt_country[!grepl('China',opt_country)]
-
+opt_country <- opt_country[!grepl('CoMix',opt_country)]
 
 # reformat and sort opt_country
 opt_country <- sort(opt_country)

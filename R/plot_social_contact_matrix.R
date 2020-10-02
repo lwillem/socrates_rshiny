@@ -33,7 +33,7 @@ plot_cnt_matrix <- function(mij,plot_title_extra = ''){
   axis(1, at=plt_ticks, labels = c(colnames(mij)),cex.axis=0.9,tick = FALSE)
   
   # format results (rounding/scientific)
-  if(any(mij>1)){
+  if(any(max(mij,na.rm=T)>1)){
     mij <- round(mij,digits=format_num_digits)
   } else{
     mij <- format(mij,digits = format_num_digits)

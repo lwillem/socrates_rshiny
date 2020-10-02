@@ -79,9 +79,12 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'China (Zhang 2019)',
                         'Zambia (Dodd 2011)',
                         'South Africa (Dodd 2011)',
-                        'Belgium* 2010 (Willem 2012)',
-                        paste0('BE CoMix wave ',1:num_BE_comix,' (Coletti 2020)')
+                        'Belgium 2010* (Willem 2012)',
+                        'Belgium 2020 CoMix (Coletti 2020)'
                        )
+
+# fix for Belgium polymod
+opt_country[grepl('Belgium \\(',opt_country)] <- "Belgium 2006 (Mossong 2008)"
 
 # set country admin => filenames and country names
 opt_country_admin <- data.frame(name = opt_country,
@@ -89,12 +92,12 @@ opt_country_admin <- data.frame(name = opt_country,
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
                                             'belgium2010',
-                                            paste0('belgium2020_CoMix_wave_',1:num_BE_comix)),
+                                            'belgium2020_comix'),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',
                                              'Russia','China','Zambia','South Africa',
                                              'Belgium',
-                                             rep('Belgium',num_BE_comix)),
+                                             'Belgium'),
                                 stringsAsFactors = FALSE)
 
 # add with holiday boolean
@@ -128,7 +131,7 @@ opt_country_admin$has_hhmember_cnt_data[grepl('\\*',opt_country_admin$name)] <- 
 sel_comix <- grepl('CoMix',opt_country_admin$name)
 names(opt_country_admin)
 opt_country_admin$has_holiday_data[sel_comix]      <- FALSE
-opt_country_admin$has_cnt_touch_data[sel_comix]    <- FALSE
+#opt_country_admin$has_cnt_touch_data[sel_comix]    <- FALSE
 opt_country_admin$has_cnt_duration_data[sel_comix] <- FALSE
 
 # complete filenames with relative path
@@ -139,7 +142,7 @@ opt_country <- opt_country[!grepl('van Hoek',opt_country)]
 #opt_country <- opt_country[!grepl('Beraud',opt_country)]
 #opt_country <- opt_country[!grepl('Zimbabwe',opt_country)]
 opt_country <- opt_country[!grepl('China',opt_country)]
-opt_country <- opt_country[!grepl('CoMix',opt_country)]
+#opt_country <- opt_country[!grepl('CoMix',opt_country)]
 
 # reformat and sort opt_country
 opt_country <- sort(opt_country)

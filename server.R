@@ -82,6 +82,13 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session,"touch", choices = opt_touch[1], selected = opt_touch[1])
     }
     
+    # update wave  options
+    if(opt_country_admin$has_waves[flag_country]){
+      updateSelectInput(session,"wave", choices = opt_waves[1:opt_country_admin$num_waves[flag_country]], selected = input$wave)
+    } else{
+      updateSelectInput(session,"wave", choices = opt_waves[1], selected = opt_waves[1])
+    }
+    
     #update transmission sliders, if the age groups have changed
     if(bool_update$age_breaks_text != input$age_breaks_text){
       
@@ -163,7 +170,8 @@ shinyServer(function(input, output, session) {
                                        bool_transmission_param = input$bool_transmission_param,
                                        age_susceptibility_text = age_susceptibility_text,
                                        age_infectiousness_text = age_infectiousness_text,
-                                       cnt_reduction           = cnt_reduction)
+                                       cnt_reduction           = cnt_reduction,
+                                       wave                    = input$wave)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
@@ -219,7 +227,8 @@ shinyServer(function(input, output, session) {
                                     age_susceptibility_text = age_susceptibility_text,
                                     age_infectiousness_text = age_infectiousness_text,
                                     cnt_reduction           = cnt_reduction,
-                                    filename = file)
+                                    wave                    = input$wave,
+                                    filename                = file)
       }
     )
     

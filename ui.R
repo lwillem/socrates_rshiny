@@ -29,6 +29,10 @@ shinyUI(pageWithSidebar(
     selectInput("country", "Country",
                 opt_country),
     
+    # waves (optional)
+    selectInput("wave", "Wave",
+                opt_waves),
+    
     textInput(inputId="age_breaks_text",
               label="Age breaks (comma delimited)",
               value=opt_age_breaks),

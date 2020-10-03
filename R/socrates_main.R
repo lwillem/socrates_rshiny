@@ -20,12 +20,14 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
                                         max_part_weight,
                                         bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
-                                        cnt_reduction){
+                                        cnt_reduction,
+                                        wave){
   
   # get social contact matrix using all features, without interventions
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
                                       cnt_location,cnt_matrix_features,age_breaks_text,
-                                      max_part_weight = max_part_weight)
+                                      max_part_weight = max_part_weight,
+                                      wave)
   
   # CLI
   fct_out <- cnt_matrix_ui
@@ -156,7 +158,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
 ## MAIN FUNCTION ####
 get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                cnt_location,cnt_matrix_features,age_breaks_text,
-                               max_part_weight){
+                               max_part_weight,wave){
   
   # parse age intervals
   age_breaks_num <- parse_age_values(age_breaks_text,bool_unique = TRUE)
@@ -181,7 +183,8 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      cnt_location = cnt_location,
                                      bool_reciprocal   = bool_reciprocal,
                                      bool_suppl_professional_cnt =  bool_suppl_professional_cnt,
-                                     bool_hhmatrix_selection = bool_hhmatrix_selection)
+                                     bool_hhmatrix_selection = bool_hhmatrix_selection,
+                                     wave         = wave)
   
   if(nrow(survey_object$participants)==0){
     return(list(matrix=NA,
@@ -236,6 +239,7 @@ get_survey_object <- function(country,
                               bool_suppl_professional_cnt,
                               bool_hhmatrix_selection,
                               missing.contact.age = "remove",  # adopted from socialmixr package
+                              wave,
                               quiet = FALSE){
   
   # select dataset filename and load #####
@@ -368,6 +372,21 @@ get_survey_object <- function(country,
     }
   }
   
+  ## select wave (optional) ----
+  if(wave != opt_waves[[1]]){
+    if(!is.null(data_part$wave) & wave %in% data_part$wave){
+      print(table(data_part$wave))
+      print(table(data_part$wave == wave))
+      
+      bool_part_wave <- data_part$wave == wave
+      data_part <- data_part[bool_part_wave,]
+      
+      bool_cnt_wave <- data_cnt$part_id %in%  data_part$part_id
+      data_cnt  <- data_cnt[bool_cnt_wave,]
+      print(paste('select wave', wave))
+      print(table(data_part$wave))
+    }
+  }
   
   #__________________________________________________________________________
   # adjust location data: missing and multiple locations ####

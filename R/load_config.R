@@ -105,7 +105,7 @@ opt_country_admin$has_holiday_data <- TRUE
 opt_country_admin$has_holiday_data[opt_country_admin$country %in% c('Italy','Netherlands','Poland',
                                                                     'Russia','South Africa','Vietnam',
                                                                     'Zambia','Zimbabwe')] <- FALSE
-opt_country_admin$has_holiday_data[opt_country_admin$dataset %in% c('hong_kong')] <- FALSE
+opt_country_admin$has_holiday_data[opt_country_admin$dataset %in% c('hong_kong,belgium2020_comix')] <- FALSE
 
 # add dayofweek boolean
 opt_country_admin$has_dayofweek_data <- TRUE
@@ -114,6 +114,7 @@ opt_country_admin$has_dayofweek_data[opt_country_admin$country %in% c('Russia')]
 # add contact duration boolean
 opt_country_admin$has_cnt_duration_data <- TRUE
 opt_country_admin$has_cnt_duration_data[opt_country_admin$country %in% c('Zimbabwe','Russia')] <- FALSE
+opt_country_admin$has_cnt_duration_data[opt_country_admin$dataset %in% c('belgium2020_comix')] <- FALSE
 
 # add contact intensity boolean
 opt_country_admin$has_cnt_touch_data <- TRUE
@@ -127,12 +128,14 @@ opt_country_admin$has_suppl_professional_cnt_data[grepl('\\*',opt_country_admin$
 opt_country_admin$has_hhmember_cnt_data <- FALSE
 opt_country_admin$has_hhmember_cnt_data[grepl('\\*',opt_country_admin$name)] <- TRUE
 
-## CoMix adjustments
-sel_comix <- grepl('CoMix',opt_country_admin$name)
-names(opt_country_admin)
-opt_country_admin$has_holiday_data[sel_comix]      <- FALSE
-#opt_country_admin$has_cnt_touch_data[sel_comix]    <- FALSE
-opt_country_admin$has_cnt_duration_data[sel_comix] <- FALSE
+# add "has wave info" boolean
+opt_country_admin$has_waves <- FALSE
+opt_country_admin$has_waves[grepl('comix',opt_country_admin$dataset)] <- TRUE
+opt_country_admin$has_waves[grepl('france',opt_country_admin$dataset)] <- TRUE
+opt_country_admin$num_waves <- 1
+opt_country_admin$num_waves[grepl('comix',opt_country_admin$dataset)] <- 8
+opt_country_admin$num_waves[grepl('france',opt_country_admin$dataset)] <- 2
+
 
 # complete filenames with relative path
 opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')
@@ -142,10 +145,12 @@ opt_country <- opt_country[!grepl('van Hoek',opt_country)]
 #opt_country <- opt_country[!grepl('Beraud',opt_country)]
 #opt_country <- opt_country[!grepl('Zimbabwe',opt_country)]
 opt_country <- opt_country[!grepl('China',opt_country)]
-#opt_country <- opt_country[!grepl('CoMix',opt_country)]
 
 # reformat and sort opt_country
 opt_country <- sort(opt_country)
+
+# waves
+opt_waves <- c("All waves",1:max(opt_country_admin$num_waves),na.rm=T) # 0 is 'no'
 
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)
@@ -155,7 +160,7 @@ names(opt_duration) <- unlist(opt_duration)
 names(opt_country)  <- unlist(opt_country)
 names(opt_location) <- unlist(opt_location)
 names(opt_matrix_features) <- unlist(opt_matrix_features)
-
+names(opt_waves)    <- unlist(opt_waves)
 
 #__________________________#
 ##  WEIGHTS             ####

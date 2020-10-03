@@ -11,7 +11,7 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
                                       cnt_location,cnt_matrix_features,age_breaks_text,
                                       max_part_weight,
                                       bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
-                                      cnt_reduction, filename){
+                                      cnt_reduction, wave, filename){
   
   
   
@@ -58,7 +58,8 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
                                              bool_transmission_param = bool_transmission_param,
                                              age_susceptibility_text = age_susceptibility_text,
                                              age_infectiousness_text = age_infectiousness_text,
-                                             cnt_reduction           =  cnt_reduction)
+                                             cnt_reduction           = cnt_reduction,
+                                             wave                    = wave)
     )
     # add matrix to list
     location_matrices[i_loc]            <- list(out_all$matrix)

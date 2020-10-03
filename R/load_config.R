@@ -183,3 +183,12 @@ url        <- a("socialcontactdata.org", href="http://www.socialcontactdata.org"
 # number of digits to round
 format_num_digits <- 2
 
+#__________________________#
+##  FORMATTING          ####
+#__________________________#
+
+rng_seed <- 20200101
+method_estimated_contact_age <- 'mean'
+#method_estimated_contact_age <- 'sample'
+
+

@@ -202,6 +202,9 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
     )
   }
   
+  # (re)set rng seed (if ages are sampled from the reported range)
+  set.seed(rng_seed)
+  
   # run social_mixr function
   matrix_out <- contact_matrix(survey          = survey_object, 
                                age.limits      = age_breaks_num,
@@ -209,6 +212,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                weigh.age.group = bool_weigh_age_group,
                                weigh.dayofweek = bool_weigh_dayofweek,
                                max.part.weight = max_part_weight,
+                               estimated.contact.age = method_estimated_contact_age,
                                quiet           = TRUE)
   
   

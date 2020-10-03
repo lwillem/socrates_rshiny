@@ -44,7 +44,8 @@ cite(survey_be2020_comix)
 
 lapply(survey_be2020_comix,dim)
 
-contact_matrix(survey_be2020_comix,estimated.contact.age = "sample")
-
+set.seed(20180216)
+contact_matrix(survey_be2020_comix,estimated.contact.age = "sample",age.limits = c(0,20,40))$matrix
+?contact_matrix
 
 

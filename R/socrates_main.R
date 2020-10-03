@@ -46,7 +46,8 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                           cnt_location,
                                           cnt_matrix_features,
                                           age_breaks_text,
-                                          max_part_weight)
+                                          max_part_weight,
+                                          wave)
 
       # unlist contact reduction parameter
       cnt_reduction_df <- unlist(cnt_reduction)
@@ -134,6 +135,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                           contact_features = paste(cnt_matrix_features,collapse=', '),
                           age_breaks = age_breaks_text,
                           max_part_weight = max_part_weight,
+                          wave = wave,
                           row.names=NULL)
   
   
@@ -605,7 +607,8 @@ get_location_matrices <- function(country,daytype,touch,duration,gender,
                                   cnt_location,
                                   cnt_matrix_features,
                                   age_breaks_text,
-                                  max_part_weight){
+                                  max_part_weight,
+                                  wave){
   
   
   # location specific ==> NOT reciprocal
@@ -619,7 +622,8 @@ get_location_matrices <- function(country,daytype,touch,duration,gender,
                                                   cnt_location = cnt_location[i_loc],
                                                   sel_cnt_matrix_features,
                                                   age_breaks_text,
-                                                  max_part_weight))
+                                                  max_part_weight,
+                                                  wave = wave))
   }
   
   # add location names

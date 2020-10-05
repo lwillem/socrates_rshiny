@@ -79,7 +79,7 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'China (Zhang 2019)',
                         'Zambia (Dodd 2011)',
                         'South Africa (Dodd 2011)',
-                        'Belgium 2010* (Willem 2012)',
+                        'Belgium 2010* (Van Hoang 2020)',
                         'Belgium 2020 CoMix (Coletti 2020)'
                        )
 
@@ -188,7 +188,7 @@ format_num_digits <- 2
 #__________________________#
 
 rng_seed <- 20200101
-method_estimated_contact_age <- 'mean'
-#method_estimated_contact_age <- 'sample'
+#method_estimated_contact_age <- 'mean'
+method_estimated_contact_age <- 'sample'
 
 

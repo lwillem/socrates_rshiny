@@ -112,9 +112,10 @@ shinyUI(pageWithSidebar(
     # use tabs
     tabsetPanel(type = "tabs",
                 tabPanel("All results", 
-                         verbatimTextOutput("social_contact_analysis")),
-                helpText('Please note that contacts whose ages are given as a range but not exactly will have their age set to the mid-point of the range.'),
-                #helpText('Note: contacts whose ages are given as a range but not exactly will have their age sampled from the given range (uniform).'),
+                         verbatimTextOutput("social_contact_analysis"),
+                         #helpText('Please note that contacts whose ages are given as a range but not exactly will have their age set to the mid-point of the range.')
+                         helpText('Please note that contacts whose ages are not given exactly will have their age sampled at random from the given range [update 2020-10-05].')
+                ),
                 tabPanel("Matrix per capita", 
                          helpText('This per capita matrix presents the daily contact rate for every individual of an age group with all other individuals in the population.'),
                          plotOutput('plot_cnt_matrix_per_capita',width = "80%", height = "300px")),

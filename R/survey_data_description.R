@@ -26,7 +26,8 @@ data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- paste(data_descr
 data_description[opt_country[grepl('France',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'We selected one diary per participant.')
 
 # add info for Belgium2010
-data_description[opt_country[grepl('Belgium\\* 2010',opt_country)]] <- 'This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member. The manuscript describing this survey in detail is in preparation and will be published soon. Willem et al (2012, PLoS ONE) is the first publicaiton using this survey data.'
+#data_description[opt_country[grepl('Belgium\\* 2010',opt_country)]] <- 'This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member. The manuscript describing this survey in detail is in preparation and will be published soon. Willem et al (2012, PLoS ONE) is the first publicaiton using this survey data.'
+data_description[opt_country[grepl('Belgium 2010\\*',opt_country)]] <- 'Van Hoang T, Coletti P, Kiffle YW, Van Kerckhove K, Vercruysse S, Willem L, Beutels P, Hens N. Close contact infection dynamics over time: insights from a second large-scale social contact survey in Flanders, Belgium, in 2010-2011. MedRxiv, 2020. This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member.'
 
 # add info for CoMix-BE
 data_description['BE CoMix (Coletti 2020)'] <- 'Coletti P, Wambua J, Gimma A, Willem L, Vercruysse S, Vanhoutte B, Jarvis CI, van Zandvoort K, Edmunds J, Beutels P, Hens N (2020) CoMix: comparing mixing patterns in the Belgian population during and after lockdown. medRxiv.'

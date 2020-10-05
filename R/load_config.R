@@ -58,6 +58,7 @@ opt_location          <- c("Home","Work","School","Transport","Leisure","Otherpl
 
 # contact reformatting and weights
 opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend",
+                           "Age range imputation: sample at random (alternative: midpoint)",
                            "Suppl. professional contacts (see 'Data sets' tab)",
                            "Set contacts at Home with non-household members as Leisure")
 

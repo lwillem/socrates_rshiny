@@ -169,6 +169,7 @@ shinyServer(function(input, output, session) {
     features_select <- c(input$bool_reciprocal,
                         input$bool_weigh_age,
                         input$bool_weigh_week,
+                        input$bool_age_range,
                         input$bool_spc,
                         input$bool_hhmember_selection)
 

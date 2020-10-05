@@ -173,8 +173,9 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   bool_reciprocal      <- opt_matrix_features[[1]]  %in% cnt_matrix_features
   bool_weigh_age_group <- opt_matrix_features[[2]]  %in% cnt_matrix_features
   bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features
-  bool_suppl_professional_cnt <- opt_matrix_features[[4]]  %in% cnt_matrix_features
-  bool_hhmatrix_selection    <- opt_matrix_features[[5]]  %in% cnt_matrix_features
+  bool_age_range       <- opt_matrix_features[[4]]  %in% cnt_matrix_features
+  bool_suppl_professional_cnt <- opt_matrix_features[[5]]  %in% cnt_matrix_features
+  bool_hhmatrix_selection    <- opt_matrix_features[[6]]  %in% cnt_matrix_features
   
   # get specific social_mixr survey object
   survey_object <- get_survey_object(country      = country,
@@ -212,7 +213,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                weigh.age.group = bool_weigh_age_group,
                                weigh.dayofweek = bool_weigh_dayofweek,
                                max.part.weight = max_part_weight,
-                               estimated.contact.age = method_estimated_contact_age,
+                               estimated.contact.age = ifelse(bool_age_range,'sample','mean'),
                                quiet           = TRUE)
   
   

@@ -56,6 +56,7 @@ shinyUI(pageWithSidebar(
                          checkboxInput("bool_reciprocal", "Reciprocity",value = TRUE),
                          checkboxInput("bool_weigh_age", "Weigh by age",value = TRUE),
                          checkboxInput("bool_weigh_week", "Weigh by week/weekend",value = TRUE),
+                         checkboxInput("bool_age_range", "Age range: sample at random",value = TRUE),
                         
                          # SPC (optional)
                          conditionalPanel(
@@ -115,7 +116,7 @@ shinyUI(pageWithSidebar(
                 tabPanel("All results", 
                          verbatimTextOutput("social_contact_analysis"),
                          #helpText('Please note that contacts whose ages are given as a range but not exactly will have their age set to the mid-point of the range.')
-                         helpText('Please note that contacts whose ages are not given exactly will have their age sampled at random from the given range [update 2020-10-05].')
+                         helpText('Please note that contacts whose ages are not given exactly will have by default their age sampled at random from the given range. If you want to use the midpoint, deselect "Age range: sample at random" [update 2020-10-05].')
                 ),
                 tabPanel("Matrix per capita", 
                          helpText('This per capita matrix presents the daily contact rate for every individual of an age group with all other individuals in the population.'),

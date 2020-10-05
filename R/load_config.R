@@ -18,6 +18,7 @@
 library('socialmixr')
 library('countrycode')
 library('data.table')
+library('markdown')
 library(shiny)
 
 # temporary to use the get_survey script outside the SocialMixr package

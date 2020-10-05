@@ -26,12 +26,13 @@ shinyUI(pageWithSidebar(
   # Sidebar with controls
   sidebarPanel(
  
-    selectInput("country", "Country",
-                opt_country),
+    selectInput(inputId = "country", 
+                label = "Country",
+                choices = opt_country,
+                selectize = ),
     
-    # waves (optional)
-    selectInput("wave", "Wave",
-                opt_waves),
+    # # waves (dynamic, only if wave info is present)
+    uiOutput(outputId = 'dynamicWaveInput'),
     
     textInput(inputId="age_breaks_text",
               label="Age breaks (comma delimited)",

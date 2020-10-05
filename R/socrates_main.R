@@ -324,8 +324,7 @@ get_survey_object <- function(country,
   
   # select contact duration ####
   if(duration != opt_duration[[1]]){
-    print(duration)
-    
+    #print(duration)
     duration_code <- which(opt_duration == duration)-1
     
     if(duration %in% names(opt_duration[2:3]) ){
@@ -342,7 +341,7 @@ get_survey_object <- function(country,
     touch_code    <- which(opt_touch == touch)-1
     bool_touching <- !is.na(data_cnt$phys_contact) & data_cnt$phys_contact == touch_code
     data_cnt      <- data_cnt[bool_touching,]
-    print(touch)
+    #print(touch)
   }
   
   # select gender ####
@@ -381,16 +380,16 @@ get_survey_object <- function(country,
   ## select wave (optional) ----
   if(wave != opt_waves[[1]]){
     if(!is.null(data_part$wave) & wave %in% data_part$wave){
-      print(table(data_part$wave))
-      print(table(data_part$wave == wave))
+      # print(table(data_part$wave))
+      # print(table(data_part$wave == wave))
       
       bool_part_wave <- data_part$wave == wave
       data_part <- data_part[bool_part_wave,]
       
       bool_cnt_wave <- data_cnt$part_id %in%  data_part$part_id
       data_cnt  <- data_cnt[bool_cnt_wave,]
-      print(paste('select wave', wave))
-      print(table(data_part$wave))
+      # print(paste('select wave', wave))
+      # print(table(data_part$wave))
     }
   }
   

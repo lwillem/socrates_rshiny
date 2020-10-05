@@ -150,7 +150,7 @@ opt_country <- opt_country[!grepl('China',opt_country)]
 opt_country <- sort(opt_country)
 
 # waves
-opt_waves <- c("All waves",1:max(opt_country_admin$num_waves),na.rm=T) # 0 is 'no'
+opt_waves <- (c("All waves",1:max(opt_country_admin$num_waves,na.rm=T))) # 0 is 'no'
 
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)

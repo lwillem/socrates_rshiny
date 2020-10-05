@@ -13,6 +13,36 @@ source('R/socrates_main.R')
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {
   
+  ## Wave input ----
+  ## list to store reactive values
+  values <- reactiveValues()
+
+  # The dynamic input definition
+  output$dynamicWaveInput <- renderUI({
+    
+    # This input exists if the `country` survey contains wave info
+    if (opt_country_admin$has_waves[opt_country_admin$name == input$country]) {
+      selectInput(inputId = 'wave_dynamic',
+                  label   = 'Wave',
+                  choices = opt_waves)
+    } else {
+      return(NULL)
+    }
+    
+  })
+  
+  ## this bit fixes the issue
+  ## force the dynamic dynamicWaveInput to reset if the country survey has no waves
+  observe({
+    if(opt_country_admin$has_waves[opt_country_admin$name == input$country]) {
+      values$w_dynamic <- input$wave_dynamic
+    } else {
+      values$w_dynamic <- opt_waves[[1]]
+    }
+  })
+  
+  
+  # Setup ####
   # create memory variable for the transmission param sliders
   bool_update <- reactiveValues(age_breaks_text = '')
   
@@ -84,9 +114,9 @@ shinyServer(function(input, output, session) {
     
     # update wave  options
     if(opt_country_admin$has_waves[flag_country]){
-      updateSelectInput(session,"wave", choices = opt_waves[1:opt_country_admin$num_waves[flag_country]], selected = input$wave)
-    } else{
-      updateSelectInput(session,"wave", choices = opt_waves[1], selected = opt_waves[1])
+      updateSelectInput(session,"wave_dynamic", choices = opt_waves[1:(opt_country_admin$num_waves[flag_country]+1)], selected = input$wave_dynamic)
+    } else {
+      updateSelectInput(session,"wave_dynamic", choices = opt_waves[1], selected = opt_waves[1])
     }
     
     #update transmission sliders, if the age groups have changed
@@ -125,9 +155,7 @@ shinyServer(function(input, output, session) {
     
   }) # end: observe
  
-  
-  
-  ## UPDATE CONTENT ####
+  ## Update results ####
   observe({
 
     progress <- Progress$new(session, min=1, max=15)
@@ -157,6 +185,9 @@ shinyServer(function(input, output, session) {
                                 Leisure    = input$cnt_reduction_leisure/100,
                                 Otherplace = input$cnt_reduction_otherplace/100)
 
+    # fix for wave
+    if(is.null(values$w_dynamic)) values$w_dynamic <- opt_waves[[1]]
+    
     # run social contact analysis
     out <- run_social_contact_analysis(country      = input$country,
                                        daytype      = input$daytype,
@@ -171,7 +202,8 @@ shinyServer(function(input, output, session) {
                                        age_susceptibility_text = age_susceptibility_text,
                                        age_infectiousness_text = age_infectiousness_text,
                                        cnt_reduction           = cnt_reduction,
-                                       wave                    = input$wave)
+                                       #wave                    = input$wave)
+                                       wave                    = values$w_dynamic)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
@@ -227,7 +259,7 @@ shinyServer(function(input, output, session) {
                                     age_susceptibility_text = age_susceptibility_text,
                                     age_infectiousness_text = age_infectiousness_text,
                                     cnt_reduction           = cnt_reduction,
-                                    wave                    = input$wave,
+                                    wave                    = values$w_dynamic,
                                     filename                = file)
       }
     )

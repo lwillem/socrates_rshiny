@@ -10,7 +10,7 @@
 ##  SET CoMix BOOLEAN   ####
 #__________________________#
 
-bool_is_comix_ui <- TRUE
+bool_is_comix_ui <- TRUE 
 
 
 #__________________________#
@@ -30,7 +30,7 @@ data_table_description <- data_table_description[table_ref %in% select_ref,]
 
 # UserInterface title
 if(bool_is_comix_ui){
-  ui_title <- "SOCRATES CoMix: comparing mixing patterns during the COVID-19 pandemic"
+  ui_title <- "SOCRATES CoMix"
   bool_selectInput_duration <- "false"
 }
 

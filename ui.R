@@ -30,6 +30,11 @@ shinyUI(pageWithSidebar(
       uiOutput("socrates_website_data")
     },
     
+    if(bool_is_comix_ui){
+      hr()
+    },
+
+
     selectInput(inputId = "country", 
                 label = "Country",
                 choices = opt_country,

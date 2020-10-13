@@ -183,10 +183,10 @@ version_id <- paste0('v',read.table('./DESCRIPTION.txt',nrows=1,sep=' ',colClass
 
 
 # project website url
-url        <- a("socialcontactdata.org", href="http://www.socialcontactdata.org")
+url        <- a("socialcontactdata.org", href="http://www.socialcontactdata.org",target="_blank")
 
 # socrates data tool url
-url_socrates <- a("SOCRATES initiative", href="https://lwillem.shinyapps.io/socrates_rshiny/")
+url_socrates <- a("SOCRATES initiative", href="https://lwillem.shinyapps.io/socrates_rshiny/",target="_blank")
 
 # number of digits to round
 format_num_digits <- 2

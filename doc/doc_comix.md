@@ -2,9 +2,10 @@
 output:
   html_document: default
 ---
-# CoMix
+# Comparing mixing patterns during the COVID-19 pandemic (CoMix)
 
-The goal of the **comparing mixing patterns during the COVID-19 pandemic (CoMix)** project is to measure compliance to social distancing during the COVID-19 pandemic and to assess the impact on disease transmission. Monitoring the effectiveness of social distancing recommendations is of paramount importance to avoid further waves of COVID-19.
+<br> 
+The goal of the CoMix project is to measure compliance to social distancing during the COVID-19 pandemic and to assess the impact on disease transmission. Monitoring the effectiveness of social distancing recommendations is of paramount importance to avoid further waves of COVID-19.
 
 Multiple survey waves were deployed in Belgium, The Netherlands and The United Kingdom since March, 2020. 
 For now, we report only the Belgian survey and hope to include the others as well in the future.

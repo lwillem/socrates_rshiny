@@ -188,6 +188,9 @@ url        <- a("socialcontactdata.org", href="http://www.socialcontactdata.org"
 # socrates data tool url
 url_socrates <- a("SOCRATES initiative", href="https://lwillem.shinyapps.io/socrates_rshiny/",target="_blank")
 
+# socrates comix url
+url_socrates_comix <- a("SOCRATES CoMix", href="https://lwillem.shinyapps.io/socrates_comix/",target="_blank")
+
 # number of digits to round
 format_num_digits <- 2
 

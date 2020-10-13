@@ -115,6 +115,9 @@ shinyUI(pageWithSidebar(
     # add version and link to project website
     headerPanel(""),
     uiOutput("project_website"),
+    if(!bool_is_comix_ui){
+      uiOutput("socrates_website_comix")
+    },
     helpText('SOCRATES',version_id)
     
   ),

@@ -138,6 +138,8 @@ shinyUI(pageWithSidebar(
                 tabPanel("Matrix per capita", 
                          helpText('This per capita matrix presents the daily contact rate for every individual of an age group with all other individuals in the population.'),
                          plotOutput('plot_cnt_matrix_per_capita',width = "80%", height = "300px")),
+                tabPanel("Contact rates", 
+                         plotOutput('plot_mean_number_contacts',width = "80%", height = "300px")),
                 tabPanel("Participants", 
                          helpText('Brief summary of participant data:'),
                          dataTableOutput('table_participants')),

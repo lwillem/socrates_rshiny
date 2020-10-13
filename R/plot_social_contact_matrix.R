@@ -1,7 +1,7 @@
 #___________________________________________________________________________
 # This file is part of the SOcial Contact RATES (SOCRATES) modelling project
 # 
-# => LOAD AND SELECT SOCIAL CONTACT SURVEY DATA
+# => PLOT SOCIAL CONTACT MATRICES
 #
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________

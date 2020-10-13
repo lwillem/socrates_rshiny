@@ -227,6 +227,11 @@ shinyServer(function(input, output, session) {
       }
     })
     
+    # plot mean number of social contacts
+    output$plot_mean_number_contacts <- renderPlot({
+      plot_mean_number_contacts(out$matrix)
+    })
+    
     # print results
     output$social_contact_analysis <- renderPrint({
       # exclude results with separate tab

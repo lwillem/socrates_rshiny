@@ -10,6 +10,7 @@
 source('R/download_matrices.R')
 source('R/load_config.R')
 source('R/contact_matrix_fix.R')
+source('R/plot_mean_number_contacts.R')
 source('R/plot_social_contact_matrix.R')
 source('R/survey_data_description.R')
 source('R/config_comix.R')

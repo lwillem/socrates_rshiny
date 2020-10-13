@@ -232,6 +232,22 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
     matrix_out$weights <- tmp
     
   }
+  
+  # ## add date
+  dates_str <- paste0(survey_object$participants$year,'-',
+                      survey_object$participants$month,'-',
+                      survey_object$participants$day)
+  dates_str <- dates_str[!grepl('NA',dates_str)]
+  
+  if(length(dates_str)==0){
+    dates_all <- unique(survey_object$participants$year)
+    matrix_out$survey_period <- paste(c('Survey period: ', paste(dates_all, collapse=', ')),collapse=' ')
+  } else{
+    dates_all <- as.Date(dates_str)
+    matrix_out$survey_period <- paste(c('From', paste(range(dates_all), collapse=' to ')),collapse=' ')
+  }
+  
+
   # return
   matrix_out
 }

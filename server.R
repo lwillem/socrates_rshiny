@@ -203,7 +203,6 @@ shinyServer(function(input, output, session) {
                                        age_susceptibility_text = age_susceptibility_text,
                                        age_infectiousness_text = age_infectiousness_text,
                                        cnt_reduction           = cnt_reduction,
-                                       #wave                    = input$wave)
                                        wave                    = values$w_dynamic)
     
     # plot social contact matrix
@@ -309,7 +308,15 @@ shinyServer(function(input, output, session) {
   })
   
   
+  # create url link
+  output$socrates_website <- renderUI({
+    tagList("More info:", url_socrates)
+  })
   
+  # create url link
+  output$socrates_website_data <- renderUI({
+    tagList("This tool is part of the", url_socrates)
+  })
   
   
 })

@@ -51,7 +51,7 @@ shinyUI(pageWithSidebar(
     selectInput("gender", "Gender",
                 opt_gender),
     
-    tabsetPanel(type = "tabs",
+    tabsetPanel(type = "tabs", id="distancing_transmission",
                 tabPanel("General",
                          checkboxInput("bool_reciprocal", "Reciprocity",value = TRUE),
                          checkboxInput("bool_weigh_age", "Weigh by age",value = TRUE),
@@ -113,6 +113,7 @@ shinyUI(pageWithSidebar(
     
     # use tabs
     tabsetPanel(type = "tabs",
+                id='tabs_results',
                 tabPanel("All results", 
                          verbatimTextOutput("social_contact_analysis"),
                          #helpText('Please note that contacts whose ages are given as a range but not exactly will have their age set to the mid-point of the range.')

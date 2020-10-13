@@ -104,7 +104,8 @@ opt_country_admin$has_holiday_data <- TRUE
 opt_country_admin$has_holiday_data[opt_country_admin$country %in% c('Italy','Netherlands','Poland',
                                                                     'Russia','South Africa','Vietnam',
                                                                     'Zambia','Zimbabwe')] <- FALSE
-opt_country_admin$has_holiday_data[opt_country_admin$dataset %in% c('hong_kong,belgium2020_comix')] <- FALSE
+opt_country_admin$has_holiday_data[grepl('hong_kong',opt_country_admin$dataset)] <- FALSE
+opt_country_admin$has_holiday_data[grepl('comix',opt_country_admin$dataset)] <- FALSE
 
 # add dayofweek boolean
 opt_country_admin$has_dayofweek_data <- TRUE
@@ -113,7 +114,7 @@ opt_country_admin$has_dayofweek_data[opt_country_admin$country %in% c('Russia')]
 # add contact duration boolean
 opt_country_admin$has_cnt_duration_data <- TRUE
 opt_country_admin$has_cnt_duration_data[opt_country_admin$country %in% c('Zimbabwe','Russia')] <- FALSE
-opt_country_admin$has_cnt_duration_data[opt_country_admin$dataset %in% c('belgium2020_comix')] <- FALSE
+opt_country_admin$has_cnt_duration_data[grepl('comix',opt_country_admin$dataset)] <- FALSE
 
 # add contact intensity boolean
 opt_country_admin$has_cnt_touch_data <- TRUE
@@ -183,6 +184,9 @@ version_id <- paste0('v',read.table('./DESCRIPTION.txt',nrows=1,sep=' ',colClass
 
 # project website url
 url        <- a("socialcontactdata.org", href="http://www.socialcontactdata.org")
+
+# socrates data tool url
+url_socrates <- a("SOCRATES initiative", href="https://lwillem.shinyapps.io/socrates_rshiny/")
 
 # number of digits to round
 format_num_digits <- 2

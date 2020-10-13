@@ -130,9 +130,9 @@ shinyUI(pageWithSidebar(
                          dataTableOutput('table_weights')),
                 tabPanel("Data sets",
                          uiOutput("project_website_data"),
-                         dataTableOutput("social_contact_data")),
-                tabPanel("CoMix 2020",
-                         includeMarkdown("doc/doc_comix.md"))
+                         dataTableOutput("social_contact_data"))#,
+                # tabPanel("CoMix 2020",
+                #          includeMarkdown("doc/doc_comix.md"))
         )
   )
 ))

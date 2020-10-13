@@ -66,9 +66,6 @@ opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend",
 # get polymod countries
 polymod_countries <- survey_countries(polymod,quiet = T)
 
-# number of BE COMIX datasets
-num_BE_comix <- 8
-
 # add other dataset (and reference)
 opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Peru (Grijalva 2015)',
@@ -138,6 +135,10 @@ opt_country_admin$num_waves <- 1
 opt_country_admin$num_waves[grepl('comix',opt_country_admin$dataset)] <- 8
 opt_country_admin$num_waves[grepl('france',opt_country_admin$dataset)] <- 2
 
+# add "comix boolean"
+opt_country_admin$bool_comix <- FALSE
+opt_country_admin$bool_comix[grepl('comix',opt_country_admin$dataset)] <- TRUE
+
 
 # complete filenames with relative path
 opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.rds')
@@ -186,11 +187,32 @@ url        <- a("socialcontactdata.org", href="http://www.socialcontactdata.org"
 format_num_digits <- 2
 
 #__________________________#
-##  FORMATTING          ####
+##  AGE RANGE           ####
 #__________________________#
 
 rng_seed <- 20200101
 #method_estimated_contact_age <- 'mean'
 method_estimated_contact_age <- 'sample'
+
+#__________________________#
+##  REFERENCES          ####
+#__________________________#
+
+strsplit_reference <- function(x){
+  if(length(x)>1){
+    warning('get_reference() only uses the first element')
+  }
+  x <- as.character(x)
+  x <- unlist(strsplit(x,'\\('))[2]
+  x <- unlist(strsplit(x,'\\)'))[1]
+  return(x) 
+}
+
+get_reference <- function(x_list){
+  return(unlist(lapply(x_list,strsplit_reference)))
+}
+
+# add reference
+opt_country_admin$reference <- get_reference(opt_country_admin$name)
 
 

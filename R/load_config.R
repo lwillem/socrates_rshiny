@@ -178,7 +178,8 @@ max_part_weight <- 3
 #__________________________#
 
 # version number
-version_id <- paste0('v',read.table('./DESCRIPTION.txt',nrows=1,sep=' ')[2])
+version_id <- paste0('v',read.table('./DESCRIPTION.txt',nrows=1,sep=' ',colClasses='character')[2])
+
 
 # project website url
 url        <- a("socialcontactdata.org", href="http://www.socialcontactdata.org")

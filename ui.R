@@ -20,12 +20,16 @@ source('R/socrates_main.R')
 shinyUI(pageWithSidebar(
   
   # Application title
-  headerPanel("Social Contact Rates (SOCRATES) Data Tool",
+  headerPanel(ui_title,
               windowTitle = paste0('SOCRATES (',version_id,')')),
   
   # Sidebar with controls
   sidebarPanel(
  
+    if(bool_is_comix_ui){
+      uiOutput("socrates_website_data")
+    },
+    
     selectInput(inputId = "country", 
                 label = "Country",
                 choices = opt_country,
@@ -42,8 +46,10 @@ shinyUI(pageWithSidebar(
     selectInput("daytype", "Type of day",
                 opt_day_type[1]),
     
+    conditionalPanel(condition = bool_selectInput_duration,
     selectInput("duration", "Contact duration",
-                opt_duration),
+                opt_duration)
+    ),
     
     selectInput("touch", "Contact intensity",
                 opt_touch),
@@ -131,9 +137,9 @@ shinyUI(pageWithSidebar(
                          dataTableOutput('table_weights')),
                 tabPanel("Data sets",
                          uiOutput("project_website_data"),
-                         dataTableOutput("social_contact_data"))#,
-                # tabPanel("CoMix 2020",
-                #          includeMarkdown("doc/doc_comix.md"))
+                         dataTableOutput("social_contact_data")),
+                tabPanel("About CoMix",
+                        includeMarkdown("doc/doc_comix.md"))
         )
   )
 ))

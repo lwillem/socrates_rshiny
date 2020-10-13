@@ -13,6 +13,15 @@ source('R/socrates_main.R')
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {
   
+  ## CoMix: hide some tabs
+  if(bool_is_comix_ui){
+    hideTab(inputId = "distancing_transmission", target = "Distancing")
+    hideTab(inputId = "distancing_transmission", target = "Transmission")
+    hideTab(inputId = "tabs_results", target = "Matrix per capita")    
+  } else{
+    hideTab(inputId = "tabs_results", target = "About CoMix")    
+  }
+
   ## Wave input ----
   ## list to store reactive values
   values <- reactiveValues()
@@ -114,7 +123,7 @@ shinyServer(function(input, output, session) {
     
     # update wave  options
     if(opt_country_admin$has_waves[flag_country]){
-      updateSelectInput(session,"wave_dynamic", choices = opt_waves[1:(opt_country_admin$num_waves[flag_country]+1)], selected = input$wave_dynamic)
+      updateSelectInput(session,"wave_dynamic", choices = opt_waves[2:(opt_country_admin$num_waves[flag_country]+1)], selected = input$wave_dynamic)
     } else {
       updateSelectInput(session,"wave_dynamic", choices = opt_waves[1], selected = opt_waves[1])
     }
@@ -310,7 +319,7 @@ shinyServer(function(input, output, session) {
   
   # create url link
   output$socrates_website <- renderUI({
-    tagList("More info:", url_socrates)
+    tagList(url_socrates)
   })
   
   # create url link

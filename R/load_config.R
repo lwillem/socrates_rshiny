@@ -191,6 +191,12 @@ url_socrates <- a("SOCRATES initiative", href="https://lwillem.shinyapps.io/socr
 # number of digits to round
 format_num_digits <- 2
 
+# UserInterface title
+ui_title <- 'Social Contact Rates (SOCRATES) Data Tool'
+
+# boolean for selectInput "duration"
+bool_selectInput_duration <- "true"
+
 #__________________________#
 ##  AGE RANGE           ####
 #__________________________#

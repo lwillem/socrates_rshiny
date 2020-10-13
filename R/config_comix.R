@@ -28,7 +28,11 @@ opt_country <- opt_country[country_ref %in% select_ref]
 table_ref <- get_reference(data_table_description$Name)
 data_table_description <- data_table_description[table_ref %in% select_ref,]
 
-
+# UserInterface title
+if(bool_is_comix_ui){
+  ui_title <- "SOCRATES CoMix: comparing mixing patterns during the COVID-19 pandemic"
+  bool_selectInput_duration <- "false"
+}
 
 
 

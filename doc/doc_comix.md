@@ -1,9 +1,31 @@
-# CoMix survey 2020
+---
+output:
+  html_document: default
+---
+# CoMix
 
-...  more info will follow asap ...
+The goal of the **comparing mixing patterns during the COVID-19 pandemic (CoMix)** project is to measure compliance to social distancing during the COVID-19 pandemic and to assess the impact on disease transmission. Monitoring the effectiveness of social distancing recommendations is of paramount importance to avoid further waves of COVID-19.
 
-Please see our pre-print:
- 
+Multiple survey waves were deployed in Belgium, The Netherlands and The United Kingdom since March, 2020. 
+For now, we report only the Belgian survey and hope to include the others as well in the future.
+
+# CoMix Belgium
+Figure 1 provides an overview of the different waves in combination with the interventions in place. 
+
+<figure>
+  <img src="timeline_plot_Belgium_w8.jpg" alt="Trulli" style="width:100%">
+  <figcaption>Figure 1 - Calendar of interventions and CoMix wave data collections.</figcaption>
+</figure>
+
+<br> 
+During the first two waves (April & May 2020) of the survey, the reduction in the average number of contacts was around 80\% and was quite consistent across all age-classes. The average number of contacts increased over time, particularly for the younger age classes, still remaining significantly lower than pre-pandemic values. For more info, please see:
+
 [Coletti P, Wambua J, Gimma A, Willem L, Vercruysse S, Vanhoutte B, Jarvis CI, van Zandvoort K, Edmunds J, Beutels P, Hens N. CoMix: comparing mixing patterns in the Belgian population during and after lockdown. medRxiv (2020).](https://www.medrxiv.org/content/10.1101/2020.08.06.20169763)
 
-and the [socialcontactdata.org](http://www.socialcontactdata.org) website.
+
+
+<br> 
+<br> 
+<font size="1"> 
+CoMix and SOCRATES are part of the [socialcontactdata.org](http://www.socialcontactdata.org) initiative and acknowledge funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation program (grant agreement 682540 TransMID) and the European Union's Horizon 2020 Research and Innovations Programme - project EpiPose (Epidemic intelligence to Minimize COVID-19's Public Health, Societal and Economical Impact).
+</font> 

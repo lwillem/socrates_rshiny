@@ -175,7 +175,7 @@ shinyServer(function(input, output, session) {
                 )
     
     # combine general options
-    features_select <- c(input$bool_reciprocal,
+    features_select <- c(ifelse(is.null(input$bool_reciprocal),FALSE,input$bool_reciprocal),
                         input$bool_weigh_age,
                         input$bool_weigh_week,
                         input$bool_age_range,

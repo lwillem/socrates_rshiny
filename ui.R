@@ -59,7 +59,9 @@ shinyUI(pageWithSidebar(
     
     tabsetPanel(type = "tabs", id="distancing_transmission",
                 tabPanel("General",
-                         checkboxInput("bool_reciprocal", "Reciprocity",value = TRUE),
+                         if(!bool_is_comix_ui){
+                           checkboxInput("bool_reciprocal", "Reciprocity",value = TRUE)
+                         },
                          checkboxInput("bool_weigh_age", "Weigh by age",value = TRUE),
                          checkboxInput("bool_weigh_week", "Weigh by week/weekend",value = TRUE),
                          checkboxInput("bool_age_range", "Age range: sample at random",value = TRUE),

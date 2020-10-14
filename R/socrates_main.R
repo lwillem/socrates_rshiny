@@ -176,8 +176,9 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   bool_weigh_age_group <- opt_matrix_features[[2]]  %in% cnt_matrix_features
   bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features
   bool_age_range       <- opt_matrix_features[[4]]  %in% cnt_matrix_features
-  bool_suppl_professional_cnt <- opt_matrix_features[[5]]  %in% cnt_matrix_features
-  bool_hhmatrix_selection    <- opt_matrix_features[[6]]  %in% cnt_matrix_features
+  bool_age_missing     <- opt_matrix_features[[5]]  %in% cnt_matrix_features
+  bool_suppl_professional_cnt <- opt_matrix_features[[6]]  %in% cnt_matrix_features
+  bool_hhmatrix_selection    <- opt_matrix_features[[7]]  %in% cnt_matrix_features
   
   # get specific social_mixr survey object
   survey_object <- get_survey_object(country      = country,
@@ -216,6 +217,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                weigh.dayofweek = bool_weigh_dayofweek,
                                max.part.weight = max_part_weight,
                                estimated.contact.age = ifelse(bool_age_range,'sample','mean'),
+                               missing.contact.age = ifelse(bool_age_missing,'remove','ignore'),
                                quiet           = TRUE)
   
   
@@ -263,7 +265,8 @@ get_survey_object <- function(country,
                               bool_reciprocal,
                               bool_suppl_professional_cnt,
                               bool_hhmatrix_selection,
-                              missing.contact.age = "remove",  # adopted from socialmixr package
+                              #missing.contact.age = "remove",  # adopted from socialmixr package
+                              #missing.contact.age = "keep",  # adopted from socialmixr package
                               wave,
                               quiet = FALSE){
   
@@ -282,25 +285,25 @@ get_survey_object <- function(country,
     data_cnt     <- data_cnt[data_cnt$part_id %in% data_part$part_id,]
   }
   
-  # missing contact age ####
-  # remove participants with missing contact age
-  if (missing.contact.age == "remove") {
-    if (!quiet)
-    {
-      message("Removing participants that have contacts without age information. ",
-              "To change this behaviour, set the 'missing.contact.age' option")
-    }
-
-  cnt_ages            <- cbind(data_cnt$cnt_age_exact, data_cnt$cnt_age_min, data_cnt$cnt_age_est_max)
-  bool_missing_age    <- rowSums(is.na(cnt_ages)) == ncol(cnt_ages)
-  part_id_missing_age <- unique(data_cnt$part_id[bool_missing_age])
-
-  data_part <- data_part[!data_part$part_id %in% part_id_missing_age,]
-  data_cnt  <- data_cnt[!data_cnt$part_id %in% part_id_missing_age,]
-
-  } else {
-    message("The specified missing.contact.age unknown")
-  }
+  # # missing contact age ####
+  # # remove participants with missing contact age
+  # if (missing.contact.age == "remove") {
+  #   if (!quiet)
+  #   {
+  #     message("Removing participants that have contacts without age information. ",
+  #             "To change this behaviour, set the 'missing.contact.age' option")
+  #   }
+  # 
+  # cnt_ages            <- cbind(data_cnt$cnt_age_exact, data_cnt$cnt_age_min, data_cnt$cnt_age_est_max)
+  # bool_missing_age    <- rowSums(is.na(cnt_ages)) == ncol(cnt_ages)
+  # part_id_missing_age <- unique(data_cnt$part_id[bool_missing_age])
+  # 
+  # data_part <- data_part[!data_part$part_id %in% part_id_missing_age,]
+  # data_cnt  <- data_cnt[!data_cnt$part_id %in% part_id_missing_age,]
+  # 
+  # } else {
+  #   message("The specified missing.contact.age unknown")
+  # }
   
   # select type of day ####
   if(!daytype %in% names(opt_day_type[c(1,6)])){

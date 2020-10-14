@@ -70,7 +70,8 @@ shinyUI(pageWithSidebar(
                          checkboxInput("bool_weigh_age", "Weigh by age",value = TRUE),
                          checkboxInput("bool_weigh_week", "Weigh by week/weekend",value = TRUE),
                          checkboxInput("bool_age_range", "Age range: sample at random",value = TRUE),
-                        
+                         checkboxInput("bool_age_missing", "Missing contact age: remove participant",value = FALSE),
+                         
                          # SPC (optional)
                          conditionalPanel(
                            condition = 'output.panelStatus',
@@ -151,7 +152,9 @@ shinyUI(pageWithSidebar(
                          uiOutput("project_website_data"),
                          dataTableOutput("social_contact_data")),
                 tabPanel("About CoMix",
-                        includeMarkdown("doc/doc_comix.md"))
+                        includeMarkdown("doc/doc_comix.md")),
+                tabPanel("Updates",
+                         includeMarkdown("doc/doc_updates.md"))
         )
   )
 ))

@@ -123,7 +123,7 @@ shinyServer(function(input, output, session) {
     
     # update wave  options
     if(opt_country_admin$has_waves[flag_country]){
-      updateSelectInput(session,"wave_dynamic", choices = opt_waves[2:(opt_country_admin$num_waves[flag_country]+1)], selected = input$wave_dynamic)
+      updateSelectInput(session,"wave_dynamic", choices = opt_waves[1:(opt_country_admin$num_waves[flag_country]+1)], selected = input$wave_dynamic)
     } else {
       updateSelectInput(session,"wave_dynamic", choices = opt_waves[1], selected = opt_waves[1])
     }
@@ -179,6 +179,7 @@ shinyServer(function(input, output, session) {
                         input$bool_weigh_age,
                         input$bool_weigh_week,
                         input$bool_age_range,
+                        input$bool_age_missing,
                         input$bool_spc,
                         input$bool_hhmember_selection)
 

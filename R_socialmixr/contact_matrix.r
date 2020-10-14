@@ -14,7 +14,7 @@
 ##' @param split whether to split the number of contacts and assortativity
 ##' @param estimated.contact.age if set to "mean" (default), people whose ages are given as a range (in columns named "..._est_min" and "..._est_max") but not exactly (in a column named "..._exact") will have their age set to the mid-point of the range; if set to "sample", the age will be sampled from the range; if set to "missing", age ranges will be treated as missing
 ##' @param missing.participant.age if set to "remove" (default), participants without age information are removed; if set to "keep", participants with missing age are kept and treated as a separate age group
-##' @param missing.contact.age if set to "remove" (default), participants that that have contacts without age information are removed; if set to "sample", contacts without age information are sampled from all the contacts of participants of the same age group; if set to "keep", contacts with missing age are kept and treated as a separate age group
+##' @param missing.contact.age if set to "remove" (default), participants that have contacts without age information are removed; if set to "sample", contacts without age information are sampled from all the contacts of participants of the same age group; if set to "keep", contacts with missing age are kept and treated as a separate age group; if set to "ignore", contacts with missing age are removed but all participants are kept.
 ##' @param weights columns that contain weights
 ##' @param weigh.dayofweek whether to weigh the day of the week (weight 5 for weekdays ans 2 for weekends)
 ##' @param weigh.age.group whether to weigh by the age of the participants (vs. the populations' age distribution)
@@ -32,7 +32,7 @@
 ##' data(polymod)
 ##' contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
 ##' @author Sebastian Funk
-contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter, n = 1, bootstrap, counts = FALSE, symmetric = FALSE, split = FALSE, estimated.contact.age=c("mean", "sample", "missing"), missing.participant.age = c("remove", "keep"), missing.contact.age = c("remove", "sample", "keep"), weights = c(), weigh.dayofweek = FALSE,weigh.age.group = FALSE, max.part.weight = NA, sample.all.age.groups = FALSE, quiet = FALSE, ...)
+contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter, n = 1, bootstrap, counts = FALSE, symmetric = FALSE, split = FALSE, estimated.contact.age=c("mean", "sample", "missing"), missing.participant.age = c("remove", "keep"), missing.contact.age = c("remove", "sample", "keep", "ignore"), weights = c(), weigh.dayofweek = FALSE,weigh.age.group = FALSE, max.part.weight = NA, sample.all.age.groups = FALSE, quiet = FALSE, ...)
 {
     ## circumvent R CMD CHECK errors by defining global variables
     lower.age.limit <- NULL
@@ -227,6 +227,19 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
                             get(columns[["contact.age"]]) < min(age.limits),
                             get(columns[["id"]])]
         survey$participants <- survey$participants[!(get(columns[["id"]]) %in% missing.age.id)]
+    }
+    
+    if (missing.contact.age == "ignore" &&
+        nrow(survey$contacts[is.na(get(columns[["contact.age"]])) |
+                             get(columns[["contact.age"]]) < min(age.limits)]) > 0)
+    {
+        if (!quiet && n == 1 && !missing.contact.age.set)
+        {
+            message("Ignore contacts without age information. ",
+                    "To change this behaviour, set the 'missing.contact.age' option")
+        }
+        survey$contacts <- survey$contacts[!is.na(get(columns[["contact.age"]])) &
+                                            get(columns[["contact.age"]]) >= min(age.limits),]
     }
 
     # note: moved up, so we can use the adapted part.age.group.breaks

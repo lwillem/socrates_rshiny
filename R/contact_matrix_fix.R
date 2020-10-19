@@ -10,12 +10,14 @@
 source('R_socialmixr/check.r')
 source('R_socialmixr/contact_matrix.r')
 source('R_socialmixr/survey.r')
+source('R_socialmixr/wpp_age.r')
 
 # temporary to use get_survey outside the SocialMixr package
 library(httr)
 library(jsonlite)
 library(XML)
 library(curl)
+library(wpp2019)
 source('R_socialmixr/get_survey.r')
 
 

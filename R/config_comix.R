@@ -24,7 +24,7 @@ select_ref <-  opt_country_admin$reference[opt_country_admin$bool_comix == bool_
 country_ref <- get_reference(opt_country)
 opt_country <- opt_country[country_ref %in% select_ref]
 
-# update data data table description
+# update data table description
 table_ref <- get_reference(data_table_description$Name)
 data_table_description <- data_table_description[table_ref %in% select_ref,]
 

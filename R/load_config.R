@@ -70,7 +70,7 @@ polymod_countries <- survey_countries(polymod,quiet = T)
 opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Peru (Grijalva 2015)',
                         'Zimbabwe (Melegaro 2013)',
-                        'France (Béraud 2015)',
+                        'France* (Béraud 2015)',
                         'Hong Kong (Leung 2017)',
                         'Vietnam (Horby 2007)',
                         'United Kingdom (van Hoek 2012)',
@@ -126,12 +126,12 @@ opt_country_admin$has_suppl_professional_cnt_data[grepl('\\*',opt_country_admin$
 
 # add "has household member contact info" boolean
 opt_country_admin$has_hhmember_cnt_data <- FALSE
-opt_country_admin$has_hhmember_cnt_data[grepl('\\*',opt_country_admin$name)] <- TRUE
+opt_country_admin$has_hhmember_cnt_data[grepl('Belgium 2010',opt_country_admin$name)] <- TRUE
 
 # add "has wave info" boolean
 opt_country_admin$has_waves <- FALSE
 opt_country_admin$has_waves[grepl('comix',opt_country_admin$dataset)] <- TRUE
-opt_country_admin$has_waves[grepl('france',opt_country_admin$dataset)] <- TRUE
+opt_country_admin$has_waves[grepl('france',opt_country_admin$dataset)] <- FALSE
 opt_country_admin$num_waves <- 1
 opt_country_admin$num_waves[grepl('comix',opt_country_admin$dataset)] <- 8
 opt_country_admin$num_waves[grepl('france',opt_country_admin$dataset)] <- 2

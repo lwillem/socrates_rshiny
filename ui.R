@@ -78,7 +78,7 @@ shinyUI(pageWithSidebar(
                          
                          # HH members (optional)
                          conditionalPanel(
-                           condition = 'output.panelStatus',
+                           condition = 'output.panelStatusHome',
                            checkboxInput("bool_hhmember_selection", "Set contacts at 'Home' with non-household members as 'leisure contacts'",value = FALSE)),
                          
                          checkboxInput("bool_location", "Include all locations",value = TRUE),

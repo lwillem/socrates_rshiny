@@ -193,7 +193,7 @@ url_socrates <- a("SOCRATES initiative", href="https://lwillem.shinyapps.io/socr
 url_socrates_comix <- a("SOCRATES CoMix", href="https://lwillem.shinyapps.io/socrates_comix/",target="_blank")
 
 # SPC doc url
-url_doc_spc <- a("here", href="https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_spc_france.html",target="_blank")
+url_doc_spc <- a("here", href="https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_spc_france.md",target="_blank")
 
 # number of digits to round
 format_num_digits <- 2

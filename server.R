@@ -60,6 +60,12 @@ shinyServer(function(input, output, session) {
     opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]
   })
   outputOptions(output, "panelStatus", suspendWhenHidden = FALSE)
+  
+  # create bool to show the 'home member' checkbox
+  output$panelStatusHome <- reactive({
+    opt_country_admin$has_hhmember_cnt_data[opt_country_admin$name == as.character(input$country)]
+  })
+  outputOptions(output, "panelStatusHome", suspendWhenHidden = FALSE)
 
   # Update UI panel(s) ####
   observe({
@@ -74,6 +80,7 @@ shinyServer(function(input, output, session) {
     # if the HH-member checkbox is not shown (nor used), set as "FALSE"
     # MESSAGE ==>> "selection is never excluded if the checkbox is not shown"
     show_hhmember_panel <- opt_country_admin$has_hhmember_cnt_data[opt_country_admin$name == as.character(input$country)]
+    print(show_hhmember_panel)
     if(!show_hhmember_panel){
       updateCheckboxInput(session,"bool_hhmember_selection", value = FALSE)
     }

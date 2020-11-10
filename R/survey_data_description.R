@@ -28,10 +28,10 @@ data_description[opt_country[grepl('Zambia & South Africa',opt_country)]] <- 'Do
 data_description[opt_country[grepl('Russia',opt_country)]] <- 'Litvinova et al. (2019); Reactive school closure weakens the network of social interactions and reduces the spread of influenza. PNAS.'
 
 # add info for Zimbabwe
-data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- paste(data_description[opt_country[grepl('Zimbabwe',opt_country)]],'. We selected one diary per participant.')
+data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- paste(data_description[opt_country[grepl('Zimbabwe',opt_country)]],'We selected one diary per participant.')
 
 # add info for France
-data_description[opt_country[grepl('France',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'. We selected one diary per participant.')
+data_description[opt_country[grepl('France',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'This dataset contains supplementary professional contacts (SPC) and we selected one diary per participant.')
 
 # add info for Belgium2010
 #data_description[opt_country[grepl('Belgium\\* 2010',opt_country)]] <- 'This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member. The manuscript describing this survey in detail is in preparation and will be published soon. Willem et al (2012, PLoS ONE) is the first publicaiton using this survey data.'

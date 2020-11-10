@@ -294,7 +294,8 @@ shinyServer(function(input, output, session) {
     # create url link
     output$project_website_data <- renderUI({
       tagList("More info on the social contact data initiative 
-              and links to the ZENODO repositories are provided at", url)
+              and links to the ZENODO repositories are provided at", url,". Info about the Supplementary Professional Contacts 
+              (SPC) for the French dataset is provided ",url_doc_spc)
     })
     # add social contact data info
     output$social_contact_data <- renderDataTable({

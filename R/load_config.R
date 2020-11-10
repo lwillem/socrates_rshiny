@@ -88,7 +88,7 @@ opt_country[grepl('Belgium \\(',opt_country)] <- "Belgium 2006 (Mossong 2008)"
 
 # set country admin => filenames and country names
 opt_country_admin <- data.frame(name = opt_country,
-                                dataset = c(rep("polymod",8),'peru','zimbabwe','france_spc',
+                                dataset = c(rep("polymod",8),'peru','zimbabwe','france2012_spc',
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
                                             'belgium2010',
@@ -191,6 +191,9 @@ url_socrates <- a("SOCRATES initiative", href="https://lwillem.shinyapps.io/socr
 
 # socrates comix url
 url_socrates_comix <- a("SOCRATES CoMix", href="https://lwillem.shinyapps.io/socrates_comix/",target="_blank")
+
+# SPC doc url
+url_doc_spc <- a("here", href="https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_spc_france.html",target="_blank")
 
 # number of digits to round
 format_num_digits <- 2

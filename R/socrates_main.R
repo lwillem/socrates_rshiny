@@ -265,7 +265,7 @@ get_survey_object <- function(country,
                               bool_reciprocal,
                               bool_suppl_professional_cnt,
                               bool_hhmatrix_selection,
-                              #missing.contact.age = "remove",  # adopted from socialmixr package
+                              missing.contact.age = "remove",  # adopted from socialmixr package
                               #missing.contact.age = "keep",  # adopted from socialmixr package
                               wave,
                               quiet = FALSE){
@@ -284,26 +284,6 @@ get_survey_object <- function(country,
     data_part    <- data_part[bool_country,]
     data_cnt     <- data_cnt[data_cnt$part_id %in% data_part$part_id,]
   }
-  
-  # # missing contact age ####
-  # # remove participants with missing contact age
-  # if (missing.contact.age == "remove") {
-  #   if (!quiet)
-  #   {
-  #     message("Removing participants that have contacts without age information. ",
-  #             "To change this behaviour, set the 'missing.contact.age' option")
-  #   }
-  # 
-  # cnt_ages            <- cbind(data_cnt$cnt_age_exact, data_cnt$cnt_age_min, data_cnt$cnt_age_est_max)
-  # bool_missing_age    <- rowSums(is.na(cnt_ages)) == ncol(cnt_ages)
-  # part_id_missing_age <- unique(data_cnt$part_id[bool_missing_age])
-  # 
-  # data_part <- data_part[!data_part$part_id %in% part_id_missing_age,]
-  # data_cnt  <- data_cnt[!data_cnt$part_id %in% part_id_missing_age,]
-  # 
-  # } else {
-  #   message("The specified missing.contact.age unknown")
-  # }
   
   # select type of day ####
   if(!daytype %in% names(opt_day_type[c(1,6)])){
@@ -329,6 +309,12 @@ get_survey_object <- function(country,
                                       sep='/')
                                 ,'%d/%m/%Y')
       data_part$holiday <- data_part$date %in% country_holiday_data$date
+    }
+    
+    # check if holiday is a boolean... if not, try to convert and throw warning
+    if(typeof(data_part$holiday) != 'logical'){
+      warning("holiday variable is not a 'logical', try to convert binary 0/1 to FALSE/TRUE")
+      data_part$holiday <- data_part$holiday == 1
     }
     
     if(daytype == opt_day_type[[4]]){

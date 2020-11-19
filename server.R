@@ -17,7 +17,6 @@ shinyServer(function(input, output, session) {
   if(bool_is_comix_ui){
     hideTab(inputId = "distancing_transmission", target = "Distancing")
     hideTab(inputId = "distancing_transmission", target = "Transmission")
-    hideTab(inputId = "tabs_results", target = "Matrix per capita")    
   } else{
     hideTab(inputId = "tabs_results", target = "About CoMix")    
   }
@@ -232,6 +231,9 @@ shinyServer(function(input, output, session) {
       
       if('matrix_per_capita' %in% names(out)){
         plot_cnt_matrix(out$matrix_per_capita, 'per capita')
+      } else{
+        plot(0,col=0,axes=F,xlab='',ylab='')
+        text(1,0,"MISSING DATA ISSUE...\nUNABLE TO PLOT THE MATRIX")    
       }
     })
     

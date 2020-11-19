@@ -37,11 +37,17 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # create option to add notes
   fct_out$notes <- NULL
   
+  # if matrix contains NA's => reciproity is not possible ==>> add warning
+  if(any(is.na(cnt_matrix_ui$matrix)) & 
+     opt_matrix_features[[1]]  %in% cnt_matrix_features){
+    fct_out$notes <- "Contact matrix contains NA, reciprocity is not possible."
+  }
+  
   # include physical distancing?
   bool_physical_distancing <- any(cnt_reduction!=0)
   if(bool_physical_distancing){
     if(any(is.na(cnt_matrix_ui$matrix))){
-      fct_out$notes <- "Contact matrix contains NA, no further analysis possible."
+      fct_out$notes <- c(fct_out$notes,"Contact matrix contains NA, no distancing analysis possible.")
     } else {
       # get location specific contact matrix (no intervention)
       matrix_loc <- get_location_matrices(country,daytype,touch,duration,gender,

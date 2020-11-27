@@ -2,7 +2,7 @@
 output:
   html_document: default
 ---
-# Comparing mixing patterns during the COVID-19 pandemic (CoMix)
+## Comparing mixing patterns during the COVID-19 pandemic (CoMix)
 
 <br> 
 The CoMix project is initiated to measure compliance to social distancing during the COVID-19 pandemic and to assess the impact on disease transmission. Monitoring the effectiveness of social distancing recommendations is of paramount importance to avoid further waves of COVID-19.
@@ -10,12 +10,12 @@ The CoMix project is initiated to measure compliance to social distancing during
 Multiple survey waves were deployed in Belgium, The Netherlands and The United Kingdom since March, 2020. 
 For now, we report only the Belgian survey and hope to include the others in the future.
 
-# CoMix Belgium
+## CoMix Belgium
 Figure 1 provides an overview of the different waves in combination with the interventions in Belgium during the COVID-19 pandemic. 
 
 <figure>
   <img src="timeline_plot_Belgium_w8.jpg" alt="Trulli" style="width:100%">
-  <figcaption>Figure 1 - Calendar of interventions and CoMix wave data collections.</figcaption>
+  <figcaption>Figure 1 - Calendar of interventions and CoMix data collection waves.</figcaption>
 </figure>
 
 <br> 

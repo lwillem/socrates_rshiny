@@ -92,7 +92,8 @@ opt_country_admin <- data.frame(name = opt_country,
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
                                             'belgium2010',
-                                            'belgium2020_comix'),
+                                            'belgium2020_comix_with_wave9'),
+                                            # 'belgium2020_comix'),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',
                                              'Russia','China','Zambia','South Africa',
@@ -134,7 +135,7 @@ opt_country_admin$has_waves <- FALSE
 opt_country_admin$has_waves[grepl('comix',opt_country_admin$dataset)] <- TRUE
 opt_country_admin$has_waves[grepl('france',opt_country_admin$dataset)] <- FALSE
 opt_country_admin$num_waves <- 1
-opt_country_admin$num_waves[grepl('comix',opt_country_admin$dataset)] <- 8
+opt_country_admin$num_waves[grepl('comix',opt_country_admin$dataset)] <- 9
 opt_country_admin$num_waves[grepl('france',opt_country_admin$dataset)] <- 2
 
 # add "comix boolean"

@@ -296,7 +296,7 @@ shinyServer(function(input, output, session) {
     output$project_website_data <- renderUI({
       tagList("More info on the social contact data initiative 
               and links to the ZENODO repositories are provided at", url,". Info about the Supplementary Professional Contacts 
-              (SPC) for the French dataset is provided ",url_doc_spc)
+              (SPC) for the French dataset ",url_doc_spc)
     })
     # add social contact data info
     output$social_contact_data <- renderDataTable({
@@ -307,6 +307,12 @@ shinyServer(function(input, output, session) {
       columnDefs = list(list(width = '170px', targets = 0))
     ))
     
+    # create url link
+    output$project_website_weights <- renderUI({
+      tagList('Based on the selected options, we calculate participant weights to account for age and the number of observations during week (5/7) and weekend (2/7) days. 
+                         The United Nation’s World Population Prospects are used as reference. Weights are constraint to a maximum of 3 to limit the influence of single participants.
+                         ',url_doc_weights)
+    })
     # add weights table
     output$table_weights <- renderDataTable({
       if(any(is.null(out$weights))){

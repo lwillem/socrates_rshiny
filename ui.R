@@ -142,8 +142,7 @@ shinyUI(pageWithSidebar(
                          helpText('Brief summary of participant data:'),
                          dataTableOutput('table_participants')),
                 tabPanel("Weights",     
-                         helpText('Based on the selected options, we calculate participant weights to account for age and the number of observations during week (5/7) and weekend (2/7) days. 
-                         The United Nation’s World Population Prospects are used as reference. Weights are constraint to a maximum of 3 to limit the influence of single participants.'),
+                         uiOutput("project_website_weights"),
                          dataTableOutput('table_weights')),
                 tabPanel("Data sets",
                          uiOutput("project_website_data"),

@@ -21,7 +21,7 @@ Figure 1 provides an overview of the different waves in combination with the int
 <br> 
 During the first two waves (April & May 2020) of the survey, the reduction in the average number of contacts was around 80% and this was quite consistent across all age-classes. The average number of contacts increased over time, particularly for the younger age classes, still remaining significantly lower than pre-pandemic values. For more info, please see:
 
-[Coletti P, Wambua J, Gimma A, Willem L, Vercruysse S, Vanhoutte B, Jarvis CI, van Zandvoort K, Edmunds J, Beutels P, Hens N. CoMix: comparing mixing patterns in the Belgian population during and after lockdown. medRxiv (2020).](https://www.medrxiv.org/content/10.1101/2020.08.06.20169763v1)
+[Coletti P, Wambua J, Gimma A, Willem L, Vercruysse S, Vanhoutte B, Jarvis CI, van Zandvoort K, Edmunds J, Beutels P, Hens N. CoMix: comparing mixing patterns in the Belgian population during and after lockdown. Scientific Reports 10, 21885 (2020).](https://doi.org/10.1038/s41598-020-78540-7)
 
 
 

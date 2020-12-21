@@ -7,16 +7,9 @@
 #___________________________________________________________________________
 
 #__________________________#
-##  SET CoMix BOOLEAN   ####
-#__________________________#
-
-bool_is_comix_ui <- FALSE
-
-#__________________________#
 ##  R-PACKAGES          ####
 #__________________________#
 # socialmixr    to process social contact data
-# npsp          to use 'simage' in plot_cnt_matrix
 # countrycode   to convert country names into iso3 codes
 # data.table    to adapt socialmixr::contact_matrix
 
@@ -284,28 +277,5 @@ data_description <- data_description[d_order,]
 # make data table
 data_table_description <- setDT(data_description)
 
-data_table_description
-
-
-#__________________________________#
-##  CoMix-related updates       ####
-#__________________________________#
-
-# select countries
-select_ref <-  opt_country_admin$reference[opt_country_admin$bool_comix == bool_is_comix_ui]
-
-# update opt_country
-country_ref <- get_reference(opt_country)
-opt_country <- opt_country[country_ref %in% select_ref]
-
-# update data table description
-table_ref <- get_reference(data_table_description$Name)
-data_table_description <- data_table_description[table_ref %in% select_ref,]
-
-# UserInterface title
-if(bool_is_comix_ui){
-  ui_title <- "SOCRATES CoMix"
-  bool_selectInput_duration <- "false"
-}
 
 

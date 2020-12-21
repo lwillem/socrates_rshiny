@@ -9,12 +9,8 @@
 # library('shiny')
 # runGitHub('socrates_rshiny','lwillem')
 
-# clear workspace
-rm(list=ls(all=TRUE))
-
-# load all functions and packages
-library('shiny')
-source('R/socrates_main.R')
+# # load all functions and packages
+# this is done automatically when running the App
 
 # Define UI for social contact application
 shinyUI(pageWithSidebar(

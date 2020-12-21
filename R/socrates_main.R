@@ -8,7 +8,8 @@
 
 # load packages and help functions
 source('R/download_matrices.R')
-source('R/load_config.R')
+source('R/load_config_base.R')
+source('R/load_config_comix.R')
 source('R/contact_matrix_fix.R')
 source('R/plot_mean_number_contacts.R')
 source('R/plot_social_contact_matrix.R')

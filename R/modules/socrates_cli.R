@@ -19,7 +19,7 @@ rm(list=ls())
 
 # load functions and options
 source('R/socrates_main.R')
-source('R/load_config.R')
+source('R/load_config_base.R') # re-load settings (without CoMix-based selection)
 
 # use the UI defined lists
 opt_country

@@ -7,8 +7,7 @@
 #___________________________________________________________________________
 
 # load all functions and packages
-library('shiny')
-source('R/socrates_main.R')
+# this is done automatically when running the App
 
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {

@@ -1,17 +1,18 @@
 #___________________________________________________________________________
 # This file is part of the SOcial Contact RATES (SOCRATES) modelling project
 # 
-# => RUN THE SOCRATES FUNCTIONS LOCALLY
+# A. Run SOCRATES functions via R(studio)
+# B. Run a remote SOCRATES UI
 #
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 ################################################################### #
-# run SOCRATES via R(studio) ----
+# Run SOCRATES functions via R(studio) ----
 ################################################################### #
+
 # note: set your work directory to the main SOCRATES repo folder to 
 #       enable the relative file paths
-
 # setwd('path/to/SOCRATES/main')
 
 # clear workspace
@@ -105,7 +106,7 @@ socrates_out <- run_social_contact_analysis(country,
                                             cnt_location,
                                             cnt_matrix_features,
                                             age_breaks_text,
-                                            weight.threshold,
+                                            weight_threshold,
                                             bool_transmission_param,
                                             age_susceptibility_text,
                                             age_infectiousness_text,
@@ -120,7 +121,7 @@ plot_cnt_matrix(socrates_out$matrix)
 
 
 ################################################################### #
-# run the SOCRATES UI locally ----
+# B. Run a remote SOCRATES UI  ----
 ################################################################### #
 
 if(0==1){ # never executed...

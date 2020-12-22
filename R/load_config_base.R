@@ -187,10 +187,10 @@ version_id <- paste0('v',read.table('./DESCRIPTION.txt',nrows=1,sep=' ',colClass
 url        <- a("socialcontactdata.org", href="http://www.socialcontactdata.org",target="_blank")
 
 # socrates data tool url
-url_socrates <- a("SOCRATES initiative", href="https://lwillem.shinyapps.io/socrates_rshiny/",target="_blank")
+url_socrates <- a("SOCRATES initiative", href="http://socialcontactdata.org/socrates/",target="_blank")
 
 # socrates comix url
-url_socrates_comix <- a("SOCRATES CoMix", href="https://lwillem.shinyapps.io/socrates_comix/",target="_blank")
+url_socrates_comix <- a("SOCRATES CoMix", href="http://socialcontactdata.org/socrates-comix/",target="_blank")
 
 # SPC doc url
 url_doc_spc <- a("is provided here.", href="https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_spc_france.md",target="_blank")

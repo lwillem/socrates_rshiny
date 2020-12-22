@@ -213,7 +213,7 @@ shinyServer(function(input, output, session) {
                                        cnt_location = input$cnt_location,
                                        cnt_matrix_features = opt_matrix_features[features_select],
                                        age_breaks_text     = input$age_breaks_text,
-                                       max_part_weight     = max_part_weight,
+                                       weight_threshold     = weight_threshold,
                                        bool_transmission_param = input$bool_transmission_param,
                                        age_susceptibility_text = age_susceptibility_text,
                                        age_infectiousness_text = age_infectiousness_text,
@@ -244,7 +244,7 @@ shinyServer(function(input, output, session) {
     # print results
     output$social_contact_analysis <- renderPrint({
       # exclude results with separate tab
-      list_exclude <- c('weights','participants','meta_data')
+      list_exclude <- c('weights','participants','participants.weights','meta_data')
       out[!names(out) %in% list_exclude]
     })
     
@@ -277,7 +277,7 @@ shinyServer(function(input, output, session) {
                                     cnt_location = input$cnt_location,
                                     cnt_matrix_features = opt_matrix_features[features_select],
                                     age_breaks_text     = input$age_breaks_text,
-                                    max_part_weight     = max_part_weight,
+                                    weight_threshold     = weight_threshold,
                                     bool_transmission_param = input$bool_transmission_param,
                                     age_susceptibility_text = age_susceptibility_text,
                                     age_infectiousness_text = age_infectiousness_text,
@@ -315,10 +315,10 @@ shinyServer(function(input, output, session) {
     })
     # add weights table
     output$table_weights <- renderDataTable({
-      if(any(is.null(out$weights))){
+      if(any(is.null(out$participants.weights))){
         data.table('No weights selected' = '')
       } else {
-        out$weights
+        out$participants.weights
       }
     },
     options = list(

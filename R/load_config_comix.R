@@ -10,7 +10,7 @@
 ##  SET CoMix BOOLEAN   ####
 #__________________________#
 
-bool_is_comix_ui <- TRUE
+bool_is_comix_ui <- FALSE
 
 #__________________________________#
 ##  CoMix-related updates       ####

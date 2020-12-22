@@ -172,7 +172,7 @@ names(opt_waves)    <- unlist(opt_waves)
 #__________________________#
 
 ## MAXIMUM WEIGHT
-max_part_weight <- 3
+weight_threshold <- 3
 
 
 #__________________________#

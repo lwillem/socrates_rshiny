@@ -87,7 +87,7 @@ matrix_out <- contact_matrix(survey_obj,
                              symmetric  = TRUE,
                              quiet      = TRUE,
                              weigh.dayofweek = TRUE,
-                             weigh.age.group = TRUE)
+                             weigh.age       = TRUE)
 names(matrix_out)
 
 # inspect contact matrix using internal function(s)  
@@ -105,7 +105,7 @@ socrates_out <- run_social_contact_analysis(country,
                                             cnt_location,
                                             cnt_matrix_features,
                                             age_breaks_text,
-                                            max_part_weight,
+                                            weight.threshold,
                                             bool_transmission_param,
                                             age_susceptibility_text,
                                             age_infectiousness_text,

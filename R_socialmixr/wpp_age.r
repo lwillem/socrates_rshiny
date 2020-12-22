@@ -23,34 +23,35 @@ wpp_age <- function(countries, years)
     female <- NULL
     male <- NULL
     country_code <- NULL
-
+    name <- NULL
+    
     data(popF, package = "wpp2019", envir = environment())
     data(popM, package = "wpp2019", envir = environment())
     
     popM <- data.table(popM)
     popF <- data.table(popF)
-
+    
     popM <- popM[, sex := "male"]
     popF <- popF[, sex := "female"]
-
+    
     pop <- rbind(popM, popF)
     
-    # fix for 2019 package
-    pop$country <- pop$name
-    pop$name <- NULL
-
+    # change column names to remain compatible with the 2015 package
+    pop[,country:=name]
+    pop[,name:=NULL]
+    
     if (!missing(countries))
     {
         ## match by UN country code
         pop <- suppressWarnings(pop[country_code %in% countrycode(countries, "country.name", "iso3n")])
     }
-
+    
     if (nrow(pop) > 0) {
         pop <- melt(pop, id.vars = c("country", "country_code", "age", "sex"), variable.name = "year")
         pop <- data.table(dcast(pop, country + country_code + age + year ~ sex, value.var = "value"))
-
+        
         pop[, year := as.integer(as.character(year))]
-
+        
         if (!missing(years))
         {
             if (any(pop$year %in% years))
@@ -63,11 +64,11 @@ wpp_age <- function(countries, years)
                 pop <- pop[year %in% nearest.year]
             }
         }
-
+        
         pop <- pop[, lower.age.limit := as.integer(sub("[-+].*$", "", age))]
         pop <- pop[, list(country, lower.age.limit, year, population = (female + male) * 1000)]
     }
-
+    
     return(as.data.frame(pop))
 }
 

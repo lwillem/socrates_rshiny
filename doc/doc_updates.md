@@ -12,6 +12,8 @@ SOCRATES is developped as part of a social contact data sharing initiative and a
 
 ## Platform updates
 
+* [2020-12-22] Changes that affect the weighted, symmetric and per capita matrices. (1) The reference population data is not truncated anymore at the upper age limit of the participants. As such, the last age group contains ALL ages up to 105 years of age (=the default of the wpp package). This truncation was included to align the participant and referece population data, but was not consistent with the notation of the open-end age group. (2) The combined weights are standardized based on post-strafication weights and truncation of weights is done after standardisation (and followed by another standardisation). More documentation on the post-stratification weights is provided [here](https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_weights.pdf).
+
 * [2020-10-05] Contacts whose ages are not given exactly will have by default their age sampled at random from the given range. If you want to use the midpoint, deselect "Age range: sample at random"
 
 * [2020-10-14] Participants with reported contacts without age information are no longer removed by default, but these contacts are "ignored". If you want to remove participants with at least one missing contact age for the selected contact features, select "Missing contact age: remove participant".

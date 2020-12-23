@@ -42,7 +42,7 @@ input <- list(age_breaks_num = c(0,18),
                 bool_reciprocal = TRUE,
                 bool_suppl_professional_cnt = TRUE,
                 wave = 3,
-                cnt_reduction = data.frame(Transport=0.5,Leisure=1,Otherplace=0.9)
+                cnt_reduction = data.frame(Transport=0,Leisure=0,Otherplace=0) # no reductions for this example
   )
   
 # include age breaks as text (required for SOCRATES)
@@ -88,7 +88,8 @@ matrix_out <- contact_matrix(survey_obj,
                              symmetric  = TRUE,
                              quiet      = TRUE,
                              weigh.dayofweek = TRUE,
-                             weigh.age       = TRUE)
+                             weigh.age       = TRUE,
+                             weight.threshold = weight_threshold)
 names(matrix_out)
 
 # inspect contact matrix using internal function(s)  

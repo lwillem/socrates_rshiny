@@ -82,9 +82,15 @@ shinyUI(pageWithSidebar(
                                               choices = opt_location,
                                               selected = opt_location))
                         ),
-                tabPanel("Missing data", 
+                tabPanel("Options", 
                          checkboxInput("bool_age_range", "Age range: sample at random",value = TRUE),
-                         checkboxInput("bool_age_missing", "Missing contact age: remove participant",value = FALSE)
+                         checkboxInput("bool_age_missing", "Missing contact age: remove participant",value = FALSE),
+                         checkboxInput("bool_matrix_limit", "Specify the color scale of the social contact matrix?",value = FALSE),
+                         conditionalPanel(condition = "input.bool_matrix_limit == true",
+                                          numericInput(inputId="ui_scale_max",
+                                                       label = "Color scale upper limit (≥1)",
+                                                       value = NA,
+                                                       min   = 1))
                 ),
                 tabPanel("Distancing", checkboxInput("bool_physical_distancing","Include physical distancing"),
                                        conditionalPanel(

@@ -9,7 +9,7 @@
 
 #mij <- contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))$matrix
 #mij <- matrix_out$matrix
-plot_cnt_matrix <- function(mij,plot_title_extra = ''){
+plot_cnt_matrix <- function(mij,plot_title_extra = '',scale_max=NA){
   if(all(is.na(mij))){
     return(NA)
   }
@@ -19,7 +19,7 @@ plot_cnt_matrix <- function(mij,plot_title_extra = ''){
              xlab="Age of participant (year)",
              ylab="Age of contact (year)", 
              legend.width=1,
-             slim=c(min(mij,na.rm=T), max(mij,na.rm=T)), 
+             slim=c(min(0,mij,na.rm=T), ifelse(is.na(scale_max),max(mij,na.rm=T),max(1,scale_max))), 
              cex.lab=1.2,
              cex.main=1.2, 
              las=0.1,

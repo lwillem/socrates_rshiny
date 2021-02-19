@@ -222,14 +222,15 @@ shinyServer(function(input, output, session) {
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
-      plot_cnt_matrix(out$matrix)
+      
+      scale_max <- ifelse(input$bool_matrix_limit == TRUE ,input$ui_scale_max,NA) 
+      plot_cnt_matrix(out$matrix,scale_max=scale_max)
     })
     
     # plot social contact matrix per capita
     output$plot_cnt_matrix_per_capita <- renderPlot({
-      
       if('matrix_per_capita' %in% names(out)){
-        plot_cnt_matrix(out$matrix_per_capita, 'per capita')
+        plot_cnt_matrix(mij = out$matrix_per_capita, 'per capita')
       } else{
         plot(0,col=0,axes=F,xlab='',ylab='')
         text(1,0,"MISSING DATA ISSUE...\nUNABLE TO PLOT THE MATRIX")    
@@ -238,7 +239,7 @@ shinyServer(function(input, output, session) {
     
     # plot mean number of social contacts
     output$plot_mean_number_contacts <- renderPlot({
-      plot_mean_number_contacts(out$matrix)
+      plot_mean_number_contacts(mij = out$matrix)
     })
     
     # print results

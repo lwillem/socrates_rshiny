@@ -64,7 +64,7 @@ survey_obj <- get_survey_object(country,
                               duration,
                               gender,
                               cnt_location,
-                              bool_reciprocal,
+                              bool_reciprocal = "Reciprocal" %in% cnt_matrix_features,
                               bool_suppl_professional_cnt = TRUE,
                               bool_hhmatrix_selection = FALSE,
                               wave = wave)
@@ -82,13 +82,24 @@ lapply(cnt_obj,dim)
 table(is.na(cnt_obj$matrix))
 sum(cnt_obj$participants$contacts_reported)
 
-# get symmetric contact matrix
+# get (default) symmetric contact matrix
 matrix_out <- contact_matrix(survey_obj, 
                              age.limits = age_breaks_num,
                              symmetric  = TRUE,
+                             quiet      = TRUE)
+names(matrix_out)
+
+# inspect contact matrix using internal function(s)  
+plot_cnt_matrix(matrix_out$matrix)
+
+# get (weighted) contact matrix based on previous input values
+matrix_out <- contact_matrix(survey_obj, 
+                             age.limits = age_breaks_num,
+                             symmetric  = "Reciprocal" %in% cnt_matrix_features, #TRUE,
+                             estimated.contact.age = 'sample',
                              quiet      = TRUE,
-                             weigh.dayofweek = TRUE,
-                             weigh.age       = TRUE,
+                             weigh.dayofweek = "Weigh by week/weekend" %in% cnt_matrix_features, #TRUE,
+                             weigh.age       = "Weigh by age" %in% cnt_matrix_features, #TRUE,
                              weight.threshold = weight_threshold)
 names(matrix_out)
 

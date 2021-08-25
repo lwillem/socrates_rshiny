@@ -13,6 +13,9 @@ plot_cnt_matrix <- function(mij,plot_title_extra = '',scale_max=NA){
   if(all(is.na(mij))){
     return(NA)
   }
+  if(!exists('format_num_digits')){
+    format_num_digits <- 2
+  }
   redc <- rev(heat.colors(100))
   par(mar=c(5, 6, 2, 2),mgp=c(3,0.5,0))
   p <- simage(s = mij, 

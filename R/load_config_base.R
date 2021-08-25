@@ -80,8 +80,15 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'South Africa (Dodd 2011)',
                         'Belgium 2010* (Van Hoang 2020)',
                         'Belgium 2020 CoMix (Coletti 2020)'
+                        ,'Austria 2020 CoMix (TBD)'   ### Add Verelst et al. when out
+                        ,'Denmark 2020 CoMix (TBD)'   ### Add Verelst et al. when out                        
+                        ,'Spain 2020 CoMix (TBD)'   ### Add Verelst et al. when out
+                        ,'France 2020 CoMix (TBD)'   ### Add Verelst et al. when out
+                        ,'Italy 2020 CoMix (TBD)'   ### Add Verelst et al. when out  
+                        ,'Portugal 2020 CoMix (TBD)'   ### Add Verelst et al. when out  
+                        ,'Poland 2020 CoMix (TBD)'   ### Add Verelst et al. when out                                                
                        )
-
+#Austria","Denmark","Spain","France","Italy","Portugal","Poland
 # fix for Belgium polymod
 opt_country[grepl('Belgium \\(',opt_country)] <- "Belgium 2006 (Mossong 2008)"
 
@@ -92,12 +99,27 @@ opt_country_admin <- data.frame(name = opt_country,
                                             'russia','china','zambia_south_africa','zambia_south_africa',
                                             'belgium2010',
                                             #'belgium2020_comix_with_wave9'),
-                                             'belgium2020_comix'),
+                                             'belgium2020_comix'
+                                             ,'CoMix_Austria2020'
+                                             ,'CoMix_Denmark2020'
+                                             ,'CoMix_Spain2020'
+                                             ,'CoMix_France2020'
+                                             ,'CoMix_Italy2020'
+                                             ,'CoMix_Portugal2020'
+                                             ,'CoMix_Poland2020'
+                                             ),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',
                                              'Russia','China','Zambia','South Africa',
                                              'Belgium',
-                                             'Belgium'),
+                                             'Belgium'
+                                             ,'Austria'
+                                             ,'Denmark'
+                                             ,'Spain'
+                                             ,'France'
+                                             ,'Italy'
+                                             ,'Portugal'
+                                             ,'Poland'),
                                 stringsAsFactors = FALSE)
 
 # add with holiday boolean
@@ -265,6 +287,11 @@ data_description[opt_country[grepl('Belgium 2010\\*',opt_country)]] <- 'Van Hoan
 
 # add info for CoMix-BE
 data_description['Belgium 2020 CoMix (Coletti 2020)'] <- 'Coletti et al. (2020) CoMix: comparing mixing patterns in the Belgian population during and after lockdown. Scientific Reports 10, 21885'
+
+# add info for CoMix-EU (to be filled)
+data_description['Italy 2021 CoMix'] <- 'TBD'
+
+
 
 # reformat to table
 data_description <- data.frame('Name' = names(data_description),

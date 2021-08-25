@@ -285,6 +285,11 @@ get_survey_object <- function(country,
   data_part   <- survey_data$participants
   data_cnt    <- survey_data$contacts
   
+  #TODO: replace temporary fix by adjusting data cleaning    
+  if("round" %in% names(data_part)){
+    data_part$wave <- data_part$round
+  }
+  
   # option to select country-specific participant and contact data
   if(nchar(sel_dataset$country)>0){
     bool_country <- (data_part$country == sel_dataset$country)
@@ -365,29 +370,38 @@ get_survey_object <- function(country,
     # first select cnt data of remaining participants
     data_cnt <- data_cnt[data_cnt$part_id %in% data_part$part_id]
     
+    # make sure the gender variable is used as character
+    data_cnt$cnt_gender   <- as.character(data_cnt$cnt_gender)
+    data_part$part_gender <- as.character(data_part$part_gender)
+    
     # set gender-specific booleans
     bool_cnt_female  <- data_cnt$cnt_gender   == 'F'
     bool_part_female <- data_part$part_gender == 'F'
+    bool_cnt_male    <- data_cnt$cnt_gender   == 'M'
+    bool_part_male   <- data_part$part_gender == 'M'
     
     # merge dataset to compare participant and contact gender
-    data_cnt_gender  <- merge(data_cnt,data_part[,c('part_id','part_gender')],by='part_id')
+    data_cnt_gender  <- merge(data_cnt[,c('part_id','cnt_gender')],data_part[,c('part_id','part_gender')],by='part_id')
+    data_cnt_gender$cnt_gender[!data_cnt_gender$cnt_gender %in% c('M','F')] <- NA
+    data_cnt_gender$part_gender[!data_cnt_gender$part_gender %in% c('M','F')] <- NA
     bool_gender_diff <- data_cnt_gender$cnt_gender != data_cnt_gender$part_gender
+    bool_gender_diff <- bool_gender_diff & !is.na(bool_gender_diff)
     
     if(gender == opt_gender[[2]]){                  # female-female
       data_cnt       <- data_cnt[bool_cnt_female,]
       data_part      <- data_part[bool_part_female,]
     } else if(gender == opt_gender[[5]]){           # male-male
-      data_cnt       <- data_cnt[!bool_cnt_female,]
-      data_part      <- data_part[!bool_part_female,]
+      data_cnt       <- data_cnt[bool_cnt_male,]
+      data_part      <- data_part[bool_part_male,]
     } else if(bool_reciprocal){
       data_cnt       <- data_cnt[bool_gender_diff,]
     } else {
       if(gender == opt_gender[[3]]){                # female-male
-        data_cnt       <- data_cnt[bool_gender_diff,]
+        data_cnt       <- data_cnt[bool_cnt_male,]
         data_part      <- data_part[bool_part_female,]
       } else if(gender == opt_gender[[4]]){         # male-female
-        data_cnt       <- data_cnt[bool_gender_diff,]
-        data_part      <- data_part[!bool_part_female,]
+        data_cnt       <- data_cnt[bool_cnt_female,]
+        data_part      <- data_part[bool_part_male,]
       }
     }
   }

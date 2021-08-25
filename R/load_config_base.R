@@ -100,13 +100,13 @@ opt_country_admin <- data.frame(name = opt_country,
                                             'belgium2010',
                                             #'belgium2020_comix_with_wave9'),
                                              'belgium2020_comix'
-                                             ,'CoMix_Austria2020'
-                                             ,'CoMix_Denmark2020'
-                                             ,'CoMix_Spain2020'
-                                             ,'CoMix_France2020'
-                                             ,'CoMix_Italy2020'
-                                             ,'CoMix_Portugal2020'
-                                             ,'CoMix_Poland2020'
+                                             ,'austria2020_comix'
+                                             ,'denmark2020_comix'
+                                             ,'spain2020_comix'
+                                             ,'france2020_comix'
+                                             ,'italy2020_comix'
+                                             ,'portugal2020_comix'
+                                             ,'poland2020_comix'
                                              ),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',

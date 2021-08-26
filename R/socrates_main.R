@@ -36,10 +36,16 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # create option to add notes
   fct_out$notes <- NULL
   
-  # if matrix contains NA's => reciproity is not possible ==>> add warning
-  if(any(is.na(cnt_matrix_ui$matrix)) & 
+  # if matrix contains NA's => reciprocity is not possible ==>> add warning
+  if(any(is.na(cnt_matrix_ui$matrix)) &
      opt_matrix_features[[1]]  %in% cnt_matrix_features){
-    fct_out$notes <- "Contact matrix contains NA, reciprocity is not possible."
+    fct_out$notes <- "Contact matrix contains missing data, so it is not possible to generate a symmetric matrix (cfr. reciprocity)."
+  }
+
+  # reciproity has also effect on the analysis by gender
+  if(gender %in% unlist(opt_gender[3:4]) &
+     opt_matrix_features[[1]]  %in% cnt_matrix_features){
+    fct_out$notes <- "Gender-specific data selection accounts for reciprocity, so Male-Female == Female-Male."
   }
   
   # include physical distancing?

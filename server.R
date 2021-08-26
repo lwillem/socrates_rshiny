@@ -234,7 +234,7 @@ shinyServer(function(input, output, session) {
         plot_cnt_matrix(mij = out$matrix_per_capita, 'per capita')
       } else{
         plot(0,col=0,axes=F,xlab='',ylab='')
-        text(1,0,"MISSING DATA ISSUE...\nUNABLE TO PLOT THE MATRIX")    
+        text(1,0,"MISSING DATA ISSUE...\nUNABLE TO GENERATE THIS MATRIX \nConsider adjusting the age limits.")    
       }
     })
     

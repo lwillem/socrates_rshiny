@@ -20,13 +20,8 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
     location_matrices_per_capita <- list()
     
     # set experimental design by location and reciprocity
-    exp_design <- data.frame(location     = c(opt_location,'total','total'),
-                             reciprocal   = c(rep(FALSE,7),TRUE)
-                             )
-    exp_design$name <- tolower(paste0(exp_design$location,ifelse(exp_design$reciprocal,'_reciprocal','')))
-    
-    # disable reciprocity by default
-    cnt_matrix_features <- cnt_matrix_features[!grepl('reciprocal',cnt_matrix_features,ignore.case = T)]
+    exp_design      <- data.frame(location     = c('total',opt_location))
+    exp_design$name <- tolower(paste0(exp_design$location))
     
     i_loc <- 1
     # loop over all contact locations
@@ -38,12 +33,6 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
         sel_location <- opt_location
       }
 
-      # add reciprocity if needed
-      sel_matrix_features <- cnt_matrix_features
-      if(exp_design$reciprocal[i_loc]){
-        sel_matrix_features <- c(sel_matrix_features,opt_matrix_features[grepl('reciprocal',opt_matrix_features,ignore.case = T)])
-      } 
-
       suppressWarnings(
       # run SOCRATES-app main function
       out_all <- run_social_contact_analysis(country  = country,
@@ -52,9 +41,9 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
                                              duration = duration,
                                              gender   = gender,
                                              cnt_location            = sel_location,
-                                             cnt_matrix_features     = sel_matrix_features,
+                                             cnt_matrix_features     = cnt_matrix_features,
                                              age_breaks_text         = age_breaks_text,
-                                             weight_threshold         = weight_threshold,
+                                             weight_threshold        = weight_threshold,
                                              bool_transmission_param = bool_transmission_param,
                                              age_susceptibility_text = age_susceptibility_text,
                                              age_infectiousness_text = age_infectiousness_text,

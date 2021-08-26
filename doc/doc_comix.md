@@ -13,10 +13,13 @@ During the first two waves (April & May 2020) of the survey, the reduction in th
 
 [Coletti  et al. (2020) CoMix: comparing mixing patterns in the Belgian population during and after lockdown. Scientific Reports 10, 21885 (2020).](https://doi.org/10.1038/s41598-020-78540-7)
 
+<!--- 
 ## CoMix UK
 For more info, please see:
 
+
 [Gimma et al. (2021) CoMix: Changes in social contacts as measured by the contact survey during the COVID-19 pandemic in England between March 2020 and March 2021. MedRxiv.](https://doi.org/10.1101/2021.05.28.21257973)
+--->
 
 ## CoMix for other European countries
 For more info, please see:

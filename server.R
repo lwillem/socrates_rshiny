@@ -30,7 +30,7 @@ shinyServer(function(input, output, session) {
     # This input exists if the `country` survey contains wave info
     if (opt_country_admin$has_waves[opt_country_admin$name == input$country]) {
       selectInput(inputId = 'wave_dynamic',
-                  label   = 'Wave',
+                  label   = 'Wave: start [panel]',
                   choices = opt_waves)
     } else {
       return(NULL)
@@ -127,8 +127,9 @@ shinyServer(function(input, output, session) {
     }
     
     # update wave  options
+    opt_waves <- unlist(opt_country_admin$opt_wave[flag_country])
     if(opt_country_admin$has_waves[flag_country]){
-      updateSelectInput(session,"wave_dynamic", choices = opt_waves[1:(opt_country_admin$num_waves[flag_country]+1)], selected = input$wave_dynamic)
+      updateSelectInput(session,"wave_dynamic", choices = opt_waves, selected = input$wave_dynamic)
     } else {
       updateSelectInput(session,"wave_dynamic", choices = opt_waves[1], selected = opt_waves[1])
     }

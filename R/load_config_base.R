@@ -31,6 +31,8 @@ library(curl)
 source('R/npsp/simage.R')
 source('R/npsp/splot.R')
 
+# loading help functions on wave id
+source('R/wave_lib.R')
 
 #__________________________#
 ##  UI PANEL OPTIONS    ####
@@ -154,10 +156,7 @@ opt_country_admin$has_hhmember_cnt_data[grepl('Belgium 2010',opt_country_admin$n
 # add "has wave info" boolean
 opt_country_admin$has_waves <- FALSE
 opt_country_admin$has_waves[grepl('comix',opt_country_admin$dataset)] <- TRUE
-opt_country_admin$has_waves[grepl('france',opt_country_admin$dataset)] <- FALSE
-opt_country_admin$num_waves <- 1
-opt_country_admin$num_waves[grepl('comix',opt_country_admin$dataset)] <- 8
-opt_country_admin$num_waves[grepl('france',opt_country_admin$dataset)] <- 2
+opt_country_admin$has_waves[grepl('france',opt_country_admin$dataset)] <- TRUE
 
 # add "comix boolean"
 opt_country_admin$bool_comix <- FALSE
@@ -176,8 +175,16 @@ opt_country <- opt_country[!grepl('China',opt_country)]
 # reformat and sort opt_country
 opt_country <- sort(opt_country)
 
-# waves
-opt_waves <- (c("All",1:max(opt_country_admin$num_waves,na.rm=T))) # 0 is 'no'
+# waves (survey specific options)
+opt_waves <- 'All'
+opt_country_admin$opt_wave <- opt_waves
+for(i_country in 1:nrow(opt_country_admin)){
+  if(opt_country_admin$has_waves[i_country]){
+    data_part <- readRDS(opt_country_admin$dataset[i_country])$participants
+    data_part <- add_wave_id(data_part)
+    opt_country_admin$opt_wave[i_country] <- list(c(opt_waves,sort(unique(data_part$wave))))  
+  }
+}
 
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)

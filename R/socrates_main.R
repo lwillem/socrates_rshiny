@@ -285,11 +285,9 @@ get_survey_object <- function(country,
   data_part   <- survey_data$participants
   data_cnt    <- survey_data$contacts
   
-  #TODO: replace temporary fix by adjusting data cleaning    
-  if("round" %in% names(data_part)){
-    data_part$wave <- data_part$round
-  }
-  
+  # include wave id notation  
+  data_part <- add_wave_id(data_part)
+
   # option to select country-specific participant and contact data
   if(nchar(sel_dataset$country)>0){
     bool_country <- (data_part$country == sel_dataset$country)
@@ -416,7 +414,7 @@ get_survey_object <- function(country,
       data_part <- data_part[bool_part_wave,]
       
       bool_cnt_wave <- data_cnt$part_id %in%  data_part$part_id
-      data_cnt  <- data_cnt[bool_cnt_wave,]
+      data_cnt      <- data_cnt[bool_cnt_wave,]
       # print(paste('select wave', wave))
       # print(table(data_part$wave))
     }
@@ -437,10 +435,10 @@ get_survey_object <- function(country,
     data_cnt_tmp[is.na(data_cnt_tmp)] <- 0
     
     # add missing location to "other"
+    # note: missing could also be "other locations than specified in opt_location"
     cnt_loc_missing <- rowSums(data_cnt_tmp,na.rm=T) == 0
     data_cnt_tmp$cnt_otherplace  <- as.numeric(data_cnt_tmp$cnt_otherplace | cnt_loc_missing)
-    #TODO: check new locations?
-    
+
     # 1. calculate cumulative sum (from left to right)
     tmp_loc_cumsum <- t(apply(data_cnt_tmp,1,cumsum))
     

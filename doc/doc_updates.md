@@ -12,6 +12,9 @@ SOCRATES is developped as part of a social contact data sharing initiative and a
 
 ## Major platform updates
 
+* [v1.52 - 2021-08-24] The selection of participants and contacts by gender is now explicitly for "Male" and "Female". Other survey options for gender are now discarted when a selection by gender is made, since they caused issues when exploring e.g. male-female interactions that were identified as "not identical gender responses".  
+
+
 * [v1.51 - 2020-12-22] Changed methods to calculate weighted, symmetric and per capita matrices. (1) The reference population data is not truncated anymore at the upper age limit of the participants. As such, the last age group contains ALL ages up to 105 years of age (=the default of the wpp package). This truncation was included to align the participant and referece population data, but was not consistent with the notation of the open-end age group. (2) The combined weights are standardized based on post-strafication weights and truncation of weights is done after standardisation (and followed by another standardisation). More documentation on the post-stratification weights is provided [here](https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_weights.pdf).
 
 * [v1.45 - 2020-11-10] Updated the UN world population prospects version from the 2015 to the 2019 revision^(1)^.

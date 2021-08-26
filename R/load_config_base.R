@@ -49,8 +49,8 @@ opt_day_type <- list("All contacts",
                      "Monday-Friday (excl. holidays)",
                      "All contacts (excl. holidays)") 
 
-opt_touch    <- list("All contacts", "Physical contacts","Non-physical contacts")
-opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes","More than 15 minutes","More than 1 hour","More than 4 hours")
+opt_touch    <- list("All", "Physical contacts","Non-physical contacts")
+opt_duration <- list("All","Less than 5 minutes", "Less than 15 minutes","More than 15 minutes","More than 1 hour","More than 4 hours")
 
 # location note: this sequence affects the "contact hierarchy", as such, if a contact is reported 
 # at multiple locations, we use only the first location in this sequence 
@@ -80,13 +80,13 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'South Africa (Dodd 2011)',
                         'Belgium 2010* (Van Hoang 2020)',
                         'Belgium 2020 CoMix (Coletti 2020)'
-                        ,'Austria 2020 CoMix (TBD)'   ### Add Verelst et al. when out
-                        ,'Denmark 2020 CoMix (TBD)'   ### Add Verelst et al. when out                        
-                        ,'Spain 2020 CoMix (TBD)'   ### Add Verelst et al. when out
-                        ,'France 2020 CoMix (TBD)'   ### Add Verelst et al. when out
-                        ,'Italy 2020 CoMix (TBD)'   ### Add Verelst et al. when out  
-                        ,'Portugal 2020 CoMix (TBD)'   ### Add Verelst et al. when out  
-                        ,'Poland 2020 CoMix (TBD)'   ### Add Verelst et al. when out                                                
+                        ,'Austria 2020 CoMix (Verelst 2021)'
+                        ,'Denmark 2020 CoMix (Verelst 2021)'                      
+                        ,'Spain 2020 CoMix (Verelst 2021)' 
+                        ,'France 2020 CoMix (Verelst 2021)' 
+                        ,'Italy 2020 CoMix (Verelst 2021)'  
+                        ,'Portugal 2020 CoMix (Verelst 2021)' 
+                        ,'Poland 2020 CoMix (Verelst 2021)'                                                
                        )
 #Austria","Denmark","Spain","France","Italy","Portugal","Poland
 # fix for Belgium polymod
@@ -177,7 +177,7 @@ opt_country <- opt_country[!grepl('China',opt_country)]
 opt_country <- sort(opt_country)
 
 # waves
-opt_waves <- (c("All waves",1:max(opt_country_admin$num_waves,na.rm=T))) # 0 is 'no'
+opt_waves <- (c("All",1:max(opt_country_admin$num_waves,na.rm=T))) # 0 is 'no'
 
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)
@@ -280,7 +280,7 @@ data_description[opt_country[grepl('Russia',opt_country)]] <- 'Litvinova et al. 
 data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- paste(data_description[opt_country[grepl('Zimbabwe',opt_country)]],'We selected one diary per participant.')
 
 # add info for France
-data_description[opt_country[grepl('France',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'This dataset contains supplementary professional contacts (SPC) and we selected one diary per participant.')
+data_description[opt_country[grepl('France 2015',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'This dataset contains supplementary professional contacts (SPC) and we selected one diary per participant.')
 
 # add info for Belgium2010
 data_description[opt_country[grepl('Belgium 2010\\*',opt_country)]] <- 'Van Hoang et al. (2020). Close contact infection dynamics over time: insights from a second large-scale social contact survey in Flanders, Belgium, in 2010-2011. MedRxiv. This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member.'
@@ -289,9 +289,7 @@ data_description[opt_country[grepl('Belgium 2010\\*',opt_country)]] <- 'Van Hoan
 data_description['Belgium 2020 CoMix (Coletti 2020)'] <- 'Coletti et al. (2020) CoMix: comparing mixing patterns in the Belgian population during and after lockdown. Scientific Reports 10, 21885'
 
 # add info for CoMix-EU (to be filled)
-data_description['Italy 2021 CoMix'] <- 'TBD'
-
-
+data_description[opt_country[grepl('(Verelst 2021)',opt_country)]] <- 'Verelst et al. (2021) SOCRATES-CoMix: A platform for timely and open-source contact mixing data during and in between COVID-19 surges and interventions in over 20 European countries. BMC Medicine, in revision.'
 
 # reformat to table
 data_description <- data.frame('Name' = names(data_description),

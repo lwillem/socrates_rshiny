@@ -439,6 +439,7 @@ get_survey_object <- function(country,
     # add missing location to "other"
     cnt_loc_missing <- rowSums(data_cnt_tmp,na.rm=T) == 0
     data_cnt_tmp$cnt_otherplace  <- as.numeric(data_cnt_tmp$cnt_otherplace | cnt_loc_missing)
+    #TODO: check new locations?
     
     # 1. calculate cumulative sum (from left to right)
     tmp_loc_cumsum <- t(apply(data_cnt_tmp,1,cumsum))

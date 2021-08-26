@@ -152,7 +152,7 @@ shinyUI(pageWithSidebar(
                          dataTableOutput('table_weights')),
                 tabPanel("Data sets",
                          uiOutput("project_website_data"),
-                         dataTableOutput("social_contact_data")),
+                         div(dataTableOutput("social_contact_data")), style = "font-size:80%"),
                 tabPanel("About CoMix",
                         includeMarkdown("doc/doc_comix.md")),
                 tabPanel("Updates",

@@ -346,7 +346,7 @@ shinyServer(function(input, output, session) {
   
   # create url link
   output$socrates_website_data <- renderUI({
-    tagList("The goal of the CoMix project is to measure social distancing during the COVID-19 pandemic. This tool is part of the", url_socrates)
+    tagList("The goal of the CoMix project has been to measure social distancing during the COVID-19 pandemic. This tool is part of the", url_socrates)
   })
   
   # create url link

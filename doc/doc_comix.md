@@ -24,7 +24,7 @@ For more info, please see:
 ## CoMix for other European countries
 For more info, please see:
 
-Verelst et al. (2021) SOCRATES-CoMix: A platform for timely and open-source contact mixing data during and in between COVID-19 surges and interventions in over 20 European countries. In revision.
+[Verelst et al. (2021) SOCRATES-CoMix: A platform for timely and open-source contact mixing data during and in between COVID-19 surges and interventions in over 20 European countries. BMC Medicine 19 (1):254 ](https://bmcmedicine.biomedcentral.com/articles/10.1186/s12916-021-02133-y).
 
 
 <br> 

@@ -290,13 +290,13 @@ data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- paste(data_descr
 data_description[opt_country[grepl('France 2015',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'This dataset contains supplementary professional contacts (SPC) and we selected one diary per participant.')
 
 # add info for Belgium2010
-data_description[opt_country[grepl('Belgium 2010\\*',opt_country)]] <- 'Van Hoang et al. (2020). Close contact infection dynamics over time: insights from a second large-scale social contact survey in Flanders, Belgium, in 2010-2011. MedRxiv. This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member.'
+data_description[opt_country[grepl('Belgium 2010\\*',opt_country)]] <- 'Van Hoang et al. (2020). Close contact infection dynamics over time: insights from a second large-scale social contact survey in Flanders, Belgium, in 2010-2011. BMC Infectious Diseases 21: 274. This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member.'
 
 # add info for CoMix-BE
 data_description['Belgium 2020 CoMix (Coletti 2020)'] <- 'Coletti et al. (2020) CoMix: comparing mixing patterns in the Belgian population during and after lockdown. Scientific Reports 10, 21885'
 
-# add info for CoMix-EU (to be filled)
-data_description[opt_country[grepl('(Verelst 2021)',opt_country)]] <- 'Verelst et al. (2021) SOCRATES-CoMix: A platform for timely and open-source contact mixing data during and in between COVID-19 surges and interventions in over 20 European countries. BMC Medicine, in revision.'
+# add info for CoMix-EU
+data_description[opt_country[grepl('(Verelst 2021)',opt_country)]] <- 'Verelst et al. (2021) SOCRATES-CoMix: A platform for timely and open-source contact mixing data during and in between COVID-19 surges and interventions in over 20 European countries. BMC Medicine 19(1):254.'
 
 # reformat to table
 data_description <- data.frame('Name' = names(data_description),

@@ -12,7 +12,7 @@ SOCRATES is developped as part of a social contact data sharing initiative and a
 
 ## Major platform updates
 
-* [v1.53 - 2021-08-26] The location-specific matrices that are downloaded via the GUI can be reciprocal. Before, the location-specific matricex were always non-reciprocal. From this version, the choice on reciprocity is defined by the user in the GUI, so the RData file is in line with the results in the GUI.  
+* [v1.53 - 2021-08-26] The location-specific matrices that are downloaded via the GUI can be reciprocal. Before, the location-specific matrices were always non-reciprocal. From this version, the choice on reciprocity is defined by the user in the GUI, so the RData file is in line with the results in the GUI.  
 
 * [v1.52 - 2021-08-24] The selection of participants and contacts by gender is now explicitly for "Male" and "Female". Other survey options for gender are now discarted when a selection by gender is made, since they caused issues when exploring e.g. male-female interactions that were identified as "not identical gender responses".  
 

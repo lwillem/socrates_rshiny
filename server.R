@@ -312,7 +312,7 @@ shinyServer(function(input, output, session) {
     # create url link
     output$project_website_weights <- renderUI({
       tagList('Based on the selected options, we calculate participant weights to account for age and the number of observations during week (5/7) and weekend (2/7) days. 
-                         The United Nation’s World Population Prospects are used as reference. Weights are constraint to a maximum of 3 to limit the influence of single participants.
+                         The United Nation’s World Population Prospects are used as reference. Weights are constrained to a maximum of 3 to limit the influence of single participants.
                          ',url_doc_weights)
     })
     # add weights table
@@ -352,7 +352,7 @@ shinyServer(function(input, output, session) {
   
   # create url link
   output$socrates_website_comix <- renderUI({
-    tagList("Also have look at", url_socrates_comix)
+    tagList("Also have a look at", url_socrates_comix)
   })
   
 })

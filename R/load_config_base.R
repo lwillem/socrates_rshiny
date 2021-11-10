@@ -80,13 +80,18 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'South Africa (Dodd 2011)',
                         'Belgium 2010* (Van Hoang 2020)',
                         'Belgium 2020 CoMix (Coletti 2020)'
-                        ,'Austria 2020 CoMix (TBD)'   ### Add Verelst et al. when out
-                        ,'Denmark 2020 CoMix (TBD)'   ### Add Verelst et al. when out                        
-                        ,'Spain 2020 CoMix (TBD)'   ### Add Verelst et al. when out
-                        ,'France 2020 CoMix (TBD)'   ### Add Verelst et al. when out
-                        ,'Italy 2020 CoMix (TBD)'   ### Add Verelst et al. when out  
-                        ,'Portugal 2020 CoMix (TBD)'   ### Add Verelst et al. when out  
-                        ,'Poland 2020 CoMix (TBD)'   ### Add Verelst et al. when out                                                
+                        ,'Austria 2020 CoMix (Verelst 2021)'   
+                        ,'Denmark 2020 CoMix (Verelst 2021)'                           
+                        ,'Spain 2020 CoMix (Verelst 2021)'   
+                        ,'France 2020 CoMix (Verelst 2021)'   
+                        ,'Italy 2020 CoMix (Verelst 2021)'     
+                        ,'Portugal 2020 CoMix (Verelst 2021)'     
+                        ,'Poland 2020 CoMix (Verelst 2021)'   
+                        ,'Finland 2021 CoMix (Verelst 2021)'                                                   
+                        ,'Greece 2021 CoMix (Verelst 2021)'                                                   
+                        ,'Lithuania 2021 CoMix (Verelst 2021)'                                                   
+                        ,'Slovenia 2021 CoMix (Verelst 2021)'   
+                        ,'Switzerland 2021 CoMix (Verelst 2021)'                                                   
                        )
 #Austria","Denmark","Spain","France","Italy","Portugal","Poland
 # fix for Belgium polymod
@@ -97,9 +102,8 @@ opt_country_admin <- data.frame(name = opt_country,
                                 dataset = c(rep("polymod",8),'peru','zimbabwe','france2012_spc',
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
-                                            'belgium2010',
-                                            #'belgium2020_comix_with_wave9'),
-                                             'belgium2020_comix'
+                                            'belgium2010'
+                                             ,'belgium2020_comix'
                                              ,'CoMix_Austria2020'
                                              ,'CoMix_Denmark2020'
                                              ,'CoMix_Spain2020'
@@ -107,6 +111,11 @@ opt_country_admin <- data.frame(name = opt_country,
                                              ,'CoMix_Italy2020'
                                              ,'CoMix_Portugal2020'
                                              ,'CoMix_Poland2020'
+                                             ,'CoMix_Finland2021'
+                                             ,'CoMix_Greece2021'
+                                             ,'CoMix_Lithuania2021'
+                                             ,'CoMix_Slovenia2021'
+                                             ,'CoMix_Switzerland2021'
                                              ),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',
@@ -119,7 +128,13 @@ opt_country_admin <- data.frame(name = opt_country,
                                              ,'France'
                                              ,'Italy'
                                              ,'Portugal'
-                                             ,'Poland'),
+                                             ,'Poland'
+                                             ,'Finland'                                                   
+                                             ,'Greece'                                                   
+                                             ,'Lithuania'                                                   
+                                             ,'Slovenia'   
+                                             ,'Switzerland'                                                                                                
+                                             ),
                                 stringsAsFactors = FALSE)
 
 # add with holiday boolean

@@ -20,6 +20,9 @@ library('data.table')
 library('markdown')
 library('wpp2015')
 library(shiny)
+library(tidyverse)
+library(ggthemes)
+library(ggpubr)
 
 # temporary to use the get_survey script outside the SocialMixr package
 library(httr)
@@ -34,6 +37,15 @@ source('R/npsp/splot.R')
 
 # loading help functions on wave id
 source('R/wave_lib.R')
+
+# load NGA functions
+source('R/NGA/check_prim.R')
+source('R/NGA/dfunctions.R')
+source('R/NGA/eigen.R')
+source('R/NGA/elasti.R')
+source('R/NGA/NGM_SIR.R')
+source('R/NGA/sens.R')
+source('R/plot_bar.R')
 
 #__________________________#
 ##  UI PANEL OPTIONS    ####

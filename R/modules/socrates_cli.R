@@ -30,7 +30,7 @@ opt_duration
 opt_gender
 
 # aggregate the input parameters in a list
-input <- list(age_breaks_num = c(0,18),
+input <- list(age_breaks_num = c(0,18,60),
                 country     = opt_country[1],
                 daytype     = opt_day_type[1],
                 touch       = opt_touch[[1]],
@@ -106,6 +106,53 @@ names(matrix_out)
 # inspect contact matrix using internal function(s)  
 plot_cnt_matrix(matrix_out$matrix)
 
+## 1.5 run the NGA analysis, which is printed in the UI ----
+################################################################### #
+
+A = matrix_out$matrix # contact matrix
+eigens=eigen_(A,norm = T);eigens  # compute eigenvalues
+
+sensi=sens(eigens) # compute sensitivities
+plot_cnt_matrix(sensi$sens,plot_title_extra = "- sensitivity") # plot sensitivities
+
+# compute the NGM for the SIR age-structured model
+
+beta=rep(0.05,3)
+gamma=rep(1/7,3)
+C=A
+N=c(100,100,100)
+S=N
+NGM = NGM_SIR(beta,gamma,C,N,S)
+
+plot_cnt_matrix(NGM,plot_title_extra = "- NGM") # plot NGM
+
+check_matrix(NGM) # check primitivity of NGM
+
+eigens_NGM=eigen_(NGM,norm = T);eigens_NGM # Eigenvalues and eigenvectors of the NGM
+
+sensi=sens(eigens_NGM) # sensitivity matrix for the NGM
+
+plot_cnt_matrix(sensi$sens,plot_title_extra = "- sensitivity") # plot sensitivity matrix
+
+# plot lower level sensitivity
+dbetas=all_dbeta(beta=beta,gamma=gamma,C=C,N=N,S=S,s=sensi)
+dbetas_plot=plot_bar(dbetas %>% filter(indicator=="sen"),"beta sensititivty")
+
+
+dSs=all_dS(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
+dSs_plot=plot_bar(dSs %>% filter(indicator=="sen"),"S sensitivity")
+
+dgammas=all_dgamma(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
+dgammas_plot=plot_bar(dgammas %>% filter(indicator=="sen"),"gamma sensitivity")
+
+dNs=all_dN(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
+dNs_plot=plot_bar(dNs%>% filter(indicator=="sen"),"N sensitivity")
+
+figure <- ggarrange(dbetas_plot, dSs_plot, dgammas_plot, dNs_plot,
+                    ncol = 2, nrow = 2)
+figure
+
+
 ## 2. run the SOCRATES analysis, which is printed in the UI ----
 ################################################################### #
 
@@ -122,16 +169,19 @@ socrates_out <- run_social_contact_analysis(country,
                                             bool_transmission_param,
                                             age_susceptibility_text,
                                             age_infectiousness_text,
+                                            bool_NGA_analysis=T,
+                                            beta=c(0.05,0.05,0.05),
+                                            gamma=c(1/7,1/7,1/7),
+                                            N=c(100,100,100),
+                                            S=c(100,100,100),
                                             wave = wave,
                                             cnt_reduction = cnt_reduction)
-
 # inspect socrates object
 names(socrates_out)
 socrates_out[1:6]
 plot_cnt_matrix(socrates_out$matrix)
 
-
-
+socrates_out$NGA$check_NGM
 ################################################################### #
 # B. Run a remote SOCRATES UI  ----
 ################################################################### #

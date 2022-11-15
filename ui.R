@@ -107,7 +107,12 @@ shinyUI(pageWithSidebar(
                                           condition = "input.bool_transmission_param == true",
                                           uiOutput("sliders_susceptibility"),
                                           uiOutput("sliders_infectiousness"))
-                        )
+                        ),
+                tabPanel("NGA",checkboxInput("bool_NGA_analysis", "NGA analysis",value = FALSE),
+                         conditionalPanel(
+                           condition = "input.bool_NGA_analysis == true",
+                           uiOutput("sliders_beta"))
+                )
                 ),
     
     hr(),

@@ -156,6 +156,7 @@ shinyServer(function(input, output, session) {
         })
       })
       
+      
       # update sliders: infectiousness
       output$sliders_infectiousness <- renderUI({
         
@@ -165,6 +166,16 @@ shinyServer(function(input, output, session) {
                       min = 0, max = 2, value = 1,step=0.1)
         }) # end: lapply
       }) # end= renderUI
+      
+      # update sliders: beta
+      output$sliders_beta <- renderUI({
+        
+        lapply(seq(age_groups), function(i) {
+          sliderInput(inputId = paste0("s_beta",i),
+                      label = paste('beta:',age_groups_label[i]),
+                      min = 0, max = 1, value = 0.05,step=0.05)
+        })
+      })
       
     } # end if-clause: update transmission sliders
     
@@ -193,6 +204,8 @@ shinyServer(function(input, output, session) {
     age_susceptibility_text    <- parse_input_list(input,'s_susceptibility')
     age_infectiousness_text    <- parse_input_list(input,'s_infectiousness')
     
+    age_beta_text <- parse_input_list(input,'s_beta')
+    
     # combine contact reductions
     # TODO: use notation from opt_location (capitals etc.)
     cnt_reduction <- data.frame(Home       = input$cnt_reduction_home/100,
@@ -219,7 +232,9 @@ shinyServer(function(input, output, session) {
                                        age_susceptibility_text = age_susceptibility_text,
                                        age_infectiousness_text = age_infectiousness_text,
                                        cnt_reduction           = cnt_reduction,
-                                       wave                    = values$w_dynamic)
+                                       wave                    = values$w_dynamic,
+                                       bool_NGA_analysis = input$bool_NGA_analysis,
+                                       age_beta_text           = age_beta_text)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({

@@ -21,6 +21,11 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
                                         weight_threshold,
                                         bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
+                                        bool_NGA_analysis,
+                                        age_beta_text,
+                                        gamma=c(1/7,1/7,1/7),
+                                        N=c(100,100,100),
+                                        S=c(100,100,100),
                                         cnt_reduction,
                                         wave){
   
@@ -136,6 +141,38 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     fct_out <- c(fct_out[1],
                  relative_incidence=list(relative_incidence),
                  fct_out[-1])
+  }
+  
+  # Add NGA analysis (if possible)
+  if(!any(is.na(cnt_matrix_ui$matrix))){
+    if(bool_NGA_analysis){
+      C=cnt_matrix_ui$matrix
+      
+      beta=as.numeric(parse_age_values(age_beta_text,bool_unique = FALSE))
+      if (length(beta)==nrow(C)) {
+        
+      NGM = NGM_SIR(beta,gamma,C,N,S)              # build the NGM
+      check_NGM = check_matrix(NGM)                 # check primitivity of NGM
+
+      # kij analysis
+      eigens_NGM=eigen_(NGM,norm = T);eigens_NGM   # eigenvalues and eigenvectors of the NGM
+      sensi=sens(eigens_NGM)                       # sensitivity matrix for the NGM
+      elasti=elasti((sensi))                       # elasticity matrix for the NGM
+
+      # lower level analysis
+      dbetas=all_dbeta(beta=beta,gamma=gamma,C=C,N=N,S=S,s=sensi)
+      dSs=all_dS(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
+      dgammas=all_dgamma(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
+      dNs=all_dN(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
+      lower_level = list(dbeta=dbetas,dSs=dSs,dgammas=dgammas,dNs=dNs)
+
+      NGA=list(NGM=NGM,check_NGM=check_NGM,eigen=eigens_NGM$eigens,sensi=sensi$sens,elasti=elasti,lower_level=lower_level)
+      fct_out$NGA=NGA
+      }
+      print(beta)
+    }
+  }else{
+    stop("matrix is incomplete, NGA analysis is not possible")
   }
   
   # add meta data on matrix parameters

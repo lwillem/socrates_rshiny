@@ -111,7 +111,10 @@ shinyUI(pageWithSidebar(
                 tabPanel("NGA",checkboxInput("bool_NGA_analysis", "NGA analysis",value = FALSE),
                          conditionalPanel(
                            condition = "input.bool_NGA_analysis == true",
-                           uiOutput("sliders_beta"))
+                           uiOutput("sliders_beta"),
+                           uiOutput("sliders_gamma"),
+                           uiOutput("sliders_N"),
+                           uiOutput("sliders_S"))
                 )
                 ),
     
@@ -149,6 +152,8 @@ shinyUI(pageWithSidebar(
                          plotOutput('plot_cnt_matrix_per_capita',width = "80%", height = "300px")),
                 tabPanel("Contact rates", 
                          plotOutput('plot_mean_number_contacts',width = "80%", height = "300px")),
+                tabPanel("Infection rates", 
+                         plotOutput('plot_mean_number_infected',width = "80%", height = "300px")),
                 tabPanel("Participants", 
                          helpText('Brief summary of participant data:'),
                          dataTableOutput('table_participants')),

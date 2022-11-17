@@ -13,6 +13,7 @@ source('R/load_config_comix.R')
 source('R/contact_matrix_fix.R')
 source('R/plot_mean_number_contacts.R')
 source('R/plot_social_contact_matrix.R')
+source('R/plot_mean_number_infected.R')
 
 # example
 #contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
@@ -23,9 +24,9 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
                                         bool_NGA_analysis,
                                         age_beta_text,
-                                        gamma=c(1/7,1/7,1/7),
-                                        N=c(100,100,100),
-                                        S=c(100,100,100),
+                                        age_gamma_text,
+                                        age_N_text,
+                                        age_S_text,
                                         cnt_reduction,
                                         wave){
   
@@ -149,7 +150,11 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       C=cnt_matrix_ui$matrix
       
       beta=as.numeric(parse_age_values(age_beta_text,bool_unique = FALSE))
-      if (length(beta)==nrow(C)) {
+      gamma=as.numeric(parse_age_values(age_gamma_text,bool_unique = FALSE))
+      N=as.numeric(parse_age_values(age_N_text,bool_unique = FALSE))
+      S=as.numeric(parse_age_values(age_S_text,bool_unique = FALSE))
+      
+      if(length(beta)==nrow(C) & length(gamma)==nrow(C) & length(N)==nrow(C) & length(S)==nrow(C)){
         
       NGM = NGM_SIR(beta,gamma,C,N,S)              # build the NGM
       check_NGM = check_matrix(NGM)                 # check primitivity of NGM
@@ -169,7 +174,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       NGA=list(NGM=NGM,check_NGM=check_NGM,eigen=eigens_NGM$eigens,sensi=sensi$sens,elasti=elasti,lower_level=lower_level)
       fct_out$NGA=NGA
       }
-      print(beta)
+      #print(beta)
     }
   }else{
     stop("matrix is incomplete, NGA analysis is not possible")
@@ -657,7 +662,9 @@ adjust_mij_transmission <- function(mij,age_susceptibility_text,age_infectiousne
 parse_input_list <- function(input_list,column_tag){
   
   # get column names
+  print(input_list)
   sel_colnames <- c(names(input_list)[grepl(column_tag,names(input_list))])
+  print(sel_colnames)
   
   # aggregate
   if(length(sel_colnames)==0){

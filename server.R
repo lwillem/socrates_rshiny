@@ -177,6 +177,37 @@ shinyServer(function(input, output, session) {
         })
       })
       
+      # update sliders: gamma
+      output$sliders_gamma <- renderUI({
+        
+        lapply(seq(age_groups), function(i) {
+          sliderInput(inputId = paste0("s_gamma",i),
+                      label = paste('gamma:',age_groups_label[i]),
+                      min = 0.01, max = 1, value = 0.1,step=0.01)
+        })
+      })
+      
+      # update textinput: N
+      output$sliders_N <- renderUI({
+        
+        lapply(seq(age_groups), function(i) {
+          textInput(inputId = paste0("s_N",i),
+                    label = paste('N:',age_groups_label[i]),
+                    value=100)
+        })
+      })
+      
+      # update textinput: S
+      output$sliders_S <- renderUI({
+        print(age_groups)
+        print(age_groups_label)
+        lapply(seq(age_groups), function(i) {
+          textInput(inputId = paste0("s_S",i),
+                    label = paste('S:',age_groups_label[i]),
+                    value=100)
+        })
+      })
+      
     } # end if-clause: update transmission sliders
     
   }) # end: observe
@@ -205,6 +236,10 @@ shinyServer(function(input, output, session) {
     age_infectiousness_text    <- parse_input_list(input,'s_infectiousness')
     
     age_beta_text <- parse_input_list(input,'s_beta')
+    age_gamma_text <- parse_input_list(input,'s_gamma')
+    age_N_text <- parse_input_list(input,'s_N')
+    age_S_text <- parse_input_list(input,'s_S')
+    #print(age_S_text)
     
     # combine contact reductions
     # TODO: use notation from opt_location (capitals etc.)
@@ -234,7 +269,10 @@ shinyServer(function(input, output, session) {
                                        cnt_reduction           = cnt_reduction,
                                        wave                    = values$w_dynamic,
                                        bool_NGA_analysis = input$bool_NGA_analysis,
-                                       age_beta_text           = age_beta_text)
+                                       age_beta_text           = age_beta_text,
+                                       age_gamma_text          = age_gamma_text,
+                                       age_N_text              = age_N_text,
+                                       age_S_text              = age_S_text)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
@@ -256,6 +294,11 @@ shinyServer(function(input, output, session) {
     # plot mean number of social contacts
     output$plot_mean_number_contacts <- renderPlot({
       plot_mean_number_contacts(mij = out$matrix)
+    })
+    
+    # plot mean number of infected in each generation
+    output$plot_mean_number_infected <- renderPlot({
+      plot_mean_number_infected(mij = out$NGA$NGM)
     })
     
     # print results

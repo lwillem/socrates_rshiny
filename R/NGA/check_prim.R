@@ -19,17 +19,13 @@ check_matrix = function(A){
         if(bol==T){
           return("Matrix is primitive")
         }else{
-          print(A_)
           return("Matrix is not primitive")
         }
       }else{
-        print("I+A^(nrow-1)")
-        print(aux)
         return("Matrix is not irreducible")
       }
       
     }else{
-      print(A)
       stop("Matrix has negative entries")
     }
     

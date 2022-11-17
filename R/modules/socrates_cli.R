@@ -170,10 +170,10 @@ socrates_out <- run_social_contact_analysis(country,
                                             age_susceptibility_text,
                                             age_infectiousness_text,
                                             bool_NGA_analysis=T,
-                                            beta=c(0.05,0.05,0.05),
-                                            gamma=c(1/7,1/7,1/7),
-                                            N=c(100,100,100),
-                                            S=c(100,100,100),
+                                            age_beta_text=as.character(beta),
+                                            age_gamma_text=as.character(gamma),
+                                            age_N_text=as.character(N),
+                                            age_S_text=as.character(S),
                                             wave = wave,
                                             cnt_reduction = cnt_reduction)
 # inspect socrates object
@@ -181,7 +181,7 @@ names(socrates_out)
 socrates_out[1:6]
 plot_cnt_matrix(socrates_out$matrix)
 
-socrates_out$NGA$check_NGM
+socrates_out$NGA$NGM
 ################################################################### #
 # B. Run a remote SOCRATES UI  ----
 ################################################################### #

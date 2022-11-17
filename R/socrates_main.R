@@ -3,7 +3,7 @@
 # 
 # => LOAD AND SELECT SOCIAL CONTACT SURVEY DATA
 #
-#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2022, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 # load packages and help functions
@@ -657,8 +657,9 @@ adjust_mij_transmission <- function(mij,age_susceptibility_text,age_infectiousne
 parse_input_list <- function(input_list,column_tag){
   
   # get column names
-  sel_colnames <- c(names(input_list)[grepl(column_tag,names(input_list))])
-  
+  # note: 'sort' is required since they are aggregated consecutively in the following code block
+  sel_colnames <- sort(unlist(names(input_list)[grepl(column_tag,names(input_list))]))
+
   # aggregate
   if(length(sel_colnames)==0){
     age_out <- 1

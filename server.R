@@ -296,9 +296,19 @@ shinyServer(function(input, output, session) {
       plot_mean_number_contacts(mij = out$matrix)
     })
     
+    # plot NGM
+    output$plot_NGM <- renderPlot({
+      plot_cnt_matrix(mij = out$NGA$NGM,plot_title_extra = "NGM")
+    })
+    
     # plot mean number of infected in each generation
     output$plot_mean_number_infected <- renderPlot({
-      plot_mean_number_infected(mij = out$NGA$NGM)
+      plot_mean_number_infected(list = out)
+    })
+    
+    # plot mean number of infected in each generation
+    output$plot_stable_distribution <- renderPlot({
+      plot_stable_distribution(list = out)
     })
     
     # print results

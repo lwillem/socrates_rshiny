@@ -1,29 +1,26 @@
 #___________________________________________________________________________
 # This file is part of the SOcial Contact RATES (SOCRATES) modelling project
 # 
-# => PLOT THE AVERAGE NUMBER OF INFECTED BY AGE AGROUP
+# => PLOT STABLE DISTRIBUTION
 #
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 
 
-plot_mean_number_infected <- function(list,scale_max=10){
-  R = max(abs(list$NGA$eigen$values))
-  mij=list$NGA$NGM
+plot_stable_distribution <- function(list,scale_max=1){
+  mij=t(as.matrix(list$NGA$eigen$w[,"dominant"]))
   if(all(is.na(mij))){
     return(NA)
   }
   
   # make sure the age-groups are added to the figure
-  rownames(mij) <- colnames(mij)
+  colnames(mij) <- colnames(list$NGA$NGM)
   
-  avg_infections_age <- t(c(R,colSums(mij)))
-  colnames(avg_infections_age)=c("R",colnames(mij))
-  
+  avg_infections_age <- mij
   bplt <- barplot(avg_infections_age,
-                  xlab="",
-                  ylab="Mean number of infections per generation",
+                  xlab="Age-group",
+                  ylab="Stable distribution",
                   ylim=range(pretty(avg_infections_age*1.1),scale_max,0,na.rm=T),
                   cex.names =  0.8)
   text(x = bplt,

@@ -182,6 +182,8 @@ socrates_out[1:6]
 plot_cnt_matrix(socrates_out$matrix)
 
 socrates_out$NGA$NGM
+socrates_out$NGA$eigen$w[,"dominant"]
+plot_stable_distribution(list=socrates_out)
 ################################################################### #
 # B. Run a remote SOCRATES UI  ----
 ################################################################### #

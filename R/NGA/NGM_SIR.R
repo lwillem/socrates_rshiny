@@ -4,7 +4,7 @@ NGM_SIR = function(beta,gamma,C,N,S){
   # Builds the next generation matrix for the simple age-structured SIR model
   # INPUT: vectors age-stratified transmission parameter (beta), recovery rate (gamma), contact structure (C) and population (N)
   # OUTPUT: next generation matrix (see Diekmann and Britton 2013 chapter 7)
-  
+  names=colnames(C)
   n=length(N)
   if (n!=length(beta) || n!=length(gamma) || n!=nrow(C) || n!=ncol(C) || n!=length(S)) {
     stop("parameter vector size do not agree")
@@ -15,7 +15,7 @@ NGM_SIR = function(beta,gamma,C,N,S){
   N_inv= diag(1/N,nrow=n,ncol=n)
   
   NGM = beta_ %*% gamma_ %*% S_ %*% C %*% N_inv
-  
+  colnames(NGM)=names
   return(NGM)
   
   

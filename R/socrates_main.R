@@ -150,6 +150,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     if(bool_NGA_analysis){
       
       C=cnt_matrix_ui$matrix
+      
       QS=as.numeric(parse_age_values(age_QS_text,bool_unique = FALSE))
       QI=as.numeric(parse_age_values(age_QI_text,bool_unique = FALSE))
       q=as.numeric(parse_age_values(q_text,bool_unique = FALSE))
@@ -161,6 +162,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       a=QS
       h=QI
       
+      C=t(C)         # the output of socrates is not congruent the analysis (participant j contacts individuals of group i) this needs to be changed to the transpose i.e., individual of group i can has mij average contacts with group j
       NGM=NGM_SIR(q=q,a=a,M=C,h=h)                        # compute the NGM
       eigens=eigen_(NGM)                                  # compute its eigenvalues
       bool_complex=is.complex(eigens$eigens$values)
@@ -169,7 +171,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       elas=elasti(sensi)                            # compute R elasticities towards Kij
       
       Rs_=Rs(q=q,a=a,M=C,h=h)                       # sum of lines and columns of the NGM
-      names(Rs_$Rs)=c(gsub("infective_","", names(Rs_$Rs))) 
+      names(Rs_$Rs)=c(gsub("infective_","", colnames(cnt_matrix_ui$matrix))) 
       agegroups=names(Rs_$Rs)
       Rs_$elas_kj=colSums(elas)
       

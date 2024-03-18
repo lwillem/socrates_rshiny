@@ -20,9 +20,9 @@ library('data.table')
 library('markdown')
 library('wpp2015')
 library(shiny)
-library(tidyverse)
-library(ggthemes)
-library(ggpubr)
+library(tidyverse) #
+library(ggthemes)  #
+library(ggpubr)    #
 
 # temporary to use the get_survey script outside the SocialMixr package
 library(httr)

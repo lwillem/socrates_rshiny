@@ -132,21 +132,24 @@ eigens_NGM=eigen_(NGM,norm = T);eigens_NGM # Eigenvalues and eigenvectors of the
 
 sensi=sens(eigens_NGM) # sensitivity matrix for the NGM
 
+elasti=elasti(sensi);elasti # elasticity towards the entries of the NGM
+
 plot_cnt_matrix(sensi$sens,plot_title_extra = "- sensitivity") # plot sensitivity matrix
 
 # plot lower level sensitivity
 dbetas=all_dbeta(beta=beta,gamma=gamma,C=C,N=N,S=S,s=sensi)
-dbetas_plot=plot_bar(dbetas %>% filter(indicator=="sen"),"beta sensititivty")
+dbetas_plot=plot_bar(dbetas,"beta sensititivty")
 
 
 dSs=all_dS(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
-dSs_plot=plot_bar(dSs %>% filter(indicator=="sen"),"S sensitivity")
+dSs_plot=plot_bar(dSs,"S sensitivity")
 
 dgammas=all_dgamma(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
-dgammas_plot=plot_bar(dgammas %>% filter(indicator=="sen"),"gamma sensitivity")
+#plot_lower_level(as.matrix(dgammas))
+dgammas_plot=plot_bar(dgammas,"R elasticity and sensitivity towards the removal rate")
 
 dNs=all_dN(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
-dNs_plot=plot_bar(dNs%>% filter(indicator=="sen"),"N sensitivity")
+dNs_plot=plot_bar(dNs,"N sensitivity")
 
 figure <- ggarrange(dbetas_plot, dSs_plot, dgammas_plot, dNs_plot,
                     ncol = 2, nrow = 2)

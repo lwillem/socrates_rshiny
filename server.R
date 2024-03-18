@@ -167,46 +167,46 @@ shinyServer(function(input, output, session) {
         }) # end: lapply
       }) # end= renderUI
       
-      # update sliders: beta
-      output$sliders_beta <- renderUI({
-        
+      
+      # update sliders: susceptibility
+      output$sliders_QS <- renderUI({
         lapply(seq(age_groups), function(i) {
-          sliderInput(inputId = paste0("s_beta",i),
-                      label = paste('beta:',age_groups_label[i]),
-                      min = 0, max = 1, value = 0.05,step=0.05)
+          sliderInput(inputId = paste0("s_QS",i),
+                      label = paste('Susceptibility:',age_groups_label[i]),
+                      min = 0, max = 1, value = 0.5,step=0.1)
         })
       })
       
-      # update sliders: gamma
-      output$sliders_gamma <- renderUI({
-        
+      # update sliders: infectivity
+      output$sliders_QI <- renderUI({
         lapply(seq(age_groups), function(i) {
-          sliderInput(inputId = paste0("s_gamma",i),
-                      label = paste('gamma:',age_groups_label[i]),
-                      min = 0.01, max = 1, value = 0.1,step=0.01)
+          sliderInput(inputId = paste0("s_QI",i),
+                      label = paste('Infectivity:',age_groups_label[i]),
+                      min = 0, max = 1, value = 0.5,step=0.1)
         })
       })
       
-      # update textinput: N
-      output$sliders_N <- renderUI({
-        
-        lapply(seq(age_groups), function(i) {
-          textInput(inputId = paste0("s_N",i),
-                    label = paste('N:',age_groups_label[i]),
-                    value=100)
-        })
+      # update sliders: Reproduction number
+      output$sliders_q <- renderUI({
+          sliderInput(inputId = paste0("s_q"),
+                      label = paste('Proportionality constant (q):'),
+                      min = 0, max = 5, value = 1,step=0.1)
       })
       
-      # update textinput: S
-      output$sliders_S <- renderUI({
-        print(age_groups)
-        print(age_groups_label)
-        lapply(seq(age_groups), function(i) {
-          textInput(inputId = paste0("s_S",i),
-                    label = paste('S:',age_groups_label[i]),
-                    value=100)
-        })
+      # update sliders: proportiona perturbation
+      output$sliders_delta_p <- renderUI({
+        sliderInput(inputId = paste0("s_p"),
+                    label = paste('Proportional perturbation (p):'),
+                    min = -1, max = 1, value = 0.1,step=0.1)
       })
+      
+      # update sliders: proportiona perturbation
+      output$sliders_nrgen <- renderUI({
+        sliderInput(inputId = paste0("s_nrgen"),
+                    label = paste('Projection time (in generations):'),
+                    min = 2, max = 20, value = 3,step=1)
+      })
+      
       
     } # end if-clause: update transmission sliders
     
@@ -235,10 +235,11 @@ shinyServer(function(input, output, session) {
     age_susceptibility_text    <- parse_input_list(input,'s_susceptibility')
     age_infectiousness_text    <- parse_input_list(input,'s_infectiousness')
     
-    age_beta_text <- parse_input_list(input,'s_beta')
-    age_gamma_text <- parse_input_list(input,'s_gamma')
-    age_N_text <- parse_input_list(input,'s_N')
-    age_S_text <- parse_input_list(input,'s_S')
+    age_QS_text <- parse_input_list(input,'s_QS')
+    age_QI_text <- parse_input_list(input,'s_QI')
+    q_text <- parse_input_list(input,'s_q')
+    delta_p_text <- parse_input_list(input,'s_p')
+    nrgen_text <- parse_input_list(input,'s_nrgen')
     #print(age_S_text)
     
     # combine contact reductions
@@ -269,10 +270,11 @@ shinyServer(function(input, output, session) {
                                        cnt_reduction           = cnt_reduction,
                                        wave                    = values$w_dynamic,
                                        bool_NGA_analysis = input$bool_NGA_analysis,
-                                       age_beta_text           = age_beta_text,
-                                       age_gamma_text          = age_gamma_text,
-                                       age_N_text              = age_N_text,
-                                       age_S_text              = age_S_text)
+                                       age_QS_text             = age_QS_text,
+                                       age_QI_text             = age_QI_text,
+                                       q_text = q_text,
+                                       delta_p_text = delta_p_text,
+                                       nrgen_text = nrgen_text)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
@@ -298,19 +300,25 @@ shinyServer(function(input, output, session) {
     
     # plot NGM
     output$plot_NGM <- renderPlot({
-      plot_cnt_matrix(mij = out$NGA$NGM,plot_title_extra = "NGM")
+      plot_NGM(NGM = out$NGA$NGM)
     })
     
-    # plot mean number of infected in each generation
-    output$plot_mean_number_infected <- renderPlot({
-      plot_mean_number_infected(list = out)
+    # plot elas
+    output$plot_ELAS <- renderPlot({
+      plot_elas(Rs_=out$NGA$Rs,eigens=out$NGA$eigens,agegroups=out$NGA$agegroups)
     })
     
-    # plot mean number of infected in each generation
-    output$plot_stable_distribution <- renderPlot({
-      plot_stable_distribution(list = out)
+    # plot RI w.r.t a
+    output$plot_RI_a <- renderPlot({
+      plot_G_a(out$NGA$RI_a,bool=out$NGA$bool_complex) 
     })
     
+    # plot RI w.r.t h
+    output$plot_RI_h <- renderPlot({
+      plot_G_h(out$NGA$RI_h,bool=out$NGA$bool_complex) 
+    })
+
+
     # print results
     output$social_contact_analysis <- renderPrint({
       # exclude results with separate tab

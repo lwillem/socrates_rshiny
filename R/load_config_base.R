@@ -38,14 +38,20 @@ source('R/npsp/splot.R')
 # loading help functions on wave id
 source('R/wave_lib.R')
 
-# load NGA functions
-source('R/NGA/check_prim.R')
-source('R/NGA/dfunctions.R')
-source('R/NGA/eigen.R')
-source('R/NGA/elasti.R')
-source('R/NGA/NGM_SIR.R')
-source('R/NGA/sens.R')
-source('R/plot_bar.R')
+#load NGA SCRIPTS functions
+source('R/NGA_scripts/check_prim.R')
+source('R/NGA_scripts/da_.R')
+source('R/NGA_scripts/dG.R')
+source('R/NGA_scripts/dh_.R')
+source('R/NGA_scripts/dv_.R')
+source('R/NGA_scripts/dw_.R')
+source('R/NGA_scripts/eigen.R')
+source('R/NGA_scripts/elasti.R')
+source('R/NGA_scripts/NGM_SIR.R')
+source('R/NGA_scripts/plot_functions.R')
+source('R/NGA_scripts/Rs_.R')
+source('R/NGA_scripts/sens.R')
+source('R/NGA_scripts/validate.R')
 
 #__________________________#
 ##  UI PANEL OPTIONS    ####

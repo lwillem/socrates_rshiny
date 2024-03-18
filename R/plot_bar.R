@@ -1,9 +1,14 @@
 plot_bar = function(df,tit){
   out = ggplot(data=df)+
-    geom_bar(aes(x=parameter,y=value),fill="royalblue",stat = "identity")+
-    scale_y_continuous(limits = c(min(0,min(df$value)),max(0,max(df$value))),
-                       breaks=df$value)+
+    facet_wrap(~indicator,scales="free")+
+    geom_bar(aes(x=parameter,y=value),fill="grey68",stat = "identity")+
     labs(title=tit)+
-    theme_gdocs()
+    theme_bw() +
+    theme(axis.line = element_line(colour = "black"),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank(),
+          panel.background = element_blank()) 
+    
   return(out)
 }

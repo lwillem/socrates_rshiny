@@ -19,7 +19,8 @@ sens = function(list,tol=1e-07){
   }
   
   sens=list$eigens$v[,"dominant"] %*% t(list$eigens$w[,"dominant"]) # vw^T
-  
+  colnames(sens) <- colnames(list$A)
+  rownames(sens) <- rownames(list$A)
   sens_l = list(A=list$A,eigens=list$eigens,sens=sens)
   
   return(sens_l)

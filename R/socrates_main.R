@@ -23,10 +23,11 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         weight_threshold,
                                         bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
                                         bool_NGA_analysis,
-                                        age_beta_text,
-                                        age_gamma_text,
-                                        age_N_text,
-                                        age_S_text,
+                                        age_QS_text,
+                                        age_QI_text,
+                                        q_text,
+                                        delta_p_text,
+                                        nrgen_text,
                                         cnt_reduction,
                                         wave){
   
@@ -147,34 +148,98 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # Add NGA analysis (if possible)
   if(!any(is.na(cnt_matrix_ui$matrix))){
     if(bool_NGA_analysis){
+      
       C=cnt_matrix_ui$matrix
+      QS=as.numeric(parse_age_values(age_QS_text,bool_unique = FALSE))
+      QI=as.numeric(parse_age_values(age_QI_text,bool_unique = FALSE))
+      q=as.numeric(parse_age_values(q_text,bool_unique = FALSE))
+      p=as.numeric(parse_age_values(delta_p_text,bool_unique = FALSE))
+      nr_gen=as.numeric(parse_age_values(nrgen_text,bool_unique = FALSE))
       
-      beta=as.numeric(parse_age_values(age_beta_text,bool_unique = FALSE))
-      gamma=as.numeric(parse_age_values(age_gamma_text,bool_unique = FALSE))
-      N=as.numeric(parse_age_values(age_N_text,bool_unique = FALSE))
-      S=as.numeric(parse_age_values(age_S_text,bool_unique = FALSE))
-      
-      if(length(beta)==nrow(C) & length(gamma)==nrow(C) & length(N)==nrow(C) & length(S)==nrow(C)){
+      if(length(QS)==nrow(C) & length(QI)==nrow(C)){
         
-      NGM = NGM_SIR(beta,gamma,C,N,S)              # build the NGM
-      check_NGM = check_matrix(NGM)                 # check primitivity of NGM
-
-      # kij analysis
-      eigens_NGM=eigen_(NGM,norm = T);eigens_NGM   # eigenvalues and eigenvectors of the NGM
-      sensi=sens(eigens_NGM)                       # sensitivity matrix for the NGM
-      elasti=elasti((sensi))                       # elasticity matrix for the NGM
-
-      # lower level analysis
-      dbetas=all_dbeta(beta=beta,gamma=gamma,C=C,N=N,S=S,s=sensi)
-      dSs=all_dS(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
-      dgammas=all_dgamma(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
-      dNs=all_dN(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
-      lower_level = list(dbeta=dbetas,dSs=dSs,dgammas=dgammas,dNs=dNs)
-
-      NGA=list(NGM=NGM,check_NGM=check_NGM,eigen=eigens_NGM$eigens,sensi=sensi$sens,elasti=elasti,lower_level=lower_level)
-      fct_out$NGA=NGA
+      a=QS
+      h=QI
+      
+      NGM=NGM_SIR(q=q,a=a,M=C,h=h)                        # compute the NGM
+      eigens=eigen_(NGM)                                  # compute its eigenvalues
+      bool_complex=is.complex(eigens$eigens$values)
+      
+      sensi=sens(eigens)                            # compute R sensitivities towards Kij
+      elas=elasti(sensi)                            # compute R elasticities towards Kij
+      
+      Rs_=Rs(q=q,a=a,M=C,h=h)                       # sum of lines and columns of the NGM
+      names(Rs_$Rs)=c(gsub("infective_","", names(Rs_$Rs))) 
+      agegroups=names(Rs_$Rs)
+      Rs_$elas_kj=colSums(elas)
+      
+      if (bool_complex==FALSE) {  # compute only sensitivities to w and RI if the eigenvalues are all real
+        da=all_da(q = q,M = C,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t a
+        dh=all_dh(q = q,M = C,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t h
+        
+        dwn=dw_n(eigens)                                # sensitivity of the right eigenvector (w) toward kij
+        dwa=dw_a_all(dw_n = dwn,q=q,a=a,M=C,h=h,agegroup=agegroups) # sensitivity of w towards a
+        dwh=dw_h_all(dw_n = dwn,q=q,a=a,M=C,h=h,agegroup=agegroups) # sensitivity of w towards h
+        
+        all.Gda=all_G_ratio_da(delta_a1=a*p,                      # RI for proportional perturbations on all entries of a
+                               l=nr_gen,
+                               da=da,
+                               eigens=eigens,
+                               agegroup=agegroups,
+                               q=q,
+                               a=a,
+                               M=C,
+                               h=h,
+                               dwn=dwn)
+        
+        all.Gdh=all_G_ratio_dh(delta_h1=h*p,                      # RI for proportional perturbations on all entries of h
+                               l=nr_gen,
+                               dh=dh,
+                               eigens=eigens,
+                               agegroup=agegroups,
+                               q=q,
+                               a=a,
+                               M=C,
+                               h=h,
+                               dwn=dwn)
+        
+        
+        
+        
+        NGA=list(agegroups=agegroups,
+                 sus=QS,
+                 inf=QI,
+                 q=q,
+                 NGM=NGM,
+                 eigens=eigens,
+                 sensi=sensi,
+                 elas=elas,
+                 Rs=Rs_,
+                 bool_complex=bool_complex,
+                 da=da,
+                 dh=dh,
+                 dwn=dwn,
+                 dwa=dwa,
+                 dwh=dwh,
+                 RI_a=all.Gda,
+                 RI_h=all.Gdh)
+        fct_out$NGA=NGA
       }
-      #print(beta)
+      if (bool_complex==TRUE) {
+        NGA=list(agegroups=agegroups,
+                 sus=QS,
+                 inf=QI,
+                 q=q,
+                 NGM=NGM,
+                 eigens=eigens,
+                 sensi=sensi,
+                 elas=elas,
+                 Rs=Rs_,
+                 bool_complex=bool_complex)
+        fct_out$NGA=NGA
+      }
+      
+      }
     }
   }else{
     stop("matrix is incomplete, NGA analysis is not possible")

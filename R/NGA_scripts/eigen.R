@@ -1,6 +1,6 @@
 # Calculate eigen values and eigen vectors--------------------------------------------------
 
-eigen_ = function(A,norm=F){
+eigen_ = function(A,norm=T){
   # Calculates eigen values and eigen vectors for both A and A^T, constrains left (v) and right (w) eigen vector
   # such that <v_i,w_i> = 1 and <v_i,w_j> = 0, i!=j.
   
@@ -17,16 +17,24 @@ eigen_ = function(A,norm=F){
   # divide each entry of the right dominant eigenvector w by the sum of the entries in order to be
   # interpreted as the stable population
   
+  
   if(norm==T){
-    R$vectors[,1]=R$vectors[,1]/sum(R$vectors[,1]) # make sure the dominant right eigenvalue is positive
+    R$vectors[,1]=R$vectors[,1]/sum(R$vectors[,1]) # normalize such that ||w|| = 1
   }
   
   
   # calculate the left eigenvectors constrained on <v_i,w_i> = 1 and <v_i,w_j> = 0, for j!=i
   
-  L=qr.solve(R$vectors%*%t(R$vectors),R$vectors)
-  colnames(L)=c("dominant",as.character(seq(2,ncol(L))))
-  eigens=list(values=R$values,w=R$vectors,v=L)
+  L=eigen(t(A))
+  colnames(L$vectors)=c("dominant",as.character(seq(2,ncol(L$vectors))))
+  
+  for (i in seq(1,ncol(L$vectors))) {
+    L$vectors[,i]=L$vectors[,i]/as.numeric((t(L$vectors[,i])%*%R$vectors[,i]))
+    
+  }
+  
+  
+  eigens=list(values=R$values,w=R$vectors,v=L$vectors)
   
   eigen=list(eigens=eigens,A=A)
   

@@ -13,6 +13,7 @@ source('R/load_config_comix.R')
 source('R/contact_matrix_fix.R')
 source('R/plot_mean_number_contacts.R')
 source('R/plot_social_contact_matrix.R')
+source('R/plot_mean_number_infected.R')
 
 # example
 #contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
@@ -21,6 +22,12 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
                                         weight_threshold,
                                         bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
+                                        bool_NGA_analysis,
+                                        age_QS_text,
+                                        age_QI_text,
+                                        q_text,
+                                        delta_p_text,
+                                        nrgen_text,
                                         cnt_reduction,
                                         wave){
   
@@ -136,6 +143,108 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     fct_out <- c(fct_out[1],
                  relative_incidence=list(relative_incidence),
                  fct_out[-1])
+  }
+  
+  # Add NGA analysis (if possible)
+  if(!any(is.na(cnt_matrix_ui$matrix))){
+    if(bool_NGA_analysis){
+      
+      C=cnt_matrix_ui$matrix
+      
+      QS=as.numeric(parse_age_values(age_QS_text,bool_unique = FALSE))
+      QI=as.numeric(parse_age_values(age_QI_text,bool_unique = FALSE))
+      q=as.numeric(parse_age_values(q_text,bool_unique = FALSE))
+      p=as.numeric(parse_age_values(delta_p_text,bool_unique = FALSE))
+      nr_gen=as.numeric(parse_age_values(nrgen_text,bool_unique = FALSE))
+      
+      if(length(QS)==nrow(C) & length(QI)==nrow(C)){
+        
+      a=QS
+      h=QI
+      
+      C=t(C)         # the output of socrates is not congruent the analysis (participant j contacts individuals of group i) this needs to be changed to the transpose i.e., individual of group i can has mij average contacts with group j
+      NGM=NGM_SIR(q=q,a=a,M=C,h=h)                        # compute the NGM
+      eigens=eigen_(NGM)                                  # compute its eigenvalues
+      bool_complex=is.complex(eigens$eigens$values)
+      
+      sensi=sens(eigens)                            # compute R sensitivities towards Kij
+      elas=elasti(sensi)                            # compute R elasticities towards Kij
+      
+      Rs_=Rs(q=q,a=a,M=C,h=h)                       # sum of lines and columns of the NGM
+      names(Rs_$Rs)=c(gsub("infective_","", colnames(cnt_matrix_ui$matrix))) 
+      agegroups=names(Rs_$Rs)
+      Rs_$elas_kj=colSums(elas)
+      
+      if (bool_complex==FALSE) {  # compute only sensitivities to w and RI if the eigenvalues are all real
+        da=all_da(q = q,M = C,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t a
+        dh=all_dh(q = q,M = C,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t h
+        
+        dwn=dw_n(eigens)                                # sensitivity of the right eigenvector (w) toward kij
+        dwa=dw_a_all(dw_n = dwn,q=q,a=a,M=C,h=h,agegroup=agegroups) # sensitivity of w towards a
+        dwh=dw_h_all(dw_n = dwn,q=q,a=a,M=C,h=h,agegroup=agegroups) # sensitivity of w towards h
+        
+        all.Gda=all_G_ratio_da(delta_a1=a*p,                      # RI for proportional perturbations on all entries of a
+                               l=nr_gen,
+                               da=da,
+                               eigens=eigens,
+                               agegroup=agegroups,
+                               q=q,
+                               a=a,
+                               M=C,
+                               h=h,
+                               dwn=dwn)
+        
+        all.Gdh=all_G_ratio_dh(delta_h1=h*p,                      # RI for proportional perturbations on all entries of h
+                               l=nr_gen,
+                               dh=dh,
+                               eigens=eigens,
+                               agegroup=agegroups,
+                               q=q,
+                               a=a,
+                               M=C,
+                               h=h,
+                               dwn=dwn)
+        
+        
+        
+        
+        NGA=list(agegroups=agegroups,
+                 sus=QS,
+                 inf=QI,
+                 q=q,
+                 NGM=NGM,
+                 eigens=eigens,
+                 sensi=sensi,
+                 elas=elas,
+                 Rs=Rs_,
+                 bool_complex=bool_complex,
+                 da=da,
+                 dh=dh,
+                 dwn=dwn,
+                 dwa=dwa,
+                 dwh=dwh,
+                 RI_a=all.Gda,
+                 RI_h=all.Gdh)
+        fct_out$NGA=NGA
+      }
+      if (bool_complex==TRUE) {
+        NGA=list(agegroups=agegroups,
+                 sus=QS,
+                 inf=QI,
+                 q=q,
+                 NGM=NGM,
+                 eigens=eigens,
+                 sensi=sensi,
+                 elas=elas,
+                 Rs=Rs_,
+                 bool_complex=bool_complex)
+        fct_out$NGA=NGA
+      }
+      
+      }
+    }
+  }else{
+    stop("matrix is incomplete, NGA analysis is not possible")
   }
   
   # add meta data on matrix parameters

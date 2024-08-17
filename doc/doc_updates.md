@@ -12,6 +12,8 @@ SOCRATES is developed as part of a social contact data sharing initiative and as
 
 ## Major platform updates
 
+* [v1.55 - 2024-08-17] The application was updated from R4.2.2 to R4.3.1. This update caused minor floating-point differences in the results compared to the previous version (<1e-9). There is one documented case involving many sparse cells where the relative incidence changed due to a switch from a complex to a real eigenvector (Peru, weekend, non-physical contacts, less than 5 minutes, female-female, age groups 0 and 19, and school closure). No major changes to the output or application were observed.
+
 * [v1.54 - 2022-11-17] Fixed the alignment of age-specific susceptibility and infectiousness sliders in the GUI with the age-specific parameters when calculating the relative incidence.
 
 * [v1.53 - 2021-08-26] The location-specific matrices that are downloaded via the GUI can be reciprocal. Before, the location-specific matrices were always non-reciprocal. From this version, the choice on reciprocity is defined by the user in the GUI, so the RData file is in line with the results in the GUI.  

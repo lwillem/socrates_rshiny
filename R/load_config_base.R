@@ -74,7 +74,7 @@ opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend",
                            "Set contacts at Home with non-household members as Leisure")
 
 # get polymod countries
-polymod_countries <- survey_countries(polymod,quiet = T)
+polymod_countries <- survey_countries(polymod)
 
 # add other dataset (and reference)
 opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),

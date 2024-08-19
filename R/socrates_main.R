@@ -711,3 +711,9 @@ get_location_matrices <- function(country,daytype,touch,duration,gender,
   return(matrix_list)
 }
 
+# generate a dummy plot for the UI with a warning message
+get_dummy_plot_for_ui <- function(warning_message){
+    plot(0,col=0,axes=F,xlab='',ylab='')
+    text(1,0,warning_message)    
+}
+

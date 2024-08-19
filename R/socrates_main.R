@@ -146,17 +146,24 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   }
   
   # Add NGA analysis (if possible)
+  fct_out$NGA = NA
   if(bool_NGA_analysis){
-    if(!any(is.na(cnt_matrix_ui$matrix))){
+    if(any(is.na(cnt_matrix_ui$matrix))){
+      warning("NGA analysis is not possible because contact matrix contains NA")
+      fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because contact matrix contains NA")  
+    } else {
       C=cnt_matrix_ui$matrix
-      
       QS=as.numeric(parse_age_values(age_QS_text,bool_unique = FALSE))
       QI=as.numeric(parse_age_values(age_QI_text,bool_unique = FALSE))
       q=as.numeric(parse_age_values(q_text,bool_unique = FALSE))
       p=as.numeric(parse_age_values(delta_p_text,bool_unique = FALSE))
       nr_gen=as.numeric(parse_age_values(nrgen_text,bool_unique = FALSE))
       
-      if(length(QS)==nrow(C) & length(QI)==nrow(C)){
+      
+      if(length(QS)!=nrow(C) | length(QI)!=nrow(C)){
+        warning("NGA analysis is not possible because age groups do not match")
+        fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because age groups do not match")  
+      } else {
         
       a=QS
       h=QI
@@ -203,10 +210,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                M=C,
                                h=h,
                                dwn=dwn)
-        
-        
-        
-        
+
         NGA=list(agegroups=agegroups,
                  sus=QS,
                  inf=QI,
@@ -224,9 +228,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                  dwh=dwh,
                  RI_a=all.Gda,
                  RI_h=all.Gdh)
-        fct_out$NGA=NGA
-      }
-      if (bool_complex==TRUE) {
+      } else {
         NGA=list(agegroups=agegroups,
                  sus=QS,
                  inf=QI,
@@ -237,13 +239,10 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                  elas=elas,
                  Rs=Rs_,
                  bool_complex=bool_complex)
-        fct_out$NGA=NGA
-      }
-      
-      }
-    }else{
-      stop("matrix is incomplete, NGA analysis is not possible")
-    }
+      } # end if-else clause on complex eigen values
+      fct_out$NGA=NGA
+      } # end if-else-clause to check age groups
+    } # end if-else-clause to check on NA's in contact matrix
   } # end if-clause 'bool_NGA_analysis'
   
   # add meta data on matrix parameters
@@ -263,6 +262,15 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # add distancing info, if present
   if(length(fct_out$notes)>0){
     meta_data[,paste('distancing info',1:length(fct_out$notes))] <- fct_out$notes
+  }
+  
+  # add NGA info, if NGA is active
+  if(bool_NGA_analysis){
+    meta_data$age_QS_text  <- age_QS_text
+    meta_data$age_QI_text  <- age_QI_text
+    meta_data$q_text       <- q_text
+    meta_data$delta_p_text <- delta_p_text
+    meta_data$nrgen_text   <- nrgen_text
   }
 
   # add meta_data to function output

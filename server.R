@@ -193,14 +193,14 @@ shinyServer(function(input, output, session) {
                       min = 0, max = 5, value = 1,step=0.1)
       })
       
-      # update sliders: proportiona perturbation
+      # update sliders: proportional perturbation
       output$sliders_delta_p <- renderUI({
         sliderInput(inputId = paste0("s_p"),
                     label = paste('Proportional perturbation (p):'),
                     min = -1, max = 1, value = 0.1,step=0.1)
       })
       
-      # update sliders: proportiona perturbation
+      # update sliders: proportional perturbation
       output$sliders_nrgen <- renderUI({
         sliderInput(inputId = paste0("s_nrgen"),
                     label = paste('Projection time (in generations):'),
@@ -299,22 +299,38 @@ shinyServer(function(input, output, session) {
     
     # plot NGM
     output$plot_NGM <- renderPlot({
-      plot_NGM(NGM = out$NGA$NGM)
+      if(length(out$NGA)>1){
+        plot_NGM(NGM = out$NGA$NGM)
+      } else {
+        get_dummy_plot_for_ui("NGA results not available")
+      }
     })
     
     # plot elas
     output$plot_ELAS <- renderPlot({
-      plot_elas(Rs_=out$NGA$Rs,eigens=out$NGA$eigens,agegroups=out$NGA$agegroups)
+      if(length(out$NGA)>1){
+        plot_elas(Rs_=out$NGA$Rs,eigens=out$NGA$eigens,agegroups=out$NGA$agegroups)
+      } else {
+          get_dummy_plot_for_ui("NGA results not available")
+        }
     })
     
     # plot RI w.r.t a
     output$plot_RI_a <- renderPlot({
-      plot_G_a(out$NGA$RI_a,bool=out$NGA$bool_complex) 
+      if(length(out$NGA)>1){
+        plot_G_a(out$NGA$RI_a,bool=out$NGA$bool_complex) 
+      } else {
+          get_dummy_plot_for_ui("NGA results not available")
+        }
     })
     
     # plot RI w.r.t h
     output$plot_RI_h <- renderPlot({
-      plot_G_h(out$NGA$RI_h,bool=out$NGA$bool_complex) 
+      if(length(out$NGA)>1){
+        plot_G_h(out$NGA$RI_h,bool=out$NGA$bool_complex) 
+      } else {
+          get_dummy_plot_for_ui("NGA results not available")
+        }
     })
 
 

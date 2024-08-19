@@ -154,9 +154,11 @@ shinyUI(pageWithSidebar(
                 tabPanel("Contact rates", 
                          plotOutput('plot_mean_number_contacts',width = "80%", height = "300px")),
                 tabPanel("Infection rates",
-                         helpText('In this tab the next generation analysis is presented. The next generation matrix (NGM), respective sum of columns (k.j) and rows (ki.), calculation of the reproduction number (R) and age-group cumulative elasticity. The relative impact (RI) is presented in the last two figures'),
-                         plotOutput('plot_NGM',width = "80%", height = "300px"),
-                         helpText('Figure 1: Next generation matrix. Each entry corresponds to the average number of infections in age group i caused by an individual in group j during their infectious period.'),
+                         conditionalPanel(
+                           condition = "input.bool_NGA_analysis == true",
+                           helpText('In this tab the next generation analysis is presented. The next generation matrix (NGM), respective sum of columns (k.j) and rows (ki.), calculation of the reproduction number (R) and age-group cumulative elasticity. The relative impact (RI) is presented in the last two figures'),
+                           plotOutput('plot_NGM',width = "80%", height = "300px"),
+                           helpText('Figure 1: Next generation matrix. Each entry corresponds to the average number of infections in age group i caused by an individual in group j during their infectious period.'),
                          plotOutput('plot_ELAS',width = "80%", height = "300px"),
                          helpText('Figure 2: The dashed line represents the reproduction number (R). Indicator kj. corresponds to the sum of columns of the NGM and can be interpreted as the average number of infections caused by an individual in age group j during their infectious period. ki. corresponds to the per-generation total number of infections in age group i caused by a single individual of each age group. Elasticities can be interpreted as the relative contribution of an age group towards overall transmission (R).'),
                          plotOutput('plot_RI_a',width = "80%", height = "300px"),
@@ -164,7 +166,10 @@ shinyUI(pageWithSidebar(
                          plotOutput('plot_RI_h',width = "80%", height = "300px"),
                          helpText('Figure 4: Relative impact (RI) measures the relative number of cases in each age group after the projection time considered given a proportional perturbation (p) to the infectivity (h_i) of age group i. Each entry corresponds to the incidence ratio I_perturbation/I_no_perturbation after the number of generations given by the projection time.')
                          ),
-            
+                         conditionalPanel(
+                           condition = "input.bool_NGA_analysis == false",
+                           helpText('Enable the next generation analysis parameters in the left column under "NGA" to get results on infection rates and transmission dynamics'),
+                           )),
                          #),
                 tabPanel("Participants", 
                          helpText('Brief summary of participant data:'),

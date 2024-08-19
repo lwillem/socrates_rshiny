@@ -22,7 +22,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
                                         weight_threshold,
                                         bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
-                                        bool_NGA_analysis,
+                                        bool_NGA_analysis=FALSE,
                                         age_QS_text,
                                         age_QI_text,
                                         q_text,
@@ -146,9 +146,8 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   }
   
   # Add NGA analysis (if possible)
-  if(!any(is.na(cnt_matrix_ui$matrix))){
-    if(bool_NGA_analysis){
-      
+  if(bool_NGA_analysis){
+    if(!any(is.na(cnt_matrix_ui$matrix))){
       C=cnt_matrix_ui$matrix
       
       QS=as.numeric(parse_age_values(age_QS_text,bool_unique = FALSE))
@@ -242,10 +241,10 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       }
       
       }
+    }else{
+      stop("matrix is incomplete, NGA analysis is not possible")
     }
-  }else{
-    stop("matrix is incomplete, NGA analysis is not possible")
-  }
+  } # end if-clause 'bool_NGA_analysis'
   
   # add meta data on matrix parameters
   meta_data <- data.frame(data_set = country,

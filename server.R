@@ -241,8 +241,10 @@ shinyServer(function(input, output, session) {
     bool_transmission_param <- input$sel_transmission == 'relative'
     bool_NGA_analysis       <- input$sel_transmission == 'sensitivity'
     
-    age_susceptibility_text    <- parse_input_list(input,'s_susceptibility')
-    age_infectiousness_text    <- parse_input_list(input,'s_infectiousness')
+    # TODO: if the number of age groups is reduced, the previous "s_susceptibility" values remain, while not visible
+    num_age_groups             <- length(parse_age_values(input$age_breaks_text))
+    age_susceptibility_text    <- parse_input_list(input,'s_susceptibility',num_age_groups)
+    age_infectiousness_text    <- parse_input_list(input,'s_infectiousness',num_age_groups)
 
     q_text <- parse_input_list(input,'s_q')
     delta_p_text <- parse_input_list(input,'s_p')

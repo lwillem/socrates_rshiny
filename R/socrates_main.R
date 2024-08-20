@@ -153,19 +153,18 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because contact matrix contains NA")  
     } else {
       
-      C=cnt_matrix_ui$matrix
-      QS=as.numeric(parse_age_values(age_QS_text,bool_unique = FALSE))
-      QI=as.numeric(parse_age_values(age_QI_text,bool_unique = FALSE))
-      q=as.numeric(parse_age_values(q_text,bool_unique = FALSE))
-      p=as.numeric(parse_age_values(delta_p_text,bool_unique = FALSE))
-      nr_gen=as.numeric(parse_age_values(nrgen_text,bool_unique = FALSE))
+      mij    = cnt_matrix_ui$matrix
+      qs     = as.numeric(parse_age_values(age_QS_text,bool_unique = FALSE))
+      qi     = as.numeric(parse_age_values(age_QI_text,bool_unique = FALSE))
+      q      = as.numeric(parse_age_values(q_text,bool_unique = FALSE))
+      p      = as.numeric(parse_age_values(delta_p_text,bool_unique = FALSE))
+      nr_gen = as.numeric(parse_age_values(nrgen_text,bool_unique = FALSE))
       
-      if(length(QS)!=nrow(C) | length(QI)!=nrow(C)){
+      if(length(qs)==nrow(mij) & length(qi)==nrow(mij)){
+        fct_out$NGA=run_NGA(mij,qs,qi,q,p,nr_gen)
+      } else {
         warning("NGA analysis is not possible because age groups do not match")
         fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because age groups do not match")  
-      } else {
-        # call main NGA function
-        fct_out$NGA=run_NGA(C,QS,QI,q,p,nr_gen)
       } # end if-else-clause to check age groups
     } # end if-else-clause to check on NA's in contact matrix
   } # end if-clause 'bool_NGA_analysis'

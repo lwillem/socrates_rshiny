@@ -3,35 +3,51 @@
 # 
 # => TO CONDUCT THE NEXT-GENERATION APPROACH ANALYSIS
 #
-#  Copyright 2024, SIMID 
+# Copyright 2024, Caetano et al. (in revision)
 #___________________________________________________________________________
+# ref: Diekmann and Britton 2013 chapter 7
+# ref: Franco et al, Plos Comput Biol, 2022
 
-run_NGA <- function(C,QS,QI,q,p,nr_gen){
 
-  agegroups = gsub("infective_","", colnames(C))
+# Run the next generation approach based on an age-structured SIR model
+#
+# INPUTS:
+#   M   social contact matrix
+#   a   age-stratified q-susceptibility, 
+#   h   age-stratified q-infectivity  
+#   q   proportionality factor
+#   p
+#   nr_gen
+#
+# OUTPUT: next generation matrix (see Diekmann and Britton 2013 chapter 7)
+run_NGA <- function(M,a,h,q,p,nr_gen){
+
+  agegroups = gsub("infective_","", colnames(M))
   
-  a=QS
-  h=QI
   
-  C=t(C)         # the output of socrates is not congruent the analysis (participant j contacts individuals of group i) this needs to be changed to the transpose i.e., individual of group i can has mij average contacts with group j
-  NGM=NGM_SIR(q=q,a=a,M=C,h=h)                        # compute the NGM
+  if(length(a)!=nrow(M) | length(h)!=nrow(M)){
+    return(NA)
+  }
+    
+  M=t(M)         # the output of socrates is not congruent the analysis (participant j contacts individuals of group i) this needs to be changed to the transpose i.e., individual of group i can has mij average contacts with group j
+  NGM=NGM_SIR(q=q,a=a,M=M,h=h)                        # compute the NGM
   eigens=eigen_(NGM)                                  # compute its eigenvalues
   bool_complex=is.complex(eigens$eigens$values)
   
   sensi=sens(eigens)                            # compute R sensitivities towards Kij
   elas=elasti(sensi)                            # compute R elasticities towards Kij
   
-  Rs_=Rs(q=q,a=a,M=C,h=h)                       # sum of lines and columns of the NGM
+  Rs_=Rs(q=q,a=a,M=M,h=h)                       # sum of lines and columns of the NGM
   names(Rs_$Rs)=agegroups 
   Rs_$elas_kj=colSums(elas)
   
   if (bool_complex==FALSE) {  # compute only sensitivities to w and RI if the eigenvalues are all real
-    da=all_da(q = q,M = C,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t a
-    dh=all_dh(q = q,M = C,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t h
+    da=all_da(q = q,M = M,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t a
+    dh=all_dh(q = q,M = M,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t h
     
     dwn=dw_n(eigens)                                # sensitivity of the right eigenvector (w) toward kij
-    dwa=dw_a_all(dw_n = dwn,q=q,a=a,M=C,h=h,agegroup=agegroups) # sensitivity of w towards a
-    dwh=dw_h_all(dw_n = dwn,q=q,a=a,M=C,h=h,agegroup=agegroups) # sensitivity of w towards h
+    dwa=dw_a_all(dw_n = dwn,q=q,a=a,M=M,h=h,agegroup=agegroups) # sensitivity of w towards a
+    dwh=dw_h_all(dw_n = dwn,q=q,a=a,M=M,h=h,agegroup=agegroups) # sensitivity of w towards h
     
     all.Gda=all_G_ratio_da(delta_a1=a*p,                      # RI for proportional perturbations on all entries of a
                            l=nr_gen,
@@ -40,7 +56,7 @@ run_NGA <- function(C,QS,QI,q,p,nr_gen){
                            agegroup=agegroups,
                            q=q,
                            a=a,
-                           M=C,
+                           M=M,
                            h=h,
                            dwn=dwn)
     
@@ -51,13 +67,13 @@ run_NGA <- function(C,QS,QI,q,p,nr_gen){
                            agegroup=agegroups,
                            q=q,
                            a=a,
-                           M=C,
+                           M=M,
                            h=h,
                            dwn=dwn)
     
     NGA=list(agegroups=agegroups,
-             sus=QS,
-             inf=QI,
+             sus=a,
+             inf=h,
              q=q,
              NGM=NGM,
              eigens=eigens,
@@ -74,8 +90,8 @@ run_NGA <- function(C,QS,QI,q,p,nr_gen){
              RI_h=all.Gdh)
   } else {
     NGA=list(agegroups=agegroups,
-             sus=QS,
-             inf=QI,
+             sus=a,
+             inf=h,
              q=q,
              NGM=NGM,
              eigens=eigens,

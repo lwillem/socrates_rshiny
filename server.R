@@ -51,7 +51,8 @@ shinyServer(function(input, output, session) {
   
   # Setup ####
   # create memory variable for the transmission param sliders
-  bool_update <- reactiveValues(age_breaks_text = '')
+  bool_update <- reactiveValues(age_breaks_text = '',
+                                sel_transmission = '')
   
   # create bool to show the SPC checkbox
   output$panelStatus <- reactive({
@@ -78,7 +79,6 @@ shinyServer(function(input, output, session) {
     # if the HH-member checkbox is not shown (nor used), set as "FALSE"
     # MESSAGE ==>> "selection is never excluded if the checkbox is not shown"
     show_hhmember_panel <- opt_country_admin$has_hhmember_cnt_data[opt_country_admin$name == as.character(input$country)]
-    print(show_hhmember_panel)
     if(!show_hhmember_panel){
       updateCheckboxInput(session,"bool_hhmember_selection", value = FALSE)
     }
@@ -139,7 +139,7 @@ shinyServer(function(input, output, session) {
        bool_update$sel_transmission != input$sel_transmission){
       
       # adjust memory variable
-      bool_update$age_breaks_text <- input$age_breaks_text
+      bool_update$age_breaks_text  <- input$age_breaks_text
       bool_update$sel_transmission <- input$sel_transmission
       
       # range
@@ -273,10 +273,10 @@ shinyServer(function(input, output, session) {
                                        cnt_matrix_features = opt_matrix_features[features_select],
                                        age_breaks_text     = input$age_breaks_text,
                                        weight_threshold     = weight_threshold,
-                                       age_susceptibility_text = age_susceptibility_text,
-                                       age_infectiousness_text = age_infectiousness_text,
                                        cnt_reduction           = cnt_reduction,
                                        wave                    = values$w_dynamic,
+                                       age_susceptibility_text = age_susceptibility_text,
+                                       age_infectiousness_text = age_infectiousness_text,
                                        bool_NGA_analysis       = bool_NGA_analysis,
                                        q_text = q_text,
                                        delta_p_text = delta_p_text,
@@ -377,10 +377,10 @@ shinyServer(function(input, output, session) {
                                     cnt_matrix_features = opt_matrix_features[features_select],
                                     age_breaks_text     = input$age_breaks_text,
                                     weight_threshold     = weight_threshold,
-                                    age_susceptibility_text = age_susceptibility_text,
-                                    age_infectiousness_text = age_infectiousness_text,
                                     cnt_reduction           = cnt_reduction,
                                     wave                    = values$w_dynamic,
+                                    age_susceptibility_text = age_susceptibility_text,
+                                    age_infectiousness_text = age_infectiousness_text,
                                     filename                = file)
       }
     )

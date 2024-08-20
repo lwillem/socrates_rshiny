@@ -170,21 +170,23 @@ socrates_out <- run_social_contact_analysis(country,
                                             gender,
                                             cnt_location,
                                             cnt_matrix_features,
-                                            age_breaks_text,
-                                            weight_threshold,
-                                            age_susceptibility_text,
-                                            age_infectiousness_text,
-                                            bool_NGA_analysis=F,
-                                            q_text,
-                                            delta_p_text,
-                                            nrgen_text,
+                                            age_breaks_text = age_breaks_text,
+                                            weight_threshold = weight_threshold,
                                             cnt_reduction = cnt_reduction,
-                                            wave = wave)
+                                            wave = wave,
+                                            age_susceptibility_text = NA,
+                                            age_infectiousness_text = NA,
+                                            bool_NGA_analysis=TRUE,
+                                            q_text = q_text,
+                                            delta_p_text = delta_p_text,
+                                            nrgen_text = nrgen_text
+                                            )
 # inspect socrates object
 names(socrates_out)
 socrates_out[1:6]
 plot_cnt_matrix(socrates_out$matrix)
 
+socrates_out$relative_incidence
 
 socrates_out$NGA$NGM
 socrates_out$NGA$eigen$eigens$w[,"dominant"]

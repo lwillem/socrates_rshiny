@@ -44,10 +44,11 @@ download_contact_matrices <- function(country,daytype,touch,duration,gender,
                                              cnt_matrix_features     = cnt_matrix_features,
                                              age_breaks_text         = age_breaks_text,
                                              weight_threshold        = weight_threshold,
-                                             age_susceptibility_text = age_susceptibility_text,
-                                             age_infectiousness_text = age_infectiousness_text,
                                              cnt_reduction           = cnt_reduction,
-                                             wave                    = wave)
+                                             wave                    = wave,
+                                             age_susceptibility_text = age_susceptibility_text,
+                                             age_infectiousness_text = age_infectiousness_text
+                                             )
     )
     # add matrix to list
     location_matrices[i_loc]            <- list(out_all$matrix)

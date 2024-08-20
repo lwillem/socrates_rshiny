@@ -21,15 +21,21 @@ source('R/plot_mean_number_infected.R')
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
                                         weight_threshold,
-                                        age_susceptibility_text,
-                                        age_infectiousness_text,
-                                        bool_NGA_analysis=FALSE,
-                                        q_text,
-                                        delta_p_text,
-                                        nrgen_text,
                                         cnt_reduction,
-                                        wave){
+                                        wave,
+                                        age_susceptibility_text = NA,
+                                        age_infectiousness_text = NA,
+                                        bool_NGA_analysis = FALSE,
+                                        q_text            = 1,
+                                        delta_p_text      = 0.1,
+                                        nrgen_text        = 3
+                                        ){
   
+  # check age-specific parameters
+  num_age_groups <- length(parse_age_values(age_breaks_text))
+  if(is.na(age_susceptibility_text) || age_susceptibility_text == '1'){ age_susceptibility_text <- paste(rep(0.5,num_age_groups),collapse=',') }
+  if(is.na(age_infectiousness_text) || age_infectiousness_text == '1'){ age_infectiousness_text <- paste(rep(0.5,num_age_groups),collapse=',') }
+
   # get social contact matrix using all features, without interventions
   cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
                                       cnt_location,cnt_matrix_features,age_breaks_text,
@@ -127,46 +133,45 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     } # end else (no NA's present) 
   }# end if intervention
   
-  # Add relative incidence (if possible)
-  if(!any(is.na(cnt_matrix_ui$matrix))){
-    mij <- cnt_matrix_ui$matrix
-
-    # option to adjust for age-specific transmission
-    mij <- adjust_mij_transmission(mij,age_susceptibility_text,age_infectiousness_text)
-
-    # calculate relative incidence
-    relative_incidence        <- standardize_RI(eigen(mij)$vectors[,1])
-    names(relative_incidence) <- colnames(cnt_matrix_ui$matrix)
+  # # Add relative incidence (if possible)
+  if(any(is.na(cnt_matrix_ui$matrix))){
+    warning("NGA analysis is not possible because contact matrix contains NA")
+    fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because contact matrix contains NA")  
+  } else {
     
+    mij    = cnt_matrix_ui$matrix
+    qs     = as.numeric(parse_age_values(age_susceptibility_text,bool_unique = FALSE))
+    qi     = as.numeric(parse_age_values(age_infectiousness_text,bool_unique = FALSE))
+    q      = as.numeric(parse_age_values(q_text,bool_unique = FALSE))
+    p      = as.numeric(parse_age_values(delta_p_text,bool_unique = FALSE))
+    nr_gen = as.numeric(parse_age_values(nrgen_text,bool_unique = FALSE))
+    
+    if(length(qs)==nrow(mij) & length(qi)==nrow(mij)){
+    
+      # calculate relative incidence
+      NGM                       <- NGM_SIR(q=q,a=qs,M=t(mij),h=qi) # compute the NGM
+      relative_incidence        <- standardize_RI(eigen(NGM)$vectors[,1])
+      
+      # sensitivity and elasticity
+      if(bool_NGA_analysis){
+        fct_out$NGA=run_NGA(mij,qs,qi,q,p,nr_gen)
+      } else{
+        fct_out$NGA <- NA
+      }
+    } else {
+      relative_incidence <- rep(NA,nrow(mij))
+      warning("NGA analysis is not possible because age groups do not match")
+      fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because age groups do not match")  
+    } # end if-else-clause to check age groups
+
     # add relative incidence to output list
+    names(relative_incidence) <- colnames(cnt_matrix_ui$matrix)
     fct_out <- c(fct_out[1],
                  relative_incidence=list(relative_incidence),
-                 fct_out[-1])
-  }
-  
-  # Add NGA analysis (if possible)
-  fct_out$NGA = NA
-  if(bool_NGA_analysis){
-    if(any(is.na(cnt_matrix_ui$matrix))){
-      warning("NGA analysis is not possible because contact matrix contains NA")
-      fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because contact matrix contains NA")  
-    } else {
-      
-      mij    = cnt_matrix_ui$matrix
-      qs     = as.numeric(parse_age_values(age_susceptibility_text,bool_unique = FALSE))
-      qi     = as.numeric(parse_age_values(age_infectiousness_text,bool_unique = FALSE))
-      q      = as.numeric(parse_age_values(q_text,bool_unique = FALSE))
-      p      = as.numeric(parse_age_values(delta_p_text,bool_unique = FALSE))
-      nr_gen = as.numeric(parse_age_values(nrgen_text,bool_unique = FALSE))
-      
-      if(length(qs)==nrow(mij) & length(qi)==nrow(mij)){
-        fct_out$NGA=run_NGA(mij,qs,qi,q,p,nr_gen)
-      } else {
-        warning("NGA analysis is not possible because age groups do not match")
-        fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because age groups do not match")  
-      } # end if-else-clause to check age groups
-    } # end if-else-clause to check on NA's in contact matrix
-  } # end if-clause 'bool_NGA_analysis'
+                 fct_out[-1])    
+    
+  } # end if-else-clause to check on NA's in contact matrix
+
   
   # add meta data on matrix parameters
   meta_data <- data.frame(data_set = country,
@@ -654,12 +659,17 @@ adjust_mij_transmission <- function(mij,age_susceptibility_text,age_infectiousne
   return(mij)
 }
 
-parse_input_list <- function(input_list,column_tag){
+#TODO: default value 1 is error prone!
+parse_input_list <- function(input_list,column_tag,max_dept=NA){
   
   # get column names
   # note: 'sort' is required since they are aggregated consecutively in the following code block
   sel_colnames <- sort(unlist(names(input_list)[grepl(column_tag,names(input_list))]))
 
+  if(!is.na(max_dept) & max_dept < length(sel_colnames)){
+    sel_colnames <- sel_colnames[1:max_dept]
+  }
+  
   # aggregate
   if(length(sel_colnames)==0){
     age_out <- 1

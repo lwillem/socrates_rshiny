@@ -28,8 +28,12 @@ run_NGA <- function(M,a,h,q,p,nr_gen){
   if(length(a)!=nrow(M) | length(h)!=nrow(M)){
     return(NA)
   }
-    
-  M=t(M)         # the output of socrates is not congruent the analysis (participant j contacts individuals of group i) this needs to be changed to the transpose i.e., individual of group i can has mij average contacts with group j
+  
+  # the output of socrates is not congruent the analysis (participant j contacts individuals of group i) 
+  # this needs to be changed to the transpose i.e., individual of group i can has mij average contacts 
+  # with group j
+  M=t(M) 
+  
   NGM=NGM_SIR(q=q,a=a,M=M,h=h)                        # compute the NGM
   eigens=eigen_(NGM)                                  # compute its eigenvalues
   bool_complex=is.complex(eigens$eigens$values)
@@ -108,7 +112,8 @@ run_NGA <- function(M,a,h,q,p,nr_gen){
 # INPUT: vectors age-stratified q-susceptibility (a), q-infectivity (h) and social contact matrix (M) and proportionality factor q
 # OUTPUT: next generation matrix (see Diekmann and Britton 2013 chapter 7)
 NGM_SIR = function(q,a,M,h){
-  names=colnames(M)
+
+  # TODO: issue with age-group names  
   n=nrow(M)
   if (n!=length(a) || n!=length(h)){
     stop("parameter vector size do not agree")
@@ -120,6 +125,7 @@ NGM_SIR = function(q,a,M,h){
   NGM = q*NGM
   rownames(NGM)=gsub("contact_", "infected_", colnames(M))
   colnames(NGM)=gsub("contact_", "infective_", colnames(M))
+  
   return(NGM)
 }
 

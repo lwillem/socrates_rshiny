@@ -21,10 +21,9 @@ source('R/plot_mean_number_infected.R')
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
                                         weight_threshold,
-                                        bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
+                                        age_susceptibility_text,
+                                        age_infectiousness_text,
                                         bool_NGA_analysis=FALSE,
-                                        age_QS_text,
-                                        age_QI_text,
                                         q_text,
                                         delta_p_text,
                                         nrgen_text,
@@ -108,7 +107,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
 
       # calculate impact on transmission
       model_comparison <- compare_contact_matrices(matrix_total,cnt_matrix_ui$matrix,
-                                                   bool_transmission_param,
                                                    age_susceptibility_text,age_infectiousness_text)
       
       # update UI results
@@ -131,11 +129,12 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   
   # Add relative incidence (if possible)
   if(!any(is.na(cnt_matrix_ui$matrix))){
-    # adjust for age-specific transmission?
     mij <- cnt_matrix_ui$matrix
-    if(bool_transmission_param){
-      mij <- adjust_mij_transmission(mij,age_susceptibility_text,age_infectiousness_text)
-    }
+
+    # option to adjust for age-specific transmission
+    mij <- adjust_mij_transmission(mij,age_susceptibility_text,age_infectiousness_text)
+
+    # calculate relative incidence
     relative_incidence        <- standardize_RI(eigen(mij)$vectors[,1])
     names(relative_incidence) <- colnames(cnt_matrix_ui$matrix)
     
@@ -154,8 +153,8 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     } else {
       
       mij    = cnt_matrix_ui$matrix
-      qs     = as.numeric(parse_age_values(age_QS_text,bool_unique = FALSE))
-      qi     = as.numeric(parse_age_values(age_QI_text,bool_unique = FALSE))
+      qs     = as.numeric(parse_age_values(age_susceptibility_text,bool_unique = FALSE))
+      qi     = as.numeric(parse_age_values(age_infectiousness_text,bool_unique = FALSE))
       q      = as.numeric(parse_age_values(q_text,bool_unique = FALSE))
       p      = as.numeric(parse_age_values(delta_p_text,bool_unique = FALSE))
       nr_gen = as.numeric(parse_age_values(nrgen_text,bool_unique = FALSE))
@@ -190,8 +189,8 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   
   # add NGA info, if NGA is active
   if(bool_NGA_analysis){
-    meta_data$age_QS_text  <- age_QS_text
-    meta_data$age_QI_text  <- age_QI_text
+    meta_data$age_QS_text  <- age_susceptibility_text
+    meta_data$age_QI_text  <- age_infectiousness_text
     meta_data$q_text       <- q_text
     meta_data$delta_p_text <- delta_p_text
     meta_data$nrgen_text   <- nrgen_text
@@ -562,16 +561,14 @@ get_survey_object <- function(country,
 #mija <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45,65))$matrix*c(1,0.5,0.6,1)
 #mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45, 65))$matrix
 compare_contact_matrices <- function(mija,mijb,
-                                     bool_transmission_param,age_susceptibility_text,age_infectiousness_text){
+                                     age_susceptibility_text,age_infectiousness_text){
   
   # mij ratio
   mij_ratio     <- mija/mijb
   
-  # adjust for age-specific transmission?
-  if(bool_transmission_param){
+  # adjust for age-specific transmission
     mija <- adjust_mij_transmission(mija,age_susceptibility_text,age_infectiousness_text)
     mijb <- adjust_mij_transmission(mijb,age_susceptibility_text,age_infectiousness_text)
-  }
   
   if(any(is.na(mija))|any(is.na(mijb))){
     warning('Social contact matrix contains NA... no comparison possible!')

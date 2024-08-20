@@ -38,9 +38,12 @@ input <- list(age_breaks_num = c(0,18,60),
                 gender      = opt_gender[1],
                 cnt_location = opt_location,
                 cnt_matrix_features   = opt_matrix_features,
-                bool_transmission_param = FALSE,
                 bool_reciprocal = TRUE,
                 bool_suppl_professional_cnt = TRUE,
+                bool_NGA_analysis = TRUE,
+                q_text            = 1,
+                delta_p_text      = 0.1,
+                nrgen_text        = 3,
                 wave = 3,
                 cnt_reduction = data.frame(Transport=0,Leisure=0,Otherplace=0) # no reductions for this example
   )
@@ -48,11 +51,11 @@ input <- list(age_breaks_num = c(0,18,60),
 # include age breaks as text (required for SOCRATES)
 input$age_breaks_text = paste(input$age_breaks_num,sep=',')
 
-# set age-specifific susceptibility and/or infectiouness (using the given age breaks)
-input$age_susceptibility_text = paste(rep(1,length(input$age_breaks_num)),collapse=',')
+# set age-specific susceptibility and/or infectiousness (using the given age breaks)
+input$age_susceptibility_text = paste(rep(0.5,length(input$age_breaks_num)),collapse=',')
 input$age_infectiousness_text = input$age_susceptibility_text
 
-# attach all atributes from the input list, so you can use their names directly
+# attach all attributes from the input list, so you can use their names directly
 attach(input,warn.conflicts = F)
 
 ## 1. GET SURVEY OBJECT AND CREATE CONTACT MATRICES (manually) ----
@@ -106,54 +109,54 @@ names(matrix_out)
 # inspect contact matrix using internal function(s)  
 plot_cnt_matrix(matrix_out$matrix)
 
-## 1.5 run the NGA analysis, which is printed in the UI ----
-################################################################### #
-
-A = matrix_out$matrix # contact matrix
-eigens=eigen_(A,norm = T);eigens  # compute eigenvalues
-
-sensi=sens(eigens) # compute sensitivities
-plot_cnt_matrix(sensi$sens,plot_title_extra = "- sensitivity") # plot sensitivities
-
-# compute the NGM for the SIR age-structured model
-
-beta=rep(0.05,3)
-gamma=rep(1/7,3)
-C=A
-N=c(100,100,100)
-S=N
-NGM = NGM_SIR(beta,gamma,C,N,S)
-
-plot_cnt_matrix(NGM,plot_title_extra = "- NGM") # plot NGM
-
-check_matrix(NGM) # check primitivity of NGM
-
-eigens_NGM=eigen_(NGM,norm = T);eigens_NGM # Eigenvalues and eigenvectors of the NGM
-
-sensi=sens(eigens_NGM) # sensitivity matrix for the NGM
-
-elasti=elasti(sensi);elasti # elasticity towards the entries of the NGM
-
-plot_cnt_matrix(sensi$sens,plot_title_extra = "- sensitivity") # plot sensitivity matrix
-
-# plot lower level sensitivity
-dbetas=all_dbeta(beta=beta,gamma=gamma,C=C,N=N,S=S,s=sensi)
-dbetas_plot=plot_bar(dbetas,"beta sensititivty")
-
-
-dSs=all_dS(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
-dSs_plot=plot_bar(dSs,"S sensitivity")
-
-dgammas=all_dgamma(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
-#plot_lower_level(as.matrix(dgammas))
-dgammas_plot=plot_bar(dgammas,"R elasticity and sensitivity towards the removal rate")
-
-dNs=all_dN(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
-dNs_plot=plot_bar(dNs,"N sensitivity")
-
-figure <- ggarrange(dbetas_plot, dSs_plot, dgammas_plot, dNs_plot,
-                    ncol = 2, nrow = 2)
-figure
+# ## 1.5 run the NGA analysis, which is printed in the UI ----
+# ################################################################### #
+# 
+# A = matrix_out$matrix # contact matrix
+# eigens=eigen_(A,norm = T);eigens  # compute eigenvalues
+# 
+# sensi=sens(eigens) # compute sensitivities
+# plot_cnt_matrix(sensi$sens,plot_title_extra = "- sensitivity") # plot sensitivities
+# 
+# # compute the NGM for the SIR age-structured model
+# 
+# beta=rep(0.05,3)
+# gamma=rep(1/7,3)
+# C=A
+# N=c(100,100,100)
+# S=N
+# NGM = NGM_SIR(beta,gamma,C,N,S)
+# 
+# plot_cnt_matrix(NGM,plot_title_extra = "- NGM") # plot NGM
+# 
+# check_matrix(NGM) # check primitivity of NGM
+# 
+# eigens_NGM=eigen_(NGM,norm = T);eigens_NGM # Eigenvalues and eigenvectors of the NGM
+# 
+# sensi=sens(eigens_NGM) # sensitivity matrix for the NGM
+# 
+# elasti=elasti(sensi);elasti # elasticity towards the entries of the NGM
+# 
+# plot_cnt_matrix(sensi$sens,plot_title_extra = "- sensitivity") # plot sensitivity matrix
+# 
+# # plot lower level sensitivity
+# dbetas=all_dbeta(beta=beta,gamma=gamma,C=C,N=N,S=S,s=sensi)
+# dbetas_plot=plot_bar(dbetas,"beta sensititivty")
+# 
+# 
+# dSs=all_dS(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
+# dSs_plot=plot_bar(dSs,"S sensitivity")
+# 
+# dgammas=all_dgamma(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
+# #plot_lower_level(as.matrix(dgammas))
+# dgammas_plot=plot_bar(dgammas,"R elasticity and sensitivity towards the removal rate")
+# 
+# dNs=all_dN(beta=beta,gamma=gamma,C=C,N=N,S=S,s = sensi)
+# dNs_plot=plot_bar(dNs,"N sensitivity")
+# 
+# figure <- ggarrange(dbetas_plot, dSs_plot, dgammas_plot, dNs_plot,
+#                     ncol = 2, nrow = 2)
+# figure
 
 
 ## 2. run the SOCRATES analysis, which is printed in the UI ----
@@ -169,24 +172,24 @@ socrates_out <- run_social_contact_analysis(country,
                                             cnt_matrix_features,
                                             age_breaks_text,
                                             weight_threshold,
-                                            bool_transmission_param,
                                             age_susceptibility_text,
                                             age_infectiousness_text,
-                                            bool_NGA_analysis=T,
-                                            age_beta_text=as.character(beta),
-                                            age_gamma_text=as.character(gamma),
-                                            age_N_text=as.character(N),
-                                            age_S_text=as.character(S),
-                                            wave = wave,
-                                            cnt_reduction = cnt_reduction)
+                                            bool_NGA_analysis=F,
+                                            q_text,
+                                            delta_p_text,
+                                            nrgen_text,
+                                            cnt_reduction = cnt_reduction,
+                                            wave = wave)
 # inspect socrates object
 names(socrates_out)
 socrates_out[1:6]
 plot_cnt_matrix(socrates_out$matrix)
 
+
 socrates_out$NGA$NGM
-socrates_out$NGA$eigen$w[,"dominant"]
-plot_stable_distribution(list=socrates_out)
+socrates_out$NGA$eigen$eigens$w[,"dominant"]
+#plot_stable_distribution(list=socrates_out)
+
 ################################################################### #
 # B. Run a remote SOCRATES UI  ----
 ################################################################### #

@@ -102,21 +102,19 @@ shinyUI(pageWithSidebar(
                                          sliderInput("cnt_reduction_leisure","Reduce 'lesiure' contacts (%)",min=0,max=100,value=0),
                                          sliderInput("cnt_reduction_otherplace","Reduce 'otherplace' contacts (%)",min=0,max=100,value=0))
                          ),
-                tabPanel("Transmission",checkboxInput("bool_transmission_param", "Age-specific transmission",value = FALSE),
-                                        conditionalPanel(
-                                          condition = "input.bool_transmission_param == true",
+                tabPanel("Transmission",
+                         radioButtons("sel_transmission","Options:",
+                                            c("Equal contributions"="equal",
+                                              "Relative age factors [0;2]" = "relative",
+                                              "Sensitivity and elasticity" = "sensitivity")),
+                         conditionalPanel(condition = "input.sel_transmission != 'equal'",
                                           uiOutput("sliders_susceptibility"),
-                                          uiOutput("sliders_infectiousness"))
-                        ),
-                tabPanel("NGA",checkboxInput("bool_NGA_analysis", "NGA analysis",value = FALSE),
-                         conditionalPanel(
-                           condition = "input.bool_NGA_analysis == true",
-                           uiOutput("sliders_QS"),
-                           uiOutput("sliders_QI"),
-                           uiOutput("sliders_q"),
-                           uiOutput("sliders_delta_p"),
-                           uiOutput("sliders_nrgen"))
-                )
+                                          uiOutput("sliders_infectiousness")),
+                         conditionalPanel(condition = "input.sel_transmission == 'sensitivity'",
+                                          uiOutput("sliders_q"),
+                                          uiOutput("sliders_delta_p"),
+                                          uiOutput("sliders_nrgen"))
+                        )
                 ),
     
     hr(),
@@ -155,7 +153,7 @@ shinyUI(pageWithSidebar(
                          plotOutput('plot_mean_number_contacts',width = "80%", height = "300px")),
                 tabPanel("Infection rates",
                          conditionalPanel(
-                           condition = "input.bool_NGA_analysis == true",
+                           condition = "input.sel_transmission == 'sensitivity'",
                            helpText('In this tab the next generation analysis is presented. The next generation matrix (NGM), respective sum of columns (k.j) and rows (ki.), calculation of the reproduction number (R) and age-group cumulative elasticity. The relative impact (RI) is presented in the last two figures'),
                            plotOutput('plot_NGM',width = "80%", height = "300px"),
                            helpText('Figure 1: Next generation matrix. Each entry corresponds to the average number of infections in age group i caused by an individual in group j during their infectious period.'),
@@ -167,8 +165,8 @@ shinyUI(pageWithSidebar(
                          helpText('Figure 4: Relative impact (RI) measures the relative number of cases in each age group after the projection time considered given a proportional perturbation (p) to the infectivity (h_i) of age group i. Each entry corresponds to the incidence ratio I_perturbation/I_no_perturbation after the number of generations given by the projection time.')
                          ),
                          conditionalPanel(
-                           condition = "input.bool_NGA_analysis == false",
-                           helpText('Enable the next generation analysis parameters in the left column under "NGA" to get results on infection rates and transmission dynamics'),
+                           condition = "input.sel_transmission != 'sensitivity'",
+                           helpText('Enable the sensitivity and elasticity parameters in the left column under "Transmission" to get results on infection rates and transmission dynamics'),
                            )),
                          #),
                 tabPanel("Participants", 

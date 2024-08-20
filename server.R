@@ -135,35 +135,41 @@ shinyServer(function(input, output, session) {
     }
     
     #update transmission sliders, if the age groups have changed
-    if(bool_update$age_breaks_text != input$age_breaks_text){
+    if(bool_update$age_breaks_text != input$age_breaks_text ||
+       bool_update$sel_transmission != input$sel_transmission){
       
       # adjust memory variable
       bool_update$age_breaks_text <- input$age_breaks_text
+      bool_update$sel_transmission <- input$sel_transmission
+      
+      # range
+      q_default_max  <- c(2,1)
+      if(input$sel_transmission == 'sensitivity'){
+        q_default_max  <- c(1,0.5,0.1)
+      }
       
       # get age groups
-      age_groups <- parse_age_values(input$age_breaks_text)
-      num_age_groups <- length(age_groups)
-      age_groups_label <- paste0('[',age_groups,'-',c(age_groups[-1],'+'),')')
+      age_groups                       <- parse_age_values(input$age_breaks_text)
+      num_age_groups                   <- length(age_groups)
+      age_groups_label                 <- paste0('[',age_groups,'-',c(age_groups[-1],'+'),')')
       age_groups_label[num_age_groups] <- paste0(age_groups[num_age_groups],'+')
       
       # update sliders: susceptibility
       output$sliders_susceptibility <- renderUI({
-        
         lapply(seq(age_groups), function(i) {
           sliderInput(inputId = paste0("s_susceptibility",i),
                       label = paste('Susceptibility:',age_groups_label[i]),
-                      min = 0, max = 2, value = 1,step=0.1)
+                      min = 0, max = q_default_max[1], value = q_default_max[2], step=0.1)
         })
       })
       
       
       # update sliders: infectiousness
       output$sliders_infectiousness <- renderUI({
-        
         lapply(seq(age_groups), function(i) {
           sliderInput(inputId = paste0("s_infectiousness",i),
                       label = paste('infectiousness:',age_groups_label[i]),
-                      min = 0, max = 2, value = 1,step=0.1)
+                      min = 0, max = q_default_max[1], value = q_default_max[2], step=0.1)
         }) # end: lapply
       }) # end= renderUI
       
@@ -232,11 +238,12 @@ shinyServer(function(input, output, session) {
                         input$bool_hhmember_selection)
 
     # parse transmission parameters
+    bool_transmission_param <- input$sel_transmission == 'relative'
+    bool_NGA_analysis       <- input$sel_transmission == 'sensitivity'
+    
     age_susceptibility_text    <- parse_input_list(input,'s_susceptibility')
     age_infectiousness_text    <- parse_input_list(input,'s_infectiousness')
-    
-    age_QS_text <- parse_input_list(input,'s_QS')
-    age_QI_text <- parse_input_list(input,'s_QI')
+
     q_text <- parse_input_list(input,'s_q')
     delta_p_text <- parse_input_list(input,'s_p')
     nrgen_text <- parse_input_list(input,'s_nrgen')
@@ -264,14 +271,14 @@ shinyServer(function(input, output, session) {
                                        cnt_matrix_features = opt_matrix_features[features_select],
                                        age_breaks_text     = input$age_breaks_text,
                                        weight_threshold     = weight_threshold,
-                                       bool_transmission_param = input$bool_transmission_param,
+                                       bool_transmission_param = bool_transmission_param,
                                        age_susceptibility_text = age_susceptibility_text,
                                        age_infectiousness_text = age_infectiousness_text,
                                        cnt_reduction           = cnt_reduction,
                                        wave                    = values$w_dynamic,
-                                       bool_NGA_analysis = input$bool_NGA_analysis,
-                                       age_QS_text             = age_QS_text,
-                                       age_QI_text             = age_QI_text,
+                                       bool_NGA_analysis       = bool_NGA_analysis,
+                                       age_QS_text             = age_susceptibility_text,
+                                       age_QI_text             = age_infectiousness_text,
                                        q_text = q_text,
                                        delta_p_text = delta_p_text,
                                        nrgen_text = nrgen_text)
@@ -371,7 +378,7 @@ shinyServer(function(input, output, session) {
                                     cnt_matrix_features = opt_matrix_features[features_select],
                                     age_breaks_text     = input$age_breaks_text,
                                     weight_threshold     = weight_threshold,
-                                    bool_transmission_param = input$bool_transmission_param,
+                                    bool_transmission_param = bool_transmission_param,
                                     age_susceptibility_text = age_susceptibility_text,
                                     age_infectiousness_text = age_infectiousness_text,
                                     cnt_reduction           = cnt_reduction,

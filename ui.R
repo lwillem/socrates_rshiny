@@ -29,8 +29,7 @@ shinyUI(pageWithSidebar(
     if(bool_is_comix_ui){
       hr()
     },
-
-
+    
     selectInput(inputId = "country", 
                 label = "Country",
                 choices = opt_country,
@@ -58,7 +57,7 @@ shinyUI(pageWithSidebar(
     selectInput("gender", "Gender",
                 opt_gender),
     
-    tabsetPanel(type = "tabs", id="distancing_transmission",
+    tabsetPanel(type = "tabs", id="distancing",
                 tabPanel("General",
                          checkboxInput("bool_reciprocal", "Reciprocity",value = TRUE),
                          checkboxInput("bool_weigh_age", "Weigh by age",value = TRUE),
@@ -157,12 +156,12 @@ shinyUI(pageWithSidebar(
                            helpText('In this tab the next generation analysis is presented. The next generation matrix (NGM), respective sum of columns (k.j) and rows (ki.), calculation of the reproduction number (R) and age-group cumulative elasticity. The relative impact (RI) is presented in the last two figures'),
                            plotOutput('plot_NGM',width = "80%", height = "300px"),
                            helpText('Figure 1: Next generation matrix. Each entry corresponds to the average number of infections in age group i caused by an individual in group j during their infectious period.'),
-                         plotOutput('plot_ELAS',width = "80%", height = "300px"),
-                         helpText('Figure 2: The dashed line represents the reproduction number (R). Indicator kj. corresponds to the sum of columns of the NGM and can be interpreted as the average number of infections caused by an individual in age group j during their infectious period. ki. corresponds to the per-generation total number of infections in age group i caused by a single individual of each age group. Elasticities can be interpreted as the relative contribution of an age group towards overall transmission (R).'),
-                         plotOutput('plot_RI_a',width = "80%", height = "300px"),
-                         helpText('Figure 3: Relative impact (RI) measures the relative number of cases in each age group after the projection time given a proportional perturbation (p) to the susceptibility (a_i) of age group i. Each entry corresponds to the incidence ratio I_perturbation/I_no_perturbation after the number of generations given by the projection time.'),
-                         plotOutput('plot_RI_h',width = "80%", height = "300px"),
-                         helpText('Figure 4: Relative impact (RI) measures the relative number of cases in each age group after the projection time considered given a proportional perturbation (p) to the infectivity (h_i) of age group i. Each entry corresponds to the incidence ratio I_perturbation/I_no_perturbation after the number of generations given by the projection time.')
+                           plotOutput('plot_ELAS',width = "80%", height = "300px"),
+                           helpText('Figure 2: The dashed line represents the reproduction number (R). Indicator kj. corresponds to the sum of columns of the NGM and can be interpreted as the average number of infections caused by an individual in age group j during their infectious period. ki. corresponds to the per-generation total number of infections in age group i caused by a single individual of each age group. Elasticities can be interpreted as the relative contribution of an age group towards overall transmission (R).'),
+                           plotOutput('plot_RI_a',width = "80%", height = "300px"),
+                           helpText('Figure 3: Relative impact (RI) measures the relative number of cases in each age group after the projection time given a proportional perturbation (p) to the susceptibility (a_i) of age group i. Each entry corresponds to the incidence ratio I_perturbation/I_no_perturbation after the number of generations given by the projection time.'),
+                           plotOutput('plot_RI_h',width = "80%", height = "300px"),
+                           helpText('Figure 4: Relative impact (RI) measures the relative number of cases in each age group after the projection time considered given a proportional perturbation (p) to the infectivity (h_i) of age group i. Each entry corresponds to the incidence ratio I_perturbation/I_no_perturbation after the number of generations given by the projection time.')
                          ),
                          conditionalPanel(
                            condition = "input.sel_transmission != 'sensitivity'",

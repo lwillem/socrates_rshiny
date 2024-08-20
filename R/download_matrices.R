@@ -7,11 +7,20 @@
 #___________________________________________________________________________
 
 
-download_contact_matrices <- function(country,daytype,touch,duration,gender,
-                                      cnt_location,cnt_matrix_features,age_breaks_text,
+download_contact_matrices <- function(country,
+                                      daytype,
+                                      touch,
+                                      duration,
+                                      gender,
+                                      cnt_location,
+                                      cnt_matrix_features,
+                                      age_breaks_text,
                                       weight_threshold,
-                                      age_susceptibility_text,age_infectiousness_text,
-                                      cnt_reduction, wave, filename){
+                                      cnt_reduction, 
+                                      wave,
+                                      age_susceptibility_text,
+                                      age_infectiousness_text,
+                                      filename){
   
   
   

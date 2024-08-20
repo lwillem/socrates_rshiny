@@ -14,8 +14,8 @@ shinyServer(function(input, output, session) {
   
   ## CoMix: hide some tabs
   if(bool_is_comix_ui){
-    hideTab(inputId = "distancing_transmission", target = "Distancing")
-    hideTab(inputId = "distancing_transmission", target = "Transmission")
+    hideTab(inputId = "distancing", target = "Distancing")
+    hideTab(inputId = "distancing", target = "Transmission")
   } else{
     hideTab(inputId = "tabs_results", target = "About CoMix")    
   }
@@ -35,7 +35,6 @@ shinyServer(function(input, output, session) {
     } else {
       return(NULL)
     }
-    
   })
   
   ## this bit fixes the issue
@@ -69,15 +68,15 @@ shinyServer(function(input, output, session) {
   # Update UI panel(s) ####
   observe({
   
-    # if the SCP checkbox is not shown (nor used), set as "TRUE" 
-    # MESSAGE ==>> "SCP are never excluded if the checkbox is not shown"
+    # if the SCP check box is not shown (nor used), set as "TRUE" 
+    # MESSAGE ==>> "SCP are never excluded if the check box is not shown"
     show_spc_panel <- opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]
     if(!show_spc_panel){
       updateCheckboxInput(session,"bool_spc", value = TRUE)
     }
     
     # if the HH-member checkbox is not shown (nor used), set as "FALSE"
-    # MESSAGE ==>> "selection is never excluded if the checkbox is not shown"
+    # MESSAGE ==>> "selection is never excluded if the check box is not shown"
     show_hhmember_panel <- opt_country_admin$has_hhmember_cnt_data[opt_country_admin$name == as.character(input$country)]
     if(!show_hhmember_panel){
       updateCheckboxInput(session,"bool_hhmember_selection", value = FALSE)
@@ -135,7 +134,7 @@ shinyServer(function(input, output, session) {
     }
     
     #update transmission sliders, if the age groups have changed
-    if(bool_update$age_breaks_text != input$age_breaks_text ||
+    if(bool_update$age_breaks_text  != input$age_breaks_text ||
        bool_update$sel_transmission != input$sel_transmission){
       
       # adjust memory variable
@@ -173,25 +172,6 @@ shinyServer(function(input, output, session) {
         }) # end: lapply
       }) # end= renderUI
       
-      
-      # update sliders: susceptibility
-      output$sliders_QS <- renderUI({
-        lapply(seq(age_groups), function(i) {
-          sliderInput(inputId = paste0("s_QS",i),
-                      label = paste('Susceptibility:',age_groups_label[i]),
-                      min = 0, max = 1, value = 0.5,step=0.1)
-        })
-      })
-      
-      # update sliders: infectivity
-      output$sliders_QI <- renderUI({
-        lapply(seq(age_groups), function(i) {
-          sliderInput(inputId = paste0("s_QI",i),
-                      label = paste('Infectivity:',age_groups_label[i]),
-                      min = 0, max = 1, value = 0.5,step=0.1)
-        })
-      })
-      
       # update sliders: Reproduction number
       output$sliders_q <- renderUI({
           sliderInput(inputId = paste0("s_q"),
@@ -212,10 +192,7 @@ shinyServer(function(input, output, session) {
                     label = paste('Projection time (in generations):'),
                     min = 2, max = 20, value = 3,step=1)
       })
-      
-      
     } # end if-clause: update transmission sliders
-    
   }) # end: observe
  
   ## Update results ####
@@ -270,21 +247,20 @@ shinyServer(function(input, output, session) {
                                        duration     = input$duration,
                                        gender       = input$gender,
                                        cnt_location = input$cnt_location,
-                                       cnt_matrix_features = opt_matrix_features[features_select],
-                                       age_breaks_text     = input$age_breaks_text,
+                                       cnt_matrix_features  = opt_matrix_features[features_select],
+                                       age_breaks_text      = input$age_breaks_text,
                                        weight_threshold     = weight_threshold,
                                        cnt_reduction           = cnt_reduction,
                                        wave                    = values$w_dynamic,
                                        age_susceptibility_text = age_susceptibility_text,
                                        age_infectiousness_text = age_infectiousness_text,
                                        bool_NGA_analysis       = bool_NGA_analysis,
-                                       q_text = q_text,
-                                       delta_p_text = delta_p_text,
-                                       nrgen_text = nrgen_text)
+                                       q_text                  = q_text,
+                                       delta_p_text            = delta_p_text,
+                                       nrgen_text              = nrgen_text)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
-      
       scale_max <- ifelse(input$bool_matrix_limit == TRUE ,input$ui_scale_max,NA) 
       plot_cnt_matrix(out$matrix,scale_max=scale_max)
     })
@@ -339,7 +315,6 @@ shinyServer(function(input, output, session) {
         }
     })
 
-
     # print results
     output$social_contact_analysis <- renderPrint({
       # exclude results with separate tab
@@ -368,7 +343,7 @@ shinyServer(function(input, output, session) {
         paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_analysis.RData")
       },
       content = function(file) {
-        download_contact_matrices(  country      = input$country,
+          download_contact_matrices(country      = input$country,
                                     daytype      = input$daytype,
                                     touch        = input$touch,
                                     duration     = input$duration,
@@ -434,7 +409,6 @@ shinyServer(function(input, output, session) {
     ))
     
   })
-  
   
   # create url link
   output$socrates_website <- renderUI({

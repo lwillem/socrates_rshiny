@@ -172,21 +172,21 @@ shinyServer(function(input, output, session) {
         }) # end: lapply
       }) # end= renderUI
       
-      # update sliders: Reproduction number
+      # update slider: Proportionality factor
       output$sliders_q <- renderUI({
           sliderInput(inputId = paste0("s_q"),
-                      label = paste('Proportionality constant (q):'),
+                      label = paste('Proportionality factor (q):'),
                       min = 0, max = 5, value = 1,step=0.1)
       })
       
-      # update sliders: proportional perturbation
+      # update slider: proportional perturbation
       output$sliders_delta_p <- renderUI({
         sliderInput(inputId = paste0("s_p"),
                     label = paste('Proportional perturbation (p):'),
                     min = -1, max = 1, value = 0.1,step=0.1)
       })
       
-      # update sliders: proportional perturbation
+      # update slider: Projection time
       output$sliders_nrgen <- renderUI({
         sliderInput(inputId = paste0("s_nrgen"),
                     label = paste('Projection time (in generations):'),
@@ -279,6 +279,56 @@ shinyServer(function(input, output, session) {
       plot_mean_number_contacts(mij = out$matrix)
     })
     
+    # plot relative incidence
+    output$plot_relative_incidence <- renderPlot({
+      bplt <- barplot(out$relative_incidence,
+              xlab="Age group",
+              ylab="Relative incidence",
+              ylim=c(0,1),
+              cex.names =  0.8)
+      text(x = bplt,
+           y = out$relative_incidence,
+           labels = round(out$relative_incidence,digits=2),
+           pos=3)
+    })
+   
+    # add NGA input parameter table
+    output$table_NGA_parameters <- renderDataTable({
+      sel_NGA_param <- out$meta_data$parameter %in% c('age groups','age specific susceptibility','age specific infectiousness',
+                                                      'q factor','delta p', 'nr generations')
+      out_NGA_param <- data.table(out$meta_data[sel_NGA_param,])
+      
+      print(out_NGA_param)
+      
+      out_NGA_param$parameter <- gsub('susceptibility','susceptibility (~A)',out_NGA_param$parameter)
+      out_NGA_param$parameter <- gsub('infectiousness','infectiousness (~H)',out_NGA_param$parameter)
+      out_NGA_param$parameter <- gsub('q factor','proportionality factor (q)',out_NGA_param$parameter)
+      out_NGA_param$parameter <- gsub('delta p','proportional perturbation (p)',out_NGA_param$parameter)
+      out_NGA_param$parameter <- gsub('nr generations','number of generations (m)',out_NGA_param$parameter)
+      out_NGA_param$value[-1] <- gsub(',',', ',out_NGA_param$value[-1])
+      
+      print(out_NGA_param)
+      
+      out_NGA_param
+    },
+    options = list(
+      autoWidth = TRUE,
+      dom = 't',   # 't' specifies only the table should be shown
+      paging = FALSE,     # Disable pagination
+      info = FALSE,       # Disable the info text (e.g., "Showing 1 to 10 of X entries")
+      columnDefs = list(list(width = '50%', targets = 0))
+    ))
+    
+    # # add NGA input parameter table
+    # output$table_NGA_sens_parameters <- renderDataTable({
+    #   sel_NGA_param <- out$meta_data$parameter %in% c('delta p', 'nr generations')
+    #   out$meta_data[sel_NGA_param,]
+    # },
+    # options = list(
+    #   autoWidth = TRUE,
+    #   columnDefs = list(list(width = '170px', targets = 0))
+    # ))
+    
     # plot NGM
     output$plot_NGM <- renderPlot({
       if(length(out$NGA)>1){
@@ -291,7 +341,7 @@ shinyServer(function(input, output, session) {
     # plot elas
     output$plot_ELAS <- renderPlot({
       if(length(out$NGA)>1){
-        plot_elas(Rs_=out$NGA$Rs,eigens=out$NGA$eigens,agegroups=out$NGA$agegroups)
+        plot_NGA_elas(Rs_=out$NGA$Rs,eigens=out$NGA$eigens,agegroups=out$NGA$agegroups)
       } else {
           get_dummy_plot_for_ui("NGA results not available")
         }
@@ -300,7 +350,8 @@ shinyServer(function(input, output, session) {
     # plot RI w.r.t a
     output$plot_RI_a <- renderPlot({
       if(length(out$NGA)>1){
-        plot_G_a(out$NGA$RI_a,bool=out$NGA$bool_complex) 
+        # plot_G_a(out$NGA$RI_a,bool=out$NGA$bool_complex) 
+        plot_NGA_RI(out$NGA,bool_susceptibility=TRUE)
       } else {
           get_dummy_plot_for_ui("NGA results not available")
         }
@@ -309,7 +360,8 @@ shinyServer(function(input, output, session) {
     # plot RI w.r.t h
     output$plot_RI_h <- renderPlot({
       if(length(out$NGA)>1){
-        plot_G_h(out$NGA$RI_h,bool=out$NGA$bool_complex) 
+        plot_NGA_RI(out$NGA,bool_susceptibility=FALSE)
+        #plot_G_h(out$NGA$RI_h,bool=out$NGA$bool_complex) 
       } else {
           get_dummy_plot_for_ui("NGA results not available")
         }

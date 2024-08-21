@@ -79,6 +79,8 @@ run_NGA <- function(M,a,h,q,p,nr_gen){
              sus=a,
              inf=h,
              q=q,
+             p=p,
+             nr_gen=nr_gen,
              NGM=NGM,
              eigens=eigens,
              sensi=sensi,

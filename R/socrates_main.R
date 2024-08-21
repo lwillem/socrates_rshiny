@@ -37,8 +37,14 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   if(is.na(age_infectiousness_text) || age_infectiousness_text == '1'){ age_infectiousness_text <- paste(rep(0.5,num_age_groups),collapse=',') }
 
   # get social contact matrix using all features, without interventions
-  cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                      cnt_location,cnt_matrix_features,age_breaks_text,
+  cnt_matrix_ui <- get_contact_matrix(country,
+                                      daytype,
+                                      touch,
+                                      duration,
+                                      gender,
+                                      cnt_location,
+                                      cnt_matrix_features,
+                                      age_breaks_text,
                                       weight_threshold = weight_threshold,
                                       wave)
   
@@ -67,7 +73,11 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       fct_out$notes <- c(fct_out$notes,"Contact matrix contains NA, no distancing analysis possible.")
     } else {
       # get location specific contact matrix (no intervention)
-      matrix_loc <- get_location_matrices(country,daytype,touch,duration,gender,
+      matrix_loc <- get_location_matrices(country,
+                                          daytype,
+                                          touch,
+                                          duration,
+                                          gender,
                                           cnt_location,
                                           cnt_matrix_features,
                                           age_breaks_text,
@@ -154,7 +164,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       
       # sensitivity and elasticity
       if(bool_NGA_analysis){
-        fct_out$NGA=run_NGA(mij,qs,qi,q,p,nr_gen)
+        fct_out$NGA=run_NGA(M=mij,a=qs,h=qi,q=q,p=p,nr_gen=nr_gen)
       } else{
         fct_out$NGA <- NA
       }
@@ -182,8 +192,11 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                           contact_locations = paste(cnt_location,collapse=', '),
                           contact_features  = paste(cnt_matrix_features,collapse=', '),
                           age_breaks        = age_breaks_text,
+                          age_groups        = paste(colnames(cnt_matrix_ui$matrix),collapse=', '),
                           weight_threshold  = weight_threshold,
                           wave              = wave,
+                          age_specific_infectiousness = age_infectiousness_text,
+                          age_specific_susceptibility = age_susceptibility_text,
                           row.names         = NULL)
   
   
@@ -194,11 +207,9 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   
   # add NGA info, if NGA is active
   if(bool_NGA_analysis){
-    meta_data$age_QS_text  <- age_susceptibility_text
-    meta_data$age_QI_text  <- age_infectiousness_text
-    meta_data$q_text       <- q_text
-    meta_data$delta_p_text <- delta_p_text
-    meta_data$nrgen_text   <- nrgen_text
+    meta_data$q_factor         <- q_text
+    meta_data$delta_p          <- delta_p_text
+    meta_data$nr_generations   <- nrgen_text
   }
 
   # add meta_data to function output
@@ -273,15 +284,19 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                weight.threshold      = weight_threshold,
                                estimated.contact.age = ifelse(bool_age_range,'sample','mean'),
                                missing.contact.age   = ifelse(bool_age_missing,'remove','ignore'),
-                               return.part.weights   = TRUE,
-                               quiet                 = TRUE)
+                               return.part.weights   = TRUE)
   
+  # make sure the row names are included
+  rownames(matrix_out$matrix) <- colnames(matrix_out$matrix)
+
   # add per capita contact rate (if demography data)
   if('demography' %in% names(matrix_out) && !any(is.na(matrix_out$matrix))){
     num_age_groups <- nrow(matrix_out$demography)
     pop_matrix     <- matrix(rep(matrix_out$demography$population,num_age_groups),ncol=num_age_groups,byrow = T)
     matrix_out$matrix_per_capita <- matrix_out$matrix / pop_matrix
   }
+  
+  
   
   ## TMP: remove weights from output
   if('weights' %in% names(matrix_out)){

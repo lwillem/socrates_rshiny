@@ -112,38 +112,38 @@ opt_country_admin <- data.frame(name = opt_country,
                                 dataset = c(rep("polymod",8),'peru','zimbabwe','france2012_spc',
                                             'hong_kong','vietnam','uk',
                                             'russia','china','zambia_south_africa','zambia_south_africa',
-                                            'belgium2010'
-                                             ,'belgium2020_comix'
-                                             ,'CoMix_Austria2020'
-                                             ,'CoMix_Denmark2020'
-                                             ,'CoMix_Spain2020'
-                                             ,'CoMix_France2020'
-                                             ,'CoMix_Italy2020'
-                                             ,'CoMix_Portugal2020'
-                                             ,'CoMix_Poland2020'
-                                             ,'CoMix_Finland2021'
-                                             ,'CoMix_Greece2021'
-                                             ,'CoMix_Lithuania2021'
-                                             ,'CoMix_Slovenia2021'
-                                             ,'CoMix_Switzerland2021'
+                                            'belgium2010',
+                                            'belgium2020_comix',
+                                            'austria2020_comix',
+                                            'denmark2020_comix',
+                                            'spain2020_comix',
+                                            'france2020_comix',
+                                            'italy2020_comix',
+                                            'portugal2020_comix',
+                                            'poland2020_comix',
+                                            'finland2021_comix',
+                                            'greece2021_comix',
+                                            'lithuania2021_comix',
+                                            'slovenia2021_comix',
+                                            'switzerland2021_comix'
                                              ),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
                                              '','Vietnam','UK',
                                              'Russia','China','Zambia','South Africa',
                                              'Belgium',
-                                             'Belgium'
-                                             ,'Austria'
-                                             ,'Denmark'
-                                             ,'Spain'
-                                             ,'France'
-                                             ,'Italy'
-                                             ,'Portugal'
-                                             ,'Poland'
-                                             ,'Finland'                                                   
-                                             ,'Greece'                                                   
-                                             ,'Lithuania'                                                   
-                                             ,'Slovenia'   
-                                             ,'Switzerland'                                                                                                
+                                             'Belgium',
+                                             'Austria',
+                                             'Denmark',
+                                             'Spain',
+                                             'France',
+                                             'Italy',
+                                             'Portugal',
+                                             'Poland',
+                                             'Finland',                                                 
+                                             'Greece',                                                   
+                                             'Lithuania',                                                   
+                                             'Slovenia',   
+                                             'Switzerland'                                                                                                
                                              ),
                                 stringsAsFactors = FALSE)
 

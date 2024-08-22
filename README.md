@@ -8,8 +8,8 @@ For more info, please have a look at [socialcontactdata.org](http://www.socialco
 
 We provide an online UI of SOCRATES at:
 
-[SOCRATES rshiny application ](http://socialcontactdata.org/socrates/)
+[SOCRATES rshiny application](http://socialcontactdata.org/socrates/)
 
-[SOCRATES CoMix appliation ](http://socialcontactdata.org/socrates-comix/)
+[SOCRATES CoMix application](http://socialcontactdata.org/socrates-comix/)
 
 To run SOCRATES locally, clone the repository and have a look at the R/modules/socrates_cli.R script.

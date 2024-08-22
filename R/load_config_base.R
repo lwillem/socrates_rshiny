@@ -18,7 +18,11 @@ library('socialmixr')
 library('countrycode')
 library('data.table')
 library('markdown')
+library('wpp2015')
 library(shiny)
+library(tidyverse) #
+library(ggthemes)  #
+library(ggpubr)    #
 
 # temporary to use the get_survey script outside the SocialMixr package
 library(httr)
@@ -31,6 +35,12 @@ library(curl)
 source('R/npsp/simage.R')
 source('R/npsp/splot.R')
 
+# loading help functions on wave id
+source('R/wave_lib.R')
+
+#load NGA SCRIPTS functions
+source('R/next_gen_lib.R')
+source('R/plot_next_gen.R')
 
 #__________________________#
 ##  UI PANEL OPTIONS    ####
@@ -49,8 +59,8 @@ opt_day_type <- list("All contacts",
                      "Monday-Friday (excl. holidays)",
                      "All contacts (excl. holidays)") 
 
-opt_touch    <- list("All contacts", "Physical contacts","Non-physical contacts")
-opt_duration <- list("All contacts","Less than 5 minutes", "Less than 15 minutes","More than 15 minutes","More than 1 hour","More than 4 hours")
+opt_touch    <- list("All", "Physical contacts","Non-physical contacts")
+opt_duration <- list("All","Less than 5 minutes", "Less than 15 minutes","More than 15 minutes","More than 1 hour","More than 4 hours")
 
 # location note: this sequence affects the "contact hierarchy", as such, if a contact is reported 
 # at multiple locations, we use only the first location in this sequence 
@@ -64,7 +74,7 @@ opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend",
                            "Set contacts at Home with non-household members as Leisure")
 
 # get polymod countries
-polymod_countries <- survey_countries(polymod,quiet = T)
+polymod_countries <- survey_countries(polymod)
 
 # add other dataset (and reference)
 opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
@@ -169,10 +179,7 @@ opt_country_admin$has_hhmember_cnt_data[grepl('Belgium 2010',opt_country_admin$n
 # add "has wave info" boolean
 opt_country_admin$has_waves <- FALSE
 opt_country_admin$has_waves[grepl('comix',opt_country_admin$dataset)] <- TRUE
-opt_country_admin$has_waves[grepl('france',opt_country_admin$dataset)] <- FALSE
-opt_country_admin$num_waves <- 1
-opt_country_admin$num_waves[grepl('comix',opt_country_admin$dataset)] <- 8
-opt_country_admin$num_waves[grepl('france',opt_country_admin$dataset)] <- 2
+opt_country_admin$has_waves[grepl('france',opt_country_admin$dataset)] <- TRUE
 
 # add "comix boolean"
 opt_country_admin$bool_comix <- FALSE
@@ -191,8 +198,16 @@ opt_country <- opt_country[!grepl('China',opt_country)]
 # reformat and sort opt_country
 opt_country <- sort(opt_country)
 
-# waves
-opt_waves <- (c("All waves",1:max(opt_country_admin$num_waves,na.rm=T))) # 0 is 'no'
+# waves (survey specific options)
+opt_waves <- 'All'
+opt_country_admin$opt_wave <- opt_waves
+for(i_country in 1:nrow(opt_country_admin)){
+  if(opt_country_admin$has_waves[i_country]){
+    data_part <- readRDS(opt_country_admin$dataset[i_country])$participants
+    data_part <- add_wave_id(data_part)
+    opt_country_admin$opt_wave[i_country] <- list(c(opt_waves,sort(unique(data_part$wave))))  
+  }
+}
 
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)
@@ -295,18 +310,16 @@ data_description[opt_country[grepl('Russia',opt_country)]] <- 'Litvinova et al. 
 data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- paste(data_description[opt_country[grepl('Zimbabwe',opt_country)]],'We selected one diary per participant.')
 
 # add info for France
-data_description[opt_country[grepl('France',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'This dataset contains supplementary professional contacts (SPC) and we selected one diary per participant.')
+data_description[opt_country[grepl('France 2015',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'This dataset contains supplementary professional contacts (SPC) and we selected one diary per participant.')
 
 # add info for Belgium2010
-data_description[opt_country[grepl('Belgium 2010\\*',opt_country)]] <- 'Van Hoang et al. (2020). Close contact infection dynamics over time: insights from a second large-scale social contact survey in Flanders, Belgium, in 2010-2011. MedRxiv. This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member.'
+data_description[opt_country[grepl('Belgium 2010\\*',opt_country)]] <- 'Van Hoang et al. (2020). Close contact infection dynamics over time: insights from a second large-scale social contact survey in Flanders, Belgium, in 2010-2011. BMC Infectious Diseases 21: 274. This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member.'
 
 # add info for CoMix-BE
 data_description['Belgium 2020 CoMix (Coletti 2020)'] <- 'Coletti et al. (2020) CoMix: comparing mixing patterns in the Belgian population during and after lockdown. Scientific Reports 10, 21885'
 
-# add info for CoMix-EU (to be filled)
-data_description['Italy 2021 CoMix'] <- 'TBD'
-
-
+# add info for CoMix-EU
+data_description[opt_country[grepl('(Verelst 2021)',opt_country)]] <- 'Verelst et al. (2021) SOCRATES-CoMix: A platform for timely and open-source contact mixing data during and in between COVID-19 surges and interventions in over 20 European countries. BMC Medicine 19(1):254.'
 
 # reformat to table
 data_description <- data.frame('Name' = names(data_description),

@@ -4,7 +4,7 @@ output:
 ---
 ## General
 
-SOCRATES is developped as part of a social contact data sharing initiative and assessment of mitigation strategies for COVID-19. The methods and some case studies are provided in:
+SOCRATES is developed as part of a social contact data sharing initiative and assessment of mitigation strategies for COVID-19. The methods and some case studies are provided in:
 
 
 [Willem L, Van Hoang T, Funk S, Coletti P, Beutels P, Hens N. SOCRATES: an online tool leveraging a social contact data sharing initiative to assess mitigation strategies for COVID-19. BMC Res Notes 13, 293 (2020).](https://doi.org/10.1186/s13104-020-05136-9)
@@ -12,7 +12,15 @@ SOCRATES is developped as part of a social contact data sharing initiative and a
 
 ## Major platform updates
 
-* [v1.51 - 2020-12-22] Changed methods to calculate weighted, symmetric and per capita matrices. (1) The reference population data is not truncated anymore at the upper age limit of the participants. As such, the last age group contains ALL ages up to 105 years of age (=the default of the wpp package). This truncation was included to align the participant and referece population data, but was not consistent with the notation of the open-end age group. (2) The combined weights are standardized based on post-strafication weights and truncation of weights is done after standardisation (and followed by another standardisation). More documentation on the post-stratification weights is provided [here](https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_weights.pdf).
+* [v1.55 - 2024-08-17] The application was updated from R4.2.2 to R4.3.1. This update caused minor floating-point differences in the results compared to the previous version (<1e-9). There is one documented case involving many sparse cells where the relative incidence changed due to a switch from a complex to a real eigenvector (Peru, weekend, non-physical contacts, less than 5 minutes, female-female, age groups 0 and 19, and school closure). No major changes to the output or application were observed.
+
+* [v1.54 - 2022-11-17] Fixed the alignment of age-specific susceptibility and infectiousness sliders in the GUI with the age-specific parameters when calculating the relative incidence.
+
+* [v1.53 - 2021-08-26] The location-specific matrices that are downloaded via the GUI can be reciprocal. Before, the location-specific matrices were always non-reciprocal. From this version, the choice on reciprocity is defined by the user in the GUI, so the RData file is in line with the results in the GUI.  
+
+* [v1.52 - 2021-08-24] The selection of participants and contacts by gender is now explicitly for "Male" and "Female". Other survey options for gender are now discarded when a selection by gender is made, since they caused issues when exploring e.g. male-female interactions that were identified as "not identical gender responses".  
+
+* [v1.51 - 2020-12-22] Changed methods to calculate weighted, symmetric and per capita matrices. (1) The reference population data is not truncated anymore at the upper age limit of the participants. As such, the last age group contains ALL ages up to 105 years of age (=the default of the wpp package). This truncation was included to align the participant and reference population data, but was not consistent with the notation of the open-end age group. (2) The combined weights are standardized based on post-stratification weights and truncation of weights is done after standardisation (and followed by another standardisation). More documentation on the post-stratification weights is provided [here](https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_weights.pdf).
 
 * [v1.45 - 2020-11-10] Updated the UN world population prospects version from the 2015 to the 2019 revision^(1)^.
 

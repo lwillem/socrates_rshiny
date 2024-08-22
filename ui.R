@@ -29,8 +29,7 @@ shinyUI(pageWithSidebar(
     if(bool_is_comix_ui){
       hr()
     },
-
-
+    
     selectInput(inputId = "country", 
                 label = "Country",
                 choices = opt_country,
@@ -58,7 +57,7 @@ shinyUI(pageWithSidebar(
     selectInput("gender", "Gender",
                 opt_gender),
     
-    tabsetPanel(type = "tabs", id="distancing_transmission",
+    tabsetPanel(type = "tabs", id="distancing",
                 tabPanel("General",
                          checkboxInput("bool_reciprocal", "Reciprocity",value = TRUE),
                          checkboxInput("bool_weigh_age", "Weigh by age",value = TRUE),
@@ -85,7 +84,7 @@ shinyUI(pageWithSidebar(
                 tabPanel("Options", 
                          checkboxInput("bool_age_range", "Age range: sample at random",value = TRUE),
                          checkboxInput("bool_age_missing", "Missing contact age: remove participant",value = FALSE),
-                         checkboxInput("bool_matrix_limit", "Specify the color scale of the social contact matrix?",value = FALSE),
+                         checkboxInput("bool_matrix_limit", "Specify the max for the contact matrix color scale?",value = FALSE),
                          conditionalPanel(condition = "input.bool_matrix_limit == true",
                                           numericInput(inputId="ui_scale_max",
                                                        label = "Color scale upper limit (≥1)",
@@ -102,11 +101,20 @@ shinyUI(pageWithSidebar(
                                          sliderInput("cnt_reduction_leisure","Reduce 'lesiure' contacts (%)",min=0,max=100,value=0),
                                          sliderInput("cnt_reduction_otherplace","Reduce 'otherplace' contacts (%)",min=0,max=100,value=0))
                          ),
-                tabPanel("Transmission",checkboxInput("bool_transmission_param", "Age-specific transmission",value = FALSE),
-                                        conditionalPanel(
-                                          condition = "input.bool_transmission_param == true",
+                tabPanel("Transmission",
+                         radioButtons("sel_transmission","Options:",
+                                            c("Equal contributions"="equal",
+                                              "Relative age factors [0;2]" = "relative",
+                                              "Sensitivity and elasticity" = "sensitivity")),
+                         conditionalPanel(condition = "input.sel_transmission != 'equal'",
                                           uiOutput("sliders_susceptibility"),
-                                          uiOutput("sliders_infectiousness"))
+                                          uiOutput("sliders_infectiousness")),
+                         conditionalPanel(condition = "input.sel_transmission == 'sensitivity'",
+                                          uiOutput("sliders_q"),
+                                          hr(),
+                                          tags$h3("To calculate relative impact:"),
+                                          uiOutput("sliders_delta_p"),
+                                          uiOutput("sliders_nrgen"))
                         )
                 ),
     
@@ -144,6 +152,80 @@ shinyUI(pageWithSidebar(
                          plotOutput('plot_cnt_matrix_per_capita',width = "80%", height = "300px")),
                 tabPanel("Contact rates", 
                          plotOutput('plot_mean_number_contacts',width = "80%", height = "300px")),
+                tabPanel("Transmission dynamics",
+                           #helpText('In this section, the next-generation analysis is presented. It includes the next-generation matrix (NGM), the respective sum of columns (k.j) and rows (ki.), the calculation of the reproduction number (R), and the cumulative elasticity for each age group. The relative impact (RI) is shown in the final two figures.'),
+                           #hr(),
+                           helpText(HTML("In the context of a susceptible-infectious-removed (SIR) model with a discrete age structure, 
+                                    the transmission process is described by an <em>n</em> × <em>n</em> next-generation matrix <em>K</em>, where <em>n</em> represents the number of age classes. 
+                                    Each entry of this matrix (<em>k<sub>ij</sub></em>) corresponds to the average number of infections caused by an individual in age group <em>j</em> 
+                                    in age group <em>i</em> throughout the course of its infection, where <em>i</em>, <em>j</em> = 1, ..., 7.
+                                    
+                                    Matrix <em>K</em> can be expressed as:
+                                    
+                                    <br><br>
+                                    <div style='text-align: center;'>
+                                    <em>K</em> = <em>q</em> * <em>A</em> * <em>M</em><sup>⊺</sup> * <em>H</em>
+                                    </div>
+                                    <br>
+                                                                        
+                                    where:
+                                    
+                                    <ul>
+                                    <li>The proportionality factor <em>q</em> accounts for the infectious period and other factors affecting transmission.</li>
+                                    <li><em>A</em> and <em>H</em> are diagonal matrices containing entries related to the susceptibility and infectivity for each age group, respectively.</li>
+                                    <li><em>M</em><sup>⊺</sup> represents the transposed contact matrix.</li>
+                                    </ul>")
+                           ), 
+                           hr(),
+                           tags$h3("Relative incidence"),
+                         helpText(HTML('The leading right eigenvector of matrix <em>K</em> is proportional to the expected incidence by age and is independent of the proportionality factor <em>q</em>. The normalized values, which sum to 1, represent the relative incidence, reflecting the risk of infection across different age groups.')),
+                         plotOutput('plot_relative_incidence',width = "80%", height = "300px"),
+                         hr(),
+                         #tags$h3("Parameter summary"),
+                         dataTableOutput('table_NGA_parameters'),
+                         hr(),
+                         conditionalPanel(
+                           condition = "input.sel_transmission == 'sensitivity'",
+                           tags$h3("Next generation matrix"),
+                           helpText('The next generation matrix represents the average number of infections in age group i caused by an individual in group j during their infectious period, given proportionality factor q.'),
+                           plotOutput('plot_NGM',width = "80%", height = "300px"),
+                           hr(),
+                           tags$h3("Sensitivity and elasticity"),
+                           helpText(HTML("Matrix <em>K</em> can be used to relate the total number of infections between two consecutive generations. 
+                                          Aggregating the columns or rows provides information on the average number of infections per generation either 
+                                          caused by age group <em>j</em> (denoted as <em>k<sub>j.</sub></em>) or acquired in age group <em>i</em> 
+                                          (denoted as <em>k<sub>.i</sub></em>). Additionally, the dominant eigenvalue of matrix <em>K</em> can be 
+                                          interpreted as the reproduction number <em>R</em>, which is indicated by the dashed line. Elasticity 
+                                         represents the relative contribution of each age group to the overall reproduction number (<em>R</em>)")
+                           ),
+                           plotOutput('plot_ELAS',width = "100%", height = "300px"),
+                           # helpText('Figure 2: Transmission indicators. Indicator "kj." corresponds to the sum of columns of the NGM and can be interpreted as the average number of infections caused by an 
+                           #          individual in age group j during their infectious period. "ki." corresponds to the per-generation total number of infections in age group i caused by a single individual 
+                           #          of each age group. Elasticities can be interpreted as the relative contribution of an age group towards overall reproduction number (R), which is presented with the dashed line.'),
+                           #helpText('Figure 2: Transmission indicators <em>k<sub>j.</sub></em>, <em>k<sub>.i</sub></em> and the reproduction number R. Elasticity can be interpreted as the relative contribution of an age group towards overall reproduction number (R), which is presented with the dashed line.'),
+                           #helpText(HTML('Transmission indicators <em>k<sub>j.</sub></em>, <em>k<sub>.i</sub></em> and the reproduction number (<em>R</em>). Elasticity represents the relative contribution of each age group to the overall reproduction number (<em>R</em>), which is indicated by the dashed line.')),
+                           hr(),
+                           tags$h3("Relative impact"),
+                           helpText(HTML("Changes in susceptibility or infectivity due to factors such as vaccination programs, non-pharmaceutical interventions, or the depletion of susceptibles will lead to 
+                                         perturbations in the elements of matrix <em>K</em>, and consequently, in the basic reproduction number (<em>R<sub>0</sub></em>) and relative incidence. The ratio of 
+                                         <em>K<sup>update</sup></em> to <em>K<sup>baseline</sup></em> can be interpreted as an approximation of the relative change in the number of infections in the 
+                                         <em>m</em><sup>th</sup> generation, given a proportional perturbation (<em>p</em>) in susceptibility or infectivity, assuming no other perturbations to <em>K</em> occurred up to the 
+                                         <em>m</em><sup>th</sup> generation.")
+                           ),
+                           plotOutput('plot_RI_a',width = "80%", height = "300px"),
+                           #helpText('The relative number of cases in each age group after the projection time (m) considered, given a proportional perturbation (p) to the susceptibility of the infectee. The comparator is the scenario without any change in susceptibility.'),
+                           #hr(),
+                           plotOutput('plot_RI_h',width = "80%", height = "300px")#,
+                           #helpText('The relative number of cases in each age group after the projection time (m) considered, given a proportional perturbation (p) to the infectivity of the infector. The comparator is the scenario without any change in infectivity.')
+                           # tags$h3("Parameter summary 2:"),
+                           # dataTableOutput('table_NGA_sens_parameters'),
+                           ),
+                         conditionalPanel(
+                           condition = "input.sel_transmission != 'sensitivity'",
+                           tags$h3("More?"),
+                           helpText('Enable the sensitivity and elasticity parameters in the left column under "Transmission" to get the next generation matrix and other insights on the transmission dynamics'),
+                           )),
+                         #),
                 tabPanel("Participants", 
                          helpText('Brief summary of participant data:'),
                          dataTableOutput('table_participants')),
@@ -152,7 +234,7 @@ shinyUI(pageWithSidebar(
                          dataTableOutput('table_weights')),
                 tabPanel("Data sets",
                          uiOutput("project_website_data"),
-                         dataTableOutput("social_contact_data")),
+                         div(dataTableOutput("social_contact_data")), style = "font-size:80%"),
                 tabPanel("About CoMix",
                         includeMarkdown("doc/doc_comix.md")),
                 tabPanel("Updates",

@@ -14,8 +14,8 @@ shinyServer(function(input, output, session) {
   
   ## CoMix: hide some tabs
   if(bool_is_comix_ui){
-    hideTab(inputId = "distancing_transmission", target = "Distancing")
-    hideTab(inputId = "distancing_transmission", target = "Transmission")
+    hideTab(inputId = "distancing", target = "Distancing")
+    hideTab(inputId = "distancing", target = "Transmission")
   } else{
     hideTab(inputId = "tabs_results", target = "About CoMix")    
   }
@@ -30,12 +30,11 @@ shinyServer(function(input, output, session) {
     # This input exists if the `country` survey contains wave info
     if (opt_country_admin$has_waves[opt_country_admin$name == input$country]) {
       selectInput(inputId = 'wave_dynamic',
-                  label   = 'Wave',
+                  label   = 'Wave: start [panel]',
                   choices = opt_waves)
     } else {
       return(NULL)
     }
-    
   })
   
   ## this bit fixes the issue
@@ -51,7 +50,8 @@ shinyServer(function(input, output, session) {
   
   # Setup ####
   # create memory variable for the transmission param sliders
-  bool_update <- reactiveValues(age_breaks_text = '')
+  bool_update <- reactiveValues(age_breaks_text = '',
+                                sel_transmission = '')
   
   # create bool to show the SPC checkbox
   output$panelStatus <- reactive({
@@ -68,17 +68,16 @@ shinyServer(function(input, output, session) {
   # Update UI panel(s) ####
   observe({
   
-    # if the SCP checkbox is not shown (nor used), set as "TRUE" 
-    # MESSAGE ==>> "SCP are never excluded if the checkbox is not shown"
+    # if the SCP check box is not shown (nor used), set as "TRUE" 
+    # MESSAGE ==>> "SCP are never excluded if the check box is not shown"
     show_spc_panel <- opt_country_admin$has_suppl_professional_cnt_data[opt_country_admin$name == as.character(input$country)]
     if(!show_spc_panel){
       updateCheckboxInput(session,"bool_spc", value = TRUE)
     }
     
     # if the HH-member checkbox is not shown (nor used), set as "FALSE"
-    # MESSAGE ==>> "selection is never excluded if the checkbox is not shown"
+    # MESSAGE ==>> "selection is never excluded if the check box is not shown"
     show_hhmember_panel <- opt_country_admin$has_hhmember_cnt_data[opt_country_admin$name == as.character(input$country)]
-    print(show_hhmember_panel)
     if(!show_hhmember_panel){
       updateCheckboxInput(session,"bool_hhmember_selection", value = FALSE)
     }
@@ -127,46 +126,73 @@ shinyServer(function(input, output, session) {
     }
     
     # update wave  options
+    opt_waves <- unlist(opt_country_admin$opt_wave[flag_country])
     if(opt_country_admin$has_waves[flag_country]){
-      updateSelectInput(session,"wave_dynamic", choices = opt_waves[1:(opt_country_admin$num_waves[flag_country]+1)], selected = input$wave_dynamic)
+      updateSelectInput(session,"wave_dynamic", choices = opt_waves, selected = input$wave_dynamic)
     } else {
       updateSelectInput(session,"wave_dynamic", choices = opt_waves[1], selected = opt_waves[1])
     }
     
     #update transmission sliders, if the age groups have changed
-    if(bool_update$age_breaks_text != input$age_breaks_text){
+    if(bool_update$age_breaks_text  != input$age_breaks_text ||
+       bool_update$sel_transmission != input$sel_transmission){
       
       # adjust memory variable
-      bool_update$age_breaks_text <- input$age_breaks_text
+      bool_update$age_breaks_text  <- input$age_breaks_text
+      bool_update$sel_transmission <- input$sel_transmission
+      
+      # range
+      q_default_max  <- c(2,1)
+      if(input$sel_transmission == 'sensitivity'){
+        q_default_max  <- c(1,0.5,0.1)
+      }
       
       # get age groups
-      age_groups <- parse_age_values(input$age_breaks_text)
-      num_age_groups <- length(age_groups)
-      age_groups_label <- paste0('[',age_groups,'-',c(age_groups[-1],'+'),')')
+      age_groups                       <- parse_age_values(input$age_breaks_text)
+      num_age_groups                   <- length(age_groups)
+      age_groups_label                 <- paste0('[',age_groups,'-',c(age_groups[-1],'+'),')')
       age_groups_label[num_age_groups] <- paste0(age_groups[num_age_groups],'+')
       
       # update sliders: susceptibility
       output$sliders_susceptibility <- renderUI({
-        
         lapply(seq(age_groups), function(i) {
           sliderInput(inputId = paste0("s_susceptibility",i),
                       label = paste('Susceptibility:',age_groups_label[i]),
-                      min = 0, max = 2, value = 1,step=0.1)
+                      min = 0, max = q_default_max[1], value = q_default_max[2], step=0.1)
         })
       })
       
+      
       # update sliders: infectiousness
       output$sliders_infectiousness <- renderUI({
-        
         lapply(seq(age_groups), function(i) {
           sliderInput(inputId = paste0("s_infectiousness",i),
                       label = paste('infectiousness:',age_groups_label[i]),
-                      min = 0, max = 2, value = 1,step=0.1)
+                      min = 0, max = q_default_max[1], value = q_default_max[2], step=0.1)
         }) # end: lapply
       }) # end= renderUI
       
+      # update slider: Proportionality factor
+      output$sliders_q <- renderUI({
+          sliderInput(inputId = paste0("s_q"),
+                      label = paste('Proportionality factor (q):'),
+                      min = 0, max = 5, value = 1,step=0.1)
+      })
+      
+      # update slider: proportional perturbation
+      output$sliders_delta_p <- renderUI({
+        sliderInput(inputId = paste0("s_p"),
+                    label = paste('Proportional perturbation (p):'),
+                    min = -1, max = 1, value = 0.1,step=0.1)
+      })
+      
+      # update slider: Projection time
+      output$sliders_nrgen <- renderUI({
+        sliderInput(inputId = paste0("s_nrgen"),
+                    label = paste('Projection time (in generations):'),
+                    min = 2, max = 20, value = 3,step=1)
+      })
     } # end if-clause: update transmission sliders
-    
   }) # end: observe
  
   ## Update results ####
@@ -189,8 +215,18 @@ shinyServer(function(input, output, session) {
                         input$bool_hhmember_selection)
 
     # parse transmission parameters
-    age_susceptibility_text    <- parse_input_list(input,'s_susceptibility')
-    age_infectiousness_text    <- parse_input_list(input,'s_infectiousness')
+    bool_transmission_param <- input$sel_transmission == 'relative'
+    bool_NGA_analysis       <- input$sel_transmission == 'sensitivity'
+    
+    # TODO: if the number of age groups is reduced, the previous "s_susceptibility" values remain, while not visible
+    num_age_groups             <- length(parse_age_values(input$age_breaks_text))
+    age_susceptibility_text    <- parse_input_list(input,'s_susceptibility',num_age_groups)
+    age_infectiousness_text    <- parse_input_list(input,'s_infectiousness',num_age_groups)
+
+    q_text <- parse_input_list(input,'s_q')
+    delta_p_text <- parse_input_list(input,'s_p')
+    nrgen_text <- parse_input_list(input,'s_nrgen')
+    #print(age_S_text)
     
     # combine contact reductions
     # TODO: use notation from opt_location (capitals etc.)
@@ -211,18 +247,20 @@ shinyServer(function(input, output, session) {
                                        duration     = input$duration,
                                        gender       = input$gender,
                                        cnt_location = input$cnt_location,
-                                       cnt_matrix_features = opt_matrix_features[features_select],
-                                       age_breaks_text     = input$age_breaks_text,
+                                       cnt_matrix_features  = opt_matrix_features[features_select],
+                                       age_breaks_text      = input$age_breaks_text,
                                        weight_threshold     = weight_threshold,
-                                       bool_transmission_param = input$bool_transmission_param,
+                                       cnt_reduction           = cnt_reduction,
+                                       wave                    = values$w_dynamic,
                                        age_susceptibility_text = age_susceptibility_text,
                                        age_infectiousness_text = age_infectiousness_text,
-                                       cnt_reduction           = cnt_reduction,
-                                       wave                    = values$w_dynamic)
+                                       bool_NGA_analysis       = bool_NGA_analysis,
+                                       q_text                  = q_text,
+                                       delta_p_text            = delta_p_text,
+                                       nrgen_text              = nrgen_text)
     
     # plot social contact matrix
     output$plot_cnt_matrix <- renderPlot({
-      
       scale_max <- ifelse(input$bool_matrix_limit == TRUE ,input$ui_scale_max,NA) 
       plot_cnt_matrix(out$matrix,scale_max=scale_max)
     })
@@ -232,8 +270,7 @@ shinyServer(function(input, output, session) {
       if('matrix_per_capita' %in% names(out)){
         plot_cnt_matrix(mij = out$matrix_per_capita, 'per capita')
       } else{
-        plot(0,col=0,axes=F,xlab='',ylab='')
-        text(1,0,"MISSING DATA ISSUE...\nUNABLE TO PLOT THE MATRIX")    
+        get_dummy_plot_for_ui("MISSING DATA ISSUE...\nUNABLE TO GENERATE THIS MATRIX \nConsider adjusting the age limits.")
       }
     })
     
@@ -242,6 +279,94 @@ shinyServer(function(input, output, session) {
       plot_mean_number_contacts(mij = out$matrix)
     })
     
+    # plot relative incidence
+    output$plot_relative_incidence <- renderPlot({
+      bplt <- barplot(out$relative_incidence,
+              xlab="Age group",
+              ylab="Relative incidence",
+              ylim=c(0,1),
+              cex.names =  0.8)
+      text(x = bplt,
+           y = out$relative_incidence,
+           labels = round(out$relative_incidence,digits=2),
+           pos=3)
+    })
+   
+    # add NGA input parameter table
+    output$table_NGA_parameters <- renderDataTable({
+      sel_NGA_param <- out$meta_data$parameter %in% c('age groups','age specific susceptibility','age specific infectiousness',
+                                                      'q factor','delta p', 'nr generations')
+      out_NGA_param <- data.table(out$meta_data[sel_NGA_param,])
+      
+      print(out_NGA_param)
+      
+      out_NGA_param$parameter <- gsub('susceptibility','susceptibility (~A)',out_NGA_param$parameter)
+      out_NGA_param$parameter <- gsub('infectiousness','infectiousness (~H)',out_NGA_param$parameter)
+      out_NGA_param$parameter <- gsub('q factor','proportionality factor (q)',out_NGA_param$parameter)
+      out_NGA_param$parameter <- gsub('delta p','proportional perturbation (p)',out_NGA_param$parameter)
+      out_NGA_param$parameter <- gsub('nr generations','number of generations (m)',out_NGA_param$parameter)
+      out_NGA_param$value[-1] <- gsub(',',', ',out_NGA_param$value[-1])
+      
+      print(out_NGA_param)
+      
+      out_NGA_param
+    },
+    options = list(
+      autoWidth = TRUE,
+      dom = 't',   # 't' specifies only the table should be shown
+      paging = FALSE,     # Disable pagination
+      info = FALSE,       # Disable the info text (e.g., "Showing 1 to 10 of X entries")
+      columnDefs = list(list(width = '50%', targets = 0))
+    ))
+    
+    # # add NGA input parameter table
+    # output$table_NGA_sens_parameters <- renderDataTable({
+    #   sel_NGA_param <- out$meta_data$parameter %in% c('delta p', 'nr generations')
+    #   out$meta_data[sel_NGA_param,]
+    # },
+    # options = list(
+    #   autoWidth = TRUE,
+    #   columnDefs = list(list(width = '170px', targets = 0))
+    # ))
+    
+    # plot NGM
+    output$plot_NGM <- renderPlot({
+      if(length(out$NGA)>1){
+        plot_NGM(NGM = out$NGA$NGM)
+      } else {
+        get_dummy_plot_for_ui("NGA results not available")
+      }
+    })
+    
+    # plot elas
+    output$plot_ELAS <- renderPlot({
+      if(length(out$NGA)>1){
+        plot_NGA_elas(Rs_=out$NGA$Rs,eigens=out$NGA$eigens,agegroups=out$NGA$agegroups)
+      } else {
+          get_dummy_plot_for_ui("NGA results not available")
+        }
+    })
+    
+    # plot RI w.r.t a
+    output$plot_RI_a <- renderPlot({
+      if(length(out$NGA)>1){
+        # plot_G_a(out$NGA$RI_a,bool=out$NGA$bool_complex) 
+        plot_NGA_RI(out$NGA,bool_susceptibility=TRUE)
+      } else {
+          get_dummy_plot_for_ui("NGA results not available")
+        }
+    })
+    
+    # plot RI w.r.t h
+    output$plot_RI_h <- renderPlot({
+      if(length(out$NGA)>1){
+        plot_NGA_RI(out$NGA,bool_susceptibility=FALSE)
+        #plot_G_h(out$NGA$RI_h,bool=out$NGA$bool_complex) 
+      } else {
+          get_dummy_plot_for_ui("NGA results not available")
+        }
+    })
+
     # print results
     output$social_contact_analysis <- renderPrint({
       # exclude results with separate tab
@@ -270,7 +395,7 @@ shinyServer(function(input, output, session) {
         paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_analysis.RData")
       },
       content = function(file) {
-        download_contact_matrices(  country      = input$country,
+          download_contact_matrices(country      = input$country,
                                     daytype      = input$daytype,
                                     touch        = input$touch,
                                     duration     = input$duration,
@@ -279,11 +404,10 @@ shinyServer(function(input, output, session) {
                                     cnt_matrix_features = opt_matrix_features[features_select],
                                     age_breaks_text     = input$age_breaks_text,
                                     weight_threshold     = weight_threshold,
-                                    bool_transmission_param = input$bool_transmission_param,
-                                    age_susceptibility_text = age_susceptibility_text,
-                                    age_infectiousness_text = age_infectiousness_text,
                                     cnt_reduction           = cnt_reduction,
                                     wave                    = values$w_dynamic,
+                                    age_susceptibility_text = age_susceptibility_text,
+                                    age_infectiousness_text = age_infectiousness_text,
                                     filename                = file)
       }
     )
@@ -311,7 +435,7 @@ shinyServer(function(input, output, session) {
     # create url link
     output$project_website_weights <- renderUI({
       tagList('Based on the selected options, we calculate participant weights to account for age and the number of observations during week (5/7) and weekend (2/7) days. 
-                         The United Nation’s World Population Prospects are used as reference. Weights are constraint to a maximum of 3 to limit the influence of single participants.
+                         The United Nation’s World Population Prospects are used as reference. Weights are constrained to a maximum of 3 to limit the influence of single participants.
                          ',url_doc_weights)
     })
     # add weights table
@@ -338,7 +462,6 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
   # create url link
   output$socrates_website <- renderUI({
     tagList(url_socrates)
@@ -346,12 +469,12 @@ shinyServer(function(input, output, session) {
   
   # create url link
   output$socrates_website_data <- renderUI({
-    tagList("The goal of the CoMix project is to measure social distancing during the COVID-19 pandemic. This tool is part of the", url_socrates)
+    tagList("The goal of the CoMix project has been to measure social distancing during the COVID-19 pandemic. This tool is part of the", url_socrates)
   })
   
   # create url link
   output$socrates_website_comix <- renderUI({
-    tagList("Also have look at", url_socrates_comix)
+    tagList("Also have a look at", url_socrates_comix)
   })
   
 })

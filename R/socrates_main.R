@@ -3,7 +3,7 @@
 # 
 # => LOAD AND SELECT SOCIAL CONTACT SURVEY DATA
 #
-#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2022, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 # load packages and help functions
@@ -13,6 +13,7 @@ source('R/load_config_comix.R')
 source('R/contact_matrix_fix.R')
 source('R/plot_mean_number_contacts.R')
 source('R/plot_social_contact_matrix.R')
+source('R/plot_mean_number_infected.R')
 
 # example
 #contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))
@@ -20,13 +21,30 @@ source('R/plot_social_contact_matrix.R')
 run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
                                         cnt_location,cnt_matrix_features,age_breaks_text,
                                         weight_threshold,
-                                        bool_transmission_param,age_susceptibility_text,age_infectiousness_text,
                                         cnt_reduction,
-                                        wave){
+                                        wave,
+                                        age_susceptibility_text = NA,
+                                        age_infectiousness_text = NA,
+                                        bool_NGA_analysis       = FALSE,
+                                        q_text                  = 1,
+                                        delta_p_text            = 0.1,
+                                        nrgen_text              = 3
+                                        ){
   
+  # check age-specific parameters
+  num_age_groups <- length(parse_age_values(age_breaks_text))
+  if(is.na(age_susceptibility_text) || age_susceptibility_text == '1'){ age_susceptibility_text <- paste(rep(0.5,num_age_groups),collapse=',') }
+  if(is.na(age_infectiousness_text) || age_infectiousness_text == '1'){ age_infectiousness_text <- paste(rep(0.5,num_age_groups),collapse=',') }
+
   # get social contact matrix using all features, without interventions
-  cnt_matrix_ui <- get_contact_matrix(country,daytype,touch,duration,gender,
-                                      cnt_location,cnt_matrix_features,age_breaks_text,
+  cnt_matrix_ui <- get_contact_matrix(country,
+                                      daytype,
+                                      touch,
+                                      duration,
+                                      gender,
+                                      cnt_location,
+                                      cnt_matrix_features,
+                                      age_breaks_text,
                                       weight_threshold = weight_threshold,
                                       wave)
   
@@ -36,10 +54,16 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # create option to add notes
   fct_out$notes <- NULL
   
-  # if matrix contains NA's => reciproity is not possible ==>> add warning
-  if(any(is.na(cnt_matrix_ui$matrix)) & 
+  # if matrix contains NA's => reciprocity is not possible ==>> add warning
+  if(any(is.na(cnt_matrix_ui$matrix)) &
      opt_matrix_features[[1]]  %in% cnt_matrix_features){
-    fct_out$notes <- "Contact matrix contains NA, reciprocity is not possible."
+    fct_out$notes <- "Contact matrix contains missing data, so it is not possible to generate a symmetric matrix (cfr. reciprocity)."
+  }
+
+  # reciprocity has also effect on the analysis by gender
+  if(gender %in% unlist(opt_gender[3:4]) &
+     opt_matrix_features[[1]]  %in% cnt_matrix_features){
+    fct_out$notes <- "Gender-specific data selection accounts for reciprocity, so Male-Female == Female-Male."
   }
   
   # include physical distancing?
@@ -49,7 +73,11 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       fct_out$notes <- c(fct_out$notes,"Contact matrix contains NA, no distancing analysis possible.")
     } else {
       # get location specific contact matrix (no intervention)
-      matrix_loc <- get_location_matrices(country,daytype,touch,duration,gender,
+      matrix_loc <- get_location_matrices(country,
+                                          daytype,
+                                          touch,
+                                          duration,
+                                          gender,
                                           cnt_location,
                                           cnt_matrix_features,
                                           age_breaks_text,
@@ -95,7 +123,6 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
 
       # calculate impact on transmission
       model_comparison <- compare_contact_matrices(matrix_total,cnt_matrix_ui$matrix,
-                                                   bool_transmission_param,
                                                    age_susceptibility_text,age_infectiousness_text)
       
       # update UI results
@@ -116,39 +143,73 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
     } # end else (no NA's present) 
   }# end if intervention
   
-  # Add relative incidence (if possible)
-  if(!any(is.na(cnt_matrix_ui$matrix))){
-    # adjust for age-specific transmission?
-    mij <- cnt_matrix_ui$matrix
-    if(bool_transmission_param){
-      mij <- adjust_mij_transmission(mij,age_susceptibility_text,age_infectiousness_text)
-    }
-    relative_incidence        <- standardize_RI(eigen(mij)$vectors[,1])
-    names(relative_incidence) <- colnames(cnt_matrix_ui$matrix)
+  # # Add relative incidence (if possible)
+  if(any(is.na(cnt_matrix_ui$matrix))){
+    warning("NGA analysis is not possible because contact matrix contains NA")
+    fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because contact matrix contains NA")  
+  } else {
     
+    mij    = cnt_matrix_ui$matrix
+    qs     = as.numeric(parse_age_values(age_susceptibility_text,bool_unique = FALSE))
+    qi     = as.numeric(parse_age_values(age_infectiousness_text,bool_unique = FALSE))
+    q      = as.numeric(parse_age_values(q_text,bool_unique = FALSE))
+    p      = as.numeric(parse_age_values(delta_p_text,bool_unique = FALSE))
+    nr_gen = as.numeric(parse_age_values(nrgen_text,bool_unique = FALSE))
+    
+    if(length(qs)==nrow(mij) & length(qi)==nrow(mij)){
+    
+      # calculate relative incidence
+      NGM                       <- NGM_SIR(q=q,a=qs,M=t(mij),h=qi) # compute the NGM
+      relative_incidence        <- standardize_RI(eigen(NGM)$vectors[,1])
+      
+      # sensitivity and elasticity
+      if(bool_NGA_analysis){
+        fct_out$NGA=run_NGA(M=mij,a=qs,h=qi,q=q,p=p,nr_gen=nr_gen)
+      } else{
+        fct_out$NGA <- NA
+      }
+    } else {
+      relative_incidence <- rep(NA,nrow(mij))
+      warning("NGA analysis is not possible because age groups do not match")
+      fct_out$notes <- c(fct_out$notes,"NGA analysis is not possible because age groups do not match")  
+    } # end if-else-clause to check age groups
+
     # add relative incidence to output list
+    names(relative_incidence) <- colnames(cnt_matrix_ui$matrix)
     fct_out <- c(fct_out[1],
                  relative_incidence=list(relative_incidence),
-                 fct_out[-1])
-  }
+                 fct_out[-1])    
+    
+  } # end if-else-clause to check on NA's in contact matrix
+
   
   # add meta data on matrix parameters
-  meta_data <- data.frame(data_set = country,
-                          day_type = unlist(daytype),
+  meta_data <- data.frame(data_set          = country,
+                          day_type          = unlist(daytype),
                           contact_intensity = unlist(touch),
-                          contact_duration = unlist(duration),
-                          contact_gender = unlist(gender),
+                          contact_duration  = unlist(duration),
+                          contact_gender    = unlist(gender),
                           contact_locations = paste(cnt_location,collapse=', '),
-                          contact_features = paste(cnt_matrix_features,collapse=', '),
-                          age_breaks = age_breaks_text,
-                          weight_threshold = weight_threshold,
-                          wave = wave,
-                          row.names=NULL)
+                          contact_features  = paste(cnt_matrix_features,collapse=', '),
+                          age_breaks        = age_breaks_text,
+                          age_groups        = paste(colnames(cnt_matrix_ui$matrix),collapse=', '),
+                          weight_threshold  = weight_threshold,
+                          wave              = wave,
+                          age_specific_infectiousness = age_infectiousness_text,
+                          age_specific_susceptibility = age_susceptibility_text,
+                          row.names         = NULL)
   
   
   # add distancing info, if present
   if(length(fct_out$notes)>0){
     meta_data[,paste('distancing info',1:length(fct_out$notes))] <- fct_out$notes
+  }
+  
+  # add NGA info, if NGA is active
+  if(bool_NGA_analysis){
+    meta_data$q_factor         <- q_text
+    meta_data$delta_p          <- delta_p_text
+    meta_data$nr_generations   <- nrgen_text
   }
 
   # add meta_data to function output
@@ -192,9 +253,9 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                      duration     = duration,
                                      gender       = gender,
                                      cnt_location = cnt_location,
-                                     bool_reciprocal   = bool_reciprocal,
+                                     bool_reciprocal             = bool_reciprocal,
                                      bool_suppl_professional_cnt =  bool_suppl_professional_cnt,
-                                     bool_hhmatrix_selection = bool_hhmatrix_selection,
+                                     bool_hhmatrix_selection     = bool_hhmatrix_selection,
                                      wave         = wave)
   
   if(nrow(survey_object$participants)==0){
@@ -220,14 +281,14 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                symmetric       = bool_reciprocal,
                                weigh.age       = bool_weigh_age,
                                weigh.dayofweek = bool_weigh_dayofweek,
-                               weight.threshold = weight_threshold,
+                               weight.threshold      = weight_threshold,
                                estimated.contact.age = ifelse(bool_age_range,'sample','mean'),
-                               missing.contact.age = ifelse(bool_age_missing,'remove','ignore'),
-                               return.part.weights = TRUE,
-                               #return.demography   = TRUE,
-                               quiet           = TRUE)
+                               missing.contact.age   = ifelse(bool_age_missing,'remove','ignore'),
+                               return.part.weights   = TRUE)
   
-  
+  # make sure the row names are included
+  rownames(matrix_out$matrix) <- colnames(matrix_out$matrix)
+
   # add per capita contact rate (if demography data)
   if('demography' %in% names(matrix_out) && !any(is.na(matrix_out$matrix))){
     num_age_groups <- nrow(matrix_out$demography)
@@ -235,12 +296,13 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
     matrix_out$matrix_per_capita <- matrix_out$matrix / pop_matrix
   }
   
+  
+  
   ## TMP: remove weights from output
   if('weights' %in% names(matrix_out)){
     tmp <- matrix_out$weights
     matrix_out$weights <- NULL
     matrix_out$weights <- tmp
-    
   }
   
   # ## add date
@@ -257,7 +319,6 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
     matrix_out$survey_period <- paste(c('From', paste(range(dates_all), collapse=' to ')),collapse=' ')
   }
   
-
   # return
   matrix_out
 }
@@ -273,11 +334,10 @@ get_survey_object <- function(country,
                               bool_suppl_professional_cnt,
                               bool_hhmatrix_selection,
                               missing.contact.age = "remove",  # adopted from socialmixr package
-                              #missing.contact.age = "keep",  # adopted from socialmixr package
                               wave,
                               quiet = FALSE){
   
-  # select dataset filename and load #####
+  # select dataset file name and load #####
   sel_dataset <- opt_country_admin[opt_country_admin$name == country,]
   
   # get original data
@@ -285,6 +345,9 @@ get_survey_object <- function(country,
   data_part   <- survey_data$participants
   data_cnt    <- survey_data$contacts
   
+  # include wave id notation  
+  data_part <- add_wave_id(data_part)
+
   # option to select country-specific participant and contact data
   if(nchar(sel_dataset$country)>0){
     bool_country <- (data_part$country == sel_dataset$country)
@@ -325,11 +388,7 @@ get_survey_object <- function(country,
     }
     
     if(daytype == opt_day_type[[4]]){
-      # if(!any(data_part$is_holiday)){ # if no holiday period data
-      #   print("NO HOLIDAY DATA... USE REGULAR PERIOD DATA")
-      # } else{ # select holiday period data
       data_part <- data_part[data_part$holiday,]
-      # }
     } else{ # select regular period data
       data_part <- data_part[!data_part$holiday,]
     }
@@ -365,29 +424,38 @@ get_survey_object <- function(country,
     # first select cnt data of remaining participants
     data_cnt <- data_cnt[data_cnt$part_id %in% data_part$part_id]
     
+    # make sure the gender variable is used as character
+    data_cnt$cnt_gender   <- as.character(data_cnt$cnt_gender)
+    data_part$part_gender <- as.character(data_part$part_gender)
+    
     # set gender-specific booleans
     bool_cnt_female  <- data_cnt$cnt_gender   == 'F'
     bool_part_female <- data_part$part_gender == 'F'
+    bool_cnt_male    <- data_cnt$cnt_gender   == 'M'
+    bool_part_male   <- data_part$part_gender == 'M'
     
     # merge dataset to compare participant and contact gender
-    data_cnt_gender  <- merge(data_cnt,data_part[,c('part_id','part_gender')],by='part_id')
+    data_cnt_gender  <- merge(data_cnt[,c('part_id','cnt_gender')],data_part[,c('part_id','part_gender')],by='part_id')
+    data_cnt_gender$cnt_gender[!data_cnt_gender$cnt_gender %in% c('M','F')] <- NA
+    data_cnt_gender$part_gender[!data_cnt_gender$part_gender %in% c('M','F')] <- NA
     bool_gender_diff <- data_cnt_gender$cnt_gender != data_cnt_gender$part_gender
+    bool_gender_diff <- bool_gender_diff & !is.na(bool_gender_diff)
     
     if(gender == opt_gender[[2]]){                  # female-female
       data_cnt       <- data_cnt[bool_cnt_female,]
       data_part      <- data_part[bool_part_female,]
     } else if(gender == opt_gender[[5]]){           # male-male
-      data_cnt       <- data_cnt[!bool_cnt_female,]
-      data_part      <- data_part[!bool_part_female,]
+      data_cnt       <- data_cnt[bool_cnt_male,]
+      data_part      <- data_part[bool_part_male,]
     } else if(bool_reciprocal){
       data_cnt       <- data_cnt[bool_gender_diff,]
     } else {
       if(gender == opt_gender[[3]]){                # female-male
-        data_cnt       <- data_cnt[bool_gender_diff,]
+        data_cnt       <- data_cnt[bool_cnt_male,]
         data_part      <- data_part[bool_part_female,]
       } else if(gender == opt_gender[[4]]){         # male-female
-        data_cnt       <- data_cnt[bool_gender_diff,]
-        data_part      <- data_part[!bool_part_female,]
+        data_cnt       <- data_cnt[bool_cnt_female,]
+        data_part      <- data_part[bool_part_male,]
       }
     }
   }
@@ -395,16 +463,11 @@ get_survey_object <- function(country,
   ## select wave (optional) ----
   if(wave != opt_waves[[1]]){
     if(!is.null(data_part$wave) & wave %in% data_part$wave){
-      # print(table(data_part$wave))
-      # print(table(data_part$wave == wave))
-      
       bool_part_wave <- data_part$wave == wave
       data_part <- data_part[bool_part_wave,]
       
       bool_cnt_wave <- data_cnt$part_id %in%  data_part$part_id
-      data_cnt  <- data_cnt[bool_cnt_wave,]
-      # print(paste('select wave', wave))
-      # print(table(data_part$wave))
+      data_cnt      <- data_cnt[bool_cnt_wave,]
     }
   }
   
@@ -423,9 +486,10 @@ get_survey_object <- function(country,
     data_cnt_tmp[is.na(data_cnt_tmp)] <- 0
     
     # add missing location to "other"
+    # note: missing could also be "other locations than specified in opt_location"
     cnt_loc_missing <- rowSums(data_cnt_tmp,na.rm=T) == 0
     data_cnt_tmp$cnt_otherplace  <- as.numeric(data_cnt_tmp$cnt_otherplace | cnt_loc_missing)
-    
+
     # 1. calculate cumulative sum (from left to right)
     tmp_loc_cumsum <- t(apply(data_cnt_tmp,1,cumsum))
     
@@ -478,7 +542,6 @@ get_survey_object <- function(country,
     } 
   }
   
-  
   # remove temporal data from contact data.frame
   if('dayofweek' %in% names(data_cnt)){
     data_cnt$dayofweek <- NULL
@@ -496,23 +559,19 @@ get_survey_object <- function(country,
   
   # return
   return(mixr_survey)
-  
 }
-
 
 #mija <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45,65))$matrix*c(1,0.5,0.6,1)
 #mijb <- contact_matrix(polymod, countries = "Belgium", age.limits = c(0, 18, 45, 65))$matrix
 compare_contact_matrices <- function(mija,mijb,
-                                     bool_transmission_param,age_susceptibility_text,age_infectiousness_text){
+                                     age_susceptibility_text,age_infectiousness_text){
   
   # mij ratio
   mij_ratio     <- mija/mijb
   
-  # adjust for age-specific transmission?
-  if(bool_transmission_param){
-    mija <- adjust_mij_transmission(mija,age_susceptibility_text,age_infectiousness_text)
-    mijb <- adjust_mij_transmission(mijb,age_susceptibility_text,age_infectiousness_text)
-  }
+  # adjust for age-specific transmission
+  mija <- adjust_mij_transmission(mija,age_susceptibility_text,age_infectiousness_text)
+  mijb <- adjust_mij_transmission(mijb,age_susceptibility_text,age_infectiousness_text)
   
   if(any(is.na(mija))|any(is.na(mijb))){
     warning('Social contact matrix contains NA... no comparison possible!')
@@ -547,7 +606,6 @@ compare_contact_matrices <- function(mija,mijb,
 
 # help function to standardize the relative incidence
 standardize_RI<-function(vec){return(vec/sum(vec))}
-
 
 # convert character string with age-specific values into (positive) numeric values
 parse_age_values <- function(age_values_text,bool_unique = TRUE){
@@ -598,10 +656,16 @@ adjust_mij_transmission <- function(mij,age_susceptibility_text,age_infectiousne
   return(mij)
 }
 
-parse_input_list <- function(input_list,column_tag){
+#TODO: default value 1 is error prone!
+parse_input_list <- function(input_list,column_tag,max_dept=NA){
   
   # get column names
-  sel_colnames <- c(names(input_list)[grepl(column_tag,names(input_list))])
+  # note: 'sort' is required since they are aggregated consecutively in the following code block
+  sel_colnames <- sort(unlist(names(input_list)[grepl(column_tag,names(input_list))]))
+
+  if(!is.na(max_dept) & max_dept < length(sel_colnames)){
+    sel_colnames <- sel_colnames[1:max_dept]
+  }
   
   # aggregate
   if(length(sel_colnames)==0){
@@ -628,7 +692,6 @@ get_location_matrices <- function(country,daytype,touch,duration,gender,
                                   weight_threshold,
                                   wave){
   
-  
   # location specific ==> NOT reciprocal
   sel_cnt_matrix_features <- cnt_matrix_features[!grepl('recipocal',cnt_matrix_features,ignore.case = T)]
   
@@ -648,5 +711,11 @@ get_location_matrices <- function(country,daytype,touch,duration,gender,
   names(matrix_list) <- cnt_location
   
   return(matrix_list)
+}
+
+# generate a dummy plot for the UI with a warning message
+get_dummy_plot_for_ui <- function(warning_message){
+    plot(0,col=0,axes=F,xlab='',ylab='')
+    text(1,0,warning_message)    
 }
 

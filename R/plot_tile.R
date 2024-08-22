@@ -1,7 +1,7 @@
 #___________________________________________________________________________
 # This file is part of the SOcial Contact RATES (SOCRATES) modelling project
 # 
-# => PLOT SOCIAL CONTACT MATRICES
+# => PLOT TILE
 #
 #  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
@@ -9,7 +9,7 @@
 
 #mij <- contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))$matrix
 #mij <- matrix_out$matrix
-plot_cnt_matrix <- function(mij,plot_title_extra = '',scale_max=NA){
+plot_tile <- function(mij,plot_title="",plot_xlab="",plot_ylab="",scale_max=NA){
   if(all(is.na(mij))){
     return(NA)
   }
@@ -19,17 +19,17 @@ plot_cnt_matrix <- function(mij,plot_title_extra = '',scale_max=NA){
   redc <- rev(heat.colors(100))
   par(mar=c(5, 6, 2, 2),mgp=c(3,0.5,0))
   p <- simage(s = mij, 
-             xlab="Age of participant (year)",
-             ylab="Age of contact (year)", 
-             legend.width=1,
-             slim=c(min(0,mij,na.rm=T), ifelse(is.na(scale_max),max(mij,na.rm=T),max(1,scale_max))), 
-             cex.lab=1.2,
-             cex.main=1.2, 
-             las=0.1,
-             col=redc, 
-             main=paste("Average number of contacts per day",plot_title_extra), 
-             xaxt="n", 
-             yaxt="n")
+              xlab=plot_xlab,
+              ylab=plot_ylab, 
+              legend.width=1,
+              slim=c(min(0,mij,na.rm=T), ifelse(is.na(scale_max),max(mij,na.rm=T),max(1,scale_max))), 
+              cex.lab=1.2,
+              cex.main=1.2, 
+              las=0.1,
+              col=redc, 
+              main=plot_title, 
+              xaxt="n", 
+              yaxt="n")
   # set axis 
   plt_ticks <- seq(0,1,length=nrow(mij))
   axis(2, at=plt_ticks, labels = c(colnames(mij)),cex.axis=0.9,tick = FALSE,las=1)
@@ -46,4 +46,6 @@ plot_cnt_matrix <- function(mij,plot_title_extra = '',scale_max=NA){
   text(e_grid, labels = mij)
 }
 
-
+# test
+#mij <- contact_matrix(polymod, countries = "United Kingdom", age.limits = c(0, 1, 5, 15))$matrix
+#plot_tile(mij,"NGM","Infected","Infective")

@@ -218,18 +218,17 @@ shinyServer(function(input, output, session) {
     bool_transmission_param <- input$sel_transmission == 'relative'
     bool_NGA_analysis       <- input$sel_transmission == 'sensitivity'
     
-    # TODO: if the number of age groups is reduced, the previous "s_susceptibility" values remain, while not visible
+    # note: if the number of age groups is reduced, the previous "s_susceptibility" values remain, while not visible.
+    # since they are hard to remove in the current code, we select the relevant age groups with max_dept.
     num_age_groups             <- length(parse_age_values(input$age_breaks_text))
-    age_susceptibility_text    <- parse_input_list(input,'s_susceptibility',num_age_groups)
-    age_infectiousness_text    <- parse_input_list(input,'s_infectiousness',num_age_groups)
+    age_susceptibility_text    <- parse_input_list(input,'s_susceptibility',max_dept=num_age_groups)
+    age_infectiousness_text    <- parse_input_list(input,'s_infectiousness',max_dept=num_age_groups)
 
     q_text <- parse_input_list(input,'s_q')
     delta_p_text <- parse_input_list(input,'s_p')
     nrgen_text <- parse_input_list(input,'s_nrgen')
-    #print(age_S_text)
     
     # combine contact reductions
-    # TODO: use notation from opt_location (capitals etc.)
     cnt_reduction <- data.frame(Home       = input$cnt_reduction_home/100,
                                 Work       = input$cnt_reduction_work/100,
                                 School     = input$cnt_reduction_school/100,
@@ -298,16 +297,12 @@ shinyServer(function(input, output, session) {
                                                       'q factor','delta p', 'nr generations')
       out_NGA_param <- data.table(out$meta_data[sel_NGA_param,])
       
-      print(out_NGA_param)
-      
       out_NGA_param$parameter <- gsub('susceptibility','susceptibility (~A)',out_NGA_param$parameter)
       out_NGA_param$parameter <- gsub('infectiousness','infectiousness (~H)',out_NGA_param$parameter)
       out_NGA_param$parameter <- gsub('q factor','proportionality factor (q)',out_NGA_param$parameter)
       out_NGA_param$parameter <- gsub('delta p','proportional perturbation (p)',out_NGA_param$parameter)
       out_NGA_param$parameter <- gsub('nr generations','number of generations (m)',out_NGA_param$parameter)
       out_NGA_param$value[-1] <- gsub(',',', ',out_NGA_param$value[-1])
-      
-      print(out_NGA_param)
       
       out_NGA_param
     },

@@ -42,7 +42,7 @@ plot_NGA_elas = function(Rs_,eigens,agegroups){
   p=ggplot()+
     geom_bar(data=age_analysis.df,aes(x=agegroup,y=value,fill=name),stat = "identity",position = "dodge")+
     geom_hline(yintercept=Ro,linetype="dashed")+
-    annotate("text", x = age_analysis.df$agegroup[1], y = Ro+Ro*0.2, label = "R",size=7)+
+    annotate("text", x = 0.5, y = Ro+Ro*0.15, label = "R",size=7)+
     labs(title="",x="Age group",fill="",y="")+
     scale_y_continuous(name=paste0("k.j, ki. and R"),breaks=scales::pretty_breaks(n=8),expand=c(0,0),limits=c(0,aux),
                        sec.axis = sec_axis( trans=~./(aux), name="Elasticity"))+

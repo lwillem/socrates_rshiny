@@ -33,8 +33,8 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   
   # check age-specific parameters
   num_age_groups <- length(parse_age_values(age_breaks_text))
-  if(is.na(age_susceptibility_text) || age_susceptibility_text == '1'){ age_susceptibility_text <- paste(rep(0.5,num_age_groups),collapse=',') }
-  if(is.na(age_infectiousness_text) || age_infectiousness_text == '1'){ age_infectiousness_text <- paste(rep(0.5,num_age_groups),collapse=',') }
+  if(is.na(age_susceptibility_text) || age_susceptibility_text == '1'){ age_susceptibility_text <- paste(rep(1,num_age_groups),collapse=',') }
+  if(is.na(age_infectiousness_text) || age_infectiousness_text == '1'){ age_infectiousness_text <- paste(rep(1,num_age_groups),collapse=',') }
 
   # get social contact matrix using all features, without interventions
   cnt_matrix_ui <- get_contact_matrix(country,

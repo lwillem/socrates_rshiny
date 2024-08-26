@@ -103,7 +103,7 @@ shinyUI(pageWithSidebar(
                          ),
                 tabPanel("Transmission",
                          radioButtons("sel_transmission","Options:",
-                                            c("Equal contributions"="equal",
+                                            c("Equal contributions" = "equal",
                                               "Relative age factors [0;2]" = "relative",
                                               "Sensitivity and elasticity" = "sensitivity")),
                          conditionalPanel(condition = "input.sel_transmission != 'equal'",

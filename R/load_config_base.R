@@ -109,9 +109,9 @@ opt_country[grepl('Belgium \\(',opt_country)] <- "Belgium 2006 (Mossong 2008)"
 
 # set country admin => filenames and country names
 opt_country_admin <- data.frame(name = opt_country,
-                                dataset = c(rep("polymod",8),'peru','zimbabwe','france2012_spc',
-                                            'hong_kong','vietnam','uk',
-                                            'russia','china','zambia_south_africa','zambia_south_africa',
+                                dataset = c(rep("polymod2008",8),'peru2011','zimbabwe2013','france2012_spc',
+                                            'hong_kong2015','vietnam2018','uk2018',
+                                            'russia2019','china2017','zambia_south_africa2011','zambia_south_africa2011',
                                             'belgium2010',
                                             'belgium2020_comix',
                                             'austria2020_comix',

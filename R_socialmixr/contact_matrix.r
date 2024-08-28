@@ -87,9 +87,9 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
     missing.contact.age <- match.arg(missing.contact.age)
 
     ## get the survey
-    survey <- get_survey(survey, quiet)
+    survey <- get_survey(survey)
     ## check and get columns
-    columns <- check(survey, columns=TRUE, quiet=TRUE, ...)
+    columns <- check(survey, ...)
 
     ## if bootstrap not asked for
     if (missing(bootstrap)) bootstrap <- (n > 1)

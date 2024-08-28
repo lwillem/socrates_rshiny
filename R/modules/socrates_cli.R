@@ -77,7 +77,7 @@ lapply(survey_obj,dim)# head(survey$contacts)
 summary(survey_obj$contacts)
 
 # generate default contact matrix, based on the survey object
-cnt_obj <- contact_matrix(survey_obj, 
+cnt_obj <- contact_matrix(survey = survey_obj, 
                           age.limits = c(0,18,60))
 
 # inspect contact matrix object
@@ -88,8 +88,7 @@ sum(cnt_obj$participants$contacts_reported)
 # get (default) symmetric contact matrix
 matrix_out <- contact_matrix(survey_obj, 
                              age.limits = age_breaks_num,
-                             symmetric  = TRUE,
-                             quiet      = TRUE)
+                             symmetric  = TRUE)
 names(matrix_out)
 
 # inspect contact matrix using internal function(s)  
@@ -100,7 +99,6 @@ matrix_out <- contact_matrix(survey_obj,
                              age.limits = age_breaks_num,
                              symmetric  = "Reciprocal" %in% cnt_matrix_features, #TRUE,
                              estimated.contact.age = 'sample',
-                             quiet      = TRUE,
                              weigh.dayofweek = "Weigh by week/weekend" %in% cnt_matrix_features, #TRUE,
                              weigh.age       = "Weigh by age" %in% cnt_matrix_features, #TRUE,
                              weight.threshold = weight_threshold)

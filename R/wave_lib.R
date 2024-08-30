@@ -17,6 +17,9 @@ add_wave_id <- function(data_part){
   
   if(!'wave_wrt_panel' %in% names(data_part)){
     data_part[,wave_wrt_panel := wave]
+  }
+  
+  if(!'panel' %in% names(data_part)){
     data_part[,panel := NA]
   }
   

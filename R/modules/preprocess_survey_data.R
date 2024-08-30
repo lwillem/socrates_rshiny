@@ -19,6 +19,9 @@ library(data.table)
 # updated socialmixr function(s)
 source('R/contact_matrix_fix.R')
 
+# specify output directory
+output_dir <- 'data5'
+
 # RETRIEVE FROM ZENODO ----
 
 # get list with all available datasets
@@ -68,9 +71,6 @@ survey_meta_data[is.na(country),]
 # Remove data for France (Béraud et al 2015)
 # ==>> this is handled in a separate script
 survey_meta_data[survey_meta_data$creator != 'Guillaume Béraud',]
-
-# specify output directory
-output_dir <- 'data5'
 
 # make sure the tmp data folder exists
 if(!dir.exists(output_dir)){
@@ -141,8 +141,10 @@ for(i in 1:nrow(survey_meta_data)){
 # get file names
 files_survey <- dir(output_dir,pattern = 'rds',full.names = TRUE)
 
-# create new output dir (forced)
+# set new output dir (forced)
 new_data_dir <- paste0(output_dir,'_clean')
+
+# clear and make new output dir (forced)
 unlink(new_data_dir,recursive=TRUE,force = TRUE)
 dir.create(new_data_dir)
 
@@ -159,7 +161,7 @@ pdata_type <- c('part_id',
                     'dayofweek'
                     ) # sday_id
 pdata_required <- c(pdata_age, pdata_type, 'holiday','wave',
-                    'day', 'month','year','sday_id')
+                    'day', 'month','year','panel','sday_id')
 
 cdata_type <- c('part_id','cnt_age_exact',"cnt_age_est_min", "cnt_age_est_max",
                     'cnt_gender',"frequency_multi","phys_contact","duration_multi")
@@ -379,27 +381,40 @@ if(0==1){
   db_new$part_id <- NA
   db_new$part_age <- NA
   db_new$part_ageNA <- NA
+  db_new$part_ageNA <- NA
+  db_new$cnt_part_id <- NA
+  db_new$cnt_age_exact <- NA
+  db_new$cnt_age_exactNA <- NA
+  db_new$bool_wave <- FALSE
+  db_new$bool_panel <- FALSE
+  db_new$bool_panel_wave <- FALSE
   
   i_file <- 1
   for(i_file in which(db_new$is_update)){
     
-    print(db_new$name_orig[i_file])
     survey_new  <- readRDS(db_new$name[i_file])
     survey_orig <- readRDS(db_new$name_orig[i_file])
   
-    print(unlist(lapply(survey_new,dim)))
-    print(unlist(lapply(survey_orig,dim)))
     
     db_new$dim_part[i_file] <- all(dim(survey_new[[1]]) == dim(survey_orig[[1]]))
     db_new$dim_cnt[i_file] <- all(dim(survey_new[[2]]) == dim(survey_orig[[2]]))
     db_new$len_ref[i_file] <- length(survey_new[[3]]) == length(survey_orig[[3]]) && 
                                         paste(unlist(survey_new[[3]]),collapse=' ') == paste(unlist(survey_orig[[3]]),collapse=' ')
     
-    survey_new$participants[1:2,]
-    survey_orig$participants[1:2,]
     
-    survey_new$participants$part_age
-    survey_orig$participants$part_age
+    age_breaks <- c(0,18,40)  
+    suppressMessages(suppressWarnings(cnt_mat_orig <- contact_matrix(survey_orig,age.limits = age_breaks)))
+    suppressMessages(suppressWarnings(cnt_mat_new  <- contact_matrix(survey_new,age.limits = age_breaks)))
+    
+    if(any(cnt_mat_orig$matrix != cnt_mat_new$matrix)){
+      cnt_mat_orig$matrix - cnt_mat_new$matrix
+      print('CONTACT MATRIX IS DIFFERENT')
+    }
+    if(any(cnt_mat_orig$participants != cnt_mat_new$participants)){
+      cnt_mat_orig$participants != cnt_mat_new$participants
+      print('PARTICIPANT DATA IS DIFFERENT')
+    }
+    
     
     if(length(survey_new$participants$part_id) == length(survey_orig$participants$part_id)){
       db_new$part_id[i_file]    <- sum((survey_new$participants$part_id != survey_orig$participants$part_id))
@@ -407,9 +422,16 @@ if(0==1){
       db_new$part_ageNA[i_file] <- sum(is.na(survey_new$participants$part_age) != is.na(survey_orig$participants$part_age),na.rm=T)
     }
     
-    table(survey_new$participants$year)
-    table(survey_orig$participants$year)
+    if(length(survey_new$contacts$part_id) == length(survey_orig$contacts$part_id)){
+      db_new$cnt_part_id[i_file]    <- sum((survey_new$contacts$part_id != survey_orig$contacts$part_id))
+      db_new$cnt_age_exact[i_file]   <- sum((survey_new$contacts$cnt_age_exact != survey_orig$contacts$cnt_age_exact))
+      db_new$cnt_age_exactNA[i_file] <- sum(is.na(survey_new$contacts$cnt_age_exact) != is.na(survey_orig$contacts$cnt_age_exact),na.rm=T)
+    }
     
+    
+    db_new$bool_wave[i_file] <- 'wave' %in% names(survey_new$participants)
+    db_new$bool_panel[i_file] <- 'panel' %in% names(survey_new$participants)
+    db_new$bool_panel_wave[i_file] <- 'wave_wrt_panel' %in% names(survey_new$participants)
   }
   
   db_new[db_new$is_comix,-1]
@@ -417,6 +439,7 @@ if(0==1){
   db_new[db_new$is_comix & db_new$is_update,-1]
   db_new[!db_new$is_comix & !db_new$is_update,-1]
   db_new[db_new$is_update,-1]
+  db_new[db_new$bool_wave,-1]
   
   
 }

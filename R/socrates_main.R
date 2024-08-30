@@ -350,7 +350,7 @@ get_survey_object <- function(country,
 
   # option to select country-specific participant and contact data
   if(nchar(sel_dataset$country)>0){
-    bool_country <- (data_part$country == sel_dataset$country)
+    bool_country <- (tolower(data_part$country) == tolower(sel_dataset$country))
     data_part    <- data_part[bool_country,]
     data_cnt     <- data_cnt[data_cnt$part_id %in% data_part$part_id,]
   }

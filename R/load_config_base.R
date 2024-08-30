@@ -101,7 +101,13 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         ,'Greece 2021 CoMix (Verelst 2021)'                                                   
                         ,'Lithuania 2021 CoMix (Verelst 2021)'                                                   
                         ,'Slovenia 2021 CoMix (Verelst 2021)'   
-                        ,'Switzerland 2021 CoMix (Verelst 2021)'                                                   
+                        ,'Switzerland 2021 CoMix (Verelst 2021)',
+                        'Croatia 2021 CoMix (Verelst 2021)',
+                        'Estonia 2021 CoMix (Verelst 2021)',
+                        'Hungary 2021 CoMix (Verelst 2021)',
+                        'Netherlands 2020 CoMix (Verelst 2021)',
+                        #'UK 2020 CoMix',
+                        'Slovakia 2021 CoMix (Verelst 2021)'
                        )
 #Austria","Denmark","Spain","France","Italy","Portugal","Poland
 # fix for Belgium polymod
@@ -125,10 +131,16 @@ opt_country_admin <- data.frame(name = opt_country,
                                             'greece2021_comix',
                                             'lithuania2021_comix',
                                             'slovenia2021_comix',
-                                            'switzerland2021_comix'
+                                            'switzerland2021_comix',
+                                            'croatia2021_comix',
+                                            'estonia2021_comix',
+                                            'hungary2021_comix',
+                                            'netherlands2020_comix',
+                                            #'uk2020_comix',
+                                            'slovakia2021_comix'
                                              ),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
-                                             '','Vietnam','UK',
+                                             '','Vietnam','United Kingdom',
                                              'Russia','China','Zambia','South Africa',
                                              'Belgium',
                                              'Belgium',
@@ -143,7 +155,13 @@ opt_country_admin <- data.frame(name = opt_country,
                                              'Greece',                                                   
                                              'Lithuania',                                                   
                                              'Slovenia',   
-                                             'Switzerland'                                                                                                
+                                             'Switzerland',
+                                             'Croatia',
+                                             'Estonia',
+                                             'Hungary',
+                                             'Netherlands',
+                                             #'United Kingdom',
+                                             'Slovakia'
                                              ),
                                 stringsAsFactors = FALSE)
 

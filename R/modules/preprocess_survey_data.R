@@ -223,8 +223,11 @@ i_file <- 8
     survey_clean$participants$country <- 'Zimbabwe'
     survey_clean$participants$dayofweek <- NA
   }
-
-
+  
+  if(grepl('uk2020_comix',files_survey[i_file])){
+    survey_clean$participants$country <- 'United Kingdom'
+  }
+  
   # store
   saveRDS(survey_clean,gsub(output_dir,new_data_dir,files_survey[i_file]))
   
@@ -509,3 +512,142 @@ if(0==1){
   dim(xx)  
 }
 
+
+if(0==1){
+ 
+  # UK DATA
+  data_uk <- readRDS(dir('data',pattern = 'uk2020_comix',full.names = T))
+
+  names(data_uk$participants)
+  names(data_uk$contacts)
+  contact_matrix(data_uk, age.limits = c(0,18,60))  
+     
+  
+}
+if(0==1){
+  
+  # check contact matrix based on original and new data
+  
+  # load filenames
+  files_orig <- dir('data',pattern = 'rds',full.names = T)
+  files_new <- dir('data5_clean',pattern = 'rds',full.names = T)
+  
+  rds_filename <- 'survey_austria2020_comix'
+  rds_filename <- 'survey_denmark2020_comix'
+  rds_filename <- 'survey_poland2020_comix'
+  
+  survey_orig <- readRDS(files_orig[grepl(rds_filename,files_orig)])  
+  survey_new  <- readRDS(files_new[grepl(rds_filename,files_new)])  
+
+
+  age_breaks <- c(0,18,40)  
+  age_breaks <- c(0)  
+  
+  cnt_mat_orig <- contact_matrix(survey_orig,age.limits = age_breaks)
+  cnt_mat_new  <- contact_matrix(survey_new,age.limits = age_breaks)
+
+  cnt_mat_orig$matrix - cnt_mat_new$matrix
+  
+  cnt_mat_orig$participants == cnt_mat_new$participants
+
+  
+  names(survey_new$contacts)
+  
+  survey_orig_edit <- survey_orig
+  survey_orig_edit$contacts <- survey_orig$contacts[,.SD, .SDcols = names(survey_new$contacts)]
+  survey_orig_edit$participants <- survey_orig$participants[,.SD, .SDcols = names(survey_new$participants)]
+  
+  dim(survey_orig_edit$contacts)
+  dim(survey_new$contacts)
+
+  xx <- survey_orig_edit$contacts != survey_new$contacts
+  colSums(xx,na.rm = T)    
+  
+  yy <- is.na(survey_orig_edit$contacts) != is.na(survey_new$contacts)
+  colSums(yy)    
+ 
+  survey_orig_edit$contacts$part_id[1:10]
+  survey_new$contacts$part_id[1:10]
+ 
+  # PART
+  dim(survey_orig_edit$participants)
+  dim(survey_new$participants)
+  
+  xx <- survey_orig_edit$participants != survey_new$participants
+  colSums(xx,na.rm = T)    
+  
+  yy <- is.na(survey_orig_edit$contacts) != is.na(survey_new$contacts)
+  colSums(yy)    
+  
+  sum(table(table(survey_new$contacts$part_id)))
+  sum(table(table(survey_orig$contacts$part_id)))
+  
+  xx <- table(survey_orig$contacts$part_id,useNA = 'ifany')
+  length(xx)  
+  mean(xx)  
+  
+  yy <- table(survey_new$contacts$part_id,useNA = 'ifany')
+  length(yy)  
+  mean(yy)  
+  
+  dim(survey_new$participants)
+  dim(survey_orig$participants)
+  
+  table(survey_new$participants$wave)
+  table(survey_orig$participants$wave_wrt_panel)
+  
+  names(survey_orig$participants$wave_wrt_panel)
+  head(survey_orig$participants$wave_wrt_panel)
+  
+  survey_orig_edit$participants[survey_orig_edit$participants$part_id == '10471407',]
+  survey_orig_edit$participants[survey_orig_edit$participants$part_id == '10471401',]
+  survey_orig_edit$contacts[survey_orig_edit$contacts$part_id == '10471407',]
+  survey_orig_edit$contacts[survey_orig_edit$contacts$part_id == '10471401',]
+  
+  survey_new$participants[survey_new$participants$part_id == '10471407',]
+  survey_new$participants[survey_new$participants$part_id == '10471401',]
+  survey_new$contacts[survey_new$contacts$part_id == '10471407',]
+  survey_new$contacts[survey_new$contacts$part_id == '10471401',]
+}
+
+if(0==1){
+  
+  # poland and portugal
+  
+  # load filenames
+  files_orig <- dir('data',pattern = 'rds',full.names = T)
+  files_new <- dir('data5_clean',pattern = 'rds',full.names = T)
+  
+  
+  rds_filename <- 'survey_poland2020_comix'
+  poland_orig <- readRDS(files_orig[grepl(rds_filename,files_orig)])  
+  poland_new  <- readRDS(files_new[grepl(rds_filename,files_new)])  
+  unlist(lapply(poland_orig,dim))
+  unlist(lapply(poland_new,dim))
+  
+  
+  rds_filename <- 'survey_portugal2020_comix'
+  portugal_orig <- readRDS(files_orig[grepl(rds_filename,files_orig)])  
+  portugal_new  <- readRDS(files_new[grepl(rds_filename,files_new)])  
+  unlist(lapply(portugal_orig,dim))
+  unlist(lapply(portugal_new,dim))
+
+  # participants per wave
+  table(poland_new$participants$wave)
+  table(poland_orig$participants$wave_wrt_panel)
+    
+  # participants per wave
+  table(portugal_new$participants$wave)
+  table(portugal_orig$participants$wave_wrt_panel)
+  table(portugal_orig$participants$wave_wrt_panel)
+
+  table(sort(portugal_orig$participants$sday_id))
+  table(sort(portugal_new$participants$sday_id))
+  
+  table(portugal_new$participants$wave,
+        portugal_new$participants$sday_id)  
+
+  table(portugal_new$participants$wave,
+        portugal_new$participants$panel)  
+  
+}

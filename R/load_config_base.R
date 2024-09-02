@@ -223,7 +223,13 @@ for(i_country in 1:nrow(opt_country_admin)){
   if(opt_country_admin$has_waves[i_country]){
     data_part <- readRDS(opt_country_admin$dataset[i_country])$participants
     data_part <- add_wave_id(data_part)
-    opt_country_admin$opt_wave[i_country] <- list(c(opt_waves,sort(unique(data_part$wave))))  
+    
+    # default sort does not work with 1, 10, 2, ...
+    country_waves    <- unique(data_part$wave)
+    country_waves_id <- unlist(lapply(country_waves,strsplit,':'))[seq(1,length(country_waves)*2,2)]
+    
+    # add sorted list to opt_country_admin
+    opt_country_admin$opt_wave[i_country] <- list(c(opt_waves,country_waves[order(as.numeric(country_waves_id))]))  
   }
 }
 

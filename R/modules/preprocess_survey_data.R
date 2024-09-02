@@ -228,6 +228,13 @@ i_file <- 8
     survey_clean$participants$country <- 'United Kingdom'
   }
   
+  if(grepl('belgium2020_comix',files_survey[i_file])){
+    # merge "Panel B" and "Panel BC", and rename to "BC"
+    survey_clean$participants[,panel := gsub('Panel B.*','BC',panel)]
+    # table(survey_clean$participants$panel,
+    #       survey_clean$participants$wave)
+  }
+  
   # store
   saveRDS(survey_clean,gsub(output_dir,new_data_dir,files_survey[i_file]))
   
@@ -253,7 +260,7 @@ table(comix_update$participants$country,
       comix_update$participants$sday_id)
 comix_update$reference$author
 
-comix_be <- readRDS(files[grepl('belgium2020_comix',files)])
+comix_be <- readRDS(files[grepl('belgium2020_comix.rds',files)])
 names(comix_be$participants)
 table(comix_be$participants$wave)
 table(comix_be$participants$sday_id)
@@ -331,7 +338,7 @@ extend_comix_country_data <- function(comix_country, comix_aggr, country_str){
   return(comix_country)
 }
 
-comix_country = readRDS(files[grepl('belgium2020_comix',files)])
+comix_country = readRDS(files[grepl('belgium2020_comix.rds',files)])
 comix_country_update <- extend_comix_country_data(comix_country = comix_country,
                                                   comix_aggr = comix_multi,
                                                   country_str = 'Belgium')
@@ -342,7 +349,7 @@ comix_country_update <- extend_comix_country_data(comix_country = comix_country_
                                                   country_str = 'Belgium')
 
 table(comix_country_update$participants$wave)
-saveRDS(comix_country_update,gsub('_comix','_comix_incl48',files[grepl('belgium2020_comix',files)]))
+saveRDS(comix_country_update,gsub('_comix','_comix_incl48',files[grepl('belgium2020_comix.rds',files)]))
 
 #TODO: update other comix countries with data from comix_update and/or comix_multi
 

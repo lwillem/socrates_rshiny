@@ -395,6 +395,10 @@ shinyServer(function(input, output, session) {
                                     wave                    = values$w_dynamic,
                                     age_susceptibility_text = age_susceptibility_text,
                                     age_infectiousness_text = age_infectiousness_text,
+                                    bool_NGA_analysis       = bool_NGA_analysis,
+                                    q_text                  = q_text,
+                                    delta_p_text            = delta_p_text,
+                                    nrgen_text              = nrgen_text,
                                     filename                = file)
       }
     )

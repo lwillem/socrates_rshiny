@@ -20,6 +20,10 @@ download_contact_matrices <- function(country,
                                       wave,
                                       age_susceptibility_text,
                                       age_infectiousness_text,
+                                      bool_NGA_analysis,
+                                      q_text,
+                                      delta_p_text,
+                                      nrgen_text,
                                       filename){
   
   
@@ -56,7 +60,11 @@ download_contact_matrices <- function(country,
                                              cnt_reduction           = cnt_reduction,
                                              wave                    = wave,
                                              age_susceptibility_text = age_susceptibility_text,
-                                             age_infectiousness_text = age_infectiousness_text
+                                             age_infectiousness_text = age_infectiousness_text,
+                                             bool_NGA_analysis       = bool_NGA_analysis,
+                                             q_text                  = q_text,
+                                             delta_p_text            = delta_p_text,
+                                             nrgen_text              = nrgen_text
                                              )
     )
     # add matrix to list
@@ -69,15 +77,26 @@ download_contact_matrices <- function(country,
     meta_data_total_reciprocal <- out_all$meta_data
     summary_demography         <- out_all$demography
     summary_participants       <- out_all$participants
-  
+    
+    # store NGA output, if available
+    if('NGA' %in% names(out_all)){
+      summary_NGA     <- out_all$NGA
+    } else{
+      summary_NGA     <- NULL
+    }
+    
     # add location names and info
     names(location_matrices)            <- exp_design$name
     names(location_matrices_per_capita) <- exp_design$name
   
   # store as .RData
-  save(location_matrices,location_matrices_per_capita,
-       meta_data_total_reciprocal,summary_demography,
-       summary_participants,file = filename)
+  save(location_matrices,
+       location_matrices_per_capita,
+       meta_data_total_reciprocal,
+       summary_demography,
+       summary_participants,
+       summary_NGA,
+       file = filename)
 }
 
 

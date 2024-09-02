@@ -12,11 +12,8 @@
 # Define server logic required to plot various output
 shinyServer(function(input, output, session) {
   
-  ## CoMix: hide some tabs
-  if(bool_is_comix_ui){
-    hideTab(inputId = "distancing", target = "Distancing")
-    hideTab(inputId = "distancing", target = "Transmission")
-  } else{
+  ## if not CoMix: hide tab(s)
+  if(!bool_is_comix_ui){
     hideTab(inputId = "tabs_results", target = "About CoMix")    
   }
 
@@ -319,16 +316,6 @@ shinyServer(function(input, output, session) {
       columnDefs = list(list(width = '50%', targets = 0))
     ))
     
-    # # add NGA input parameter table
-    # output$table_NGA_sens_parameters <- renderDataTable({
-    #   sel_NGA_param <- out$meta_data$parameter %in% c('delta p', 'nr generations')
-    #   out$meta_data[sel_NGA_param,]
-    # },
-    # options = list(
-    #   autoWidth = TRUE,
-    #   columnDefs = list(list(width = '170px', targets = 0))
-    # ))
-    
     # plot NGM
     output$plot_NGM <- renderPlot({
       if("NGA" %in% names(out)){
@@ -420,7 +407,7 @@ shinyServer(function(input, output, session) {
     # create url link
     output$project_website_data <- renderUI({
       tagList("More info on the social contact data initiative 
-              and links to the ZENODO repositories are provided at", url,". Info about the Supplementary Professional Contacts 
+              is provided at ", url," with links to the ZENODO repositories. Info about the Supplementary Professional Contacts 
               (SPC) for the French dataset ",url_doc_spc)
     })
     # add social contact data info

@@ -89,25 +89,25 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Zambia (Dodd 2011)',
                         'South Africa (Dodd 2011)',
                         'Belgium 2010* (Van Hoang 2020)',
-                        'Belgium 2020 CoMix (Coletti 2020)'
-                        ,'Austria 2020 CoMix (Verelst 2021)'   
-                        ,'Denmark 2020 CoMix (Verelst 2021)'                           
-                        ,'Spain 2020 CoMix (Verelst 2021)'   
-                        ,'France 2020 CoMix (Verelst 2021)'   
-                        ,'Italy 2020 CoMix (Verelst 2021)'     
-                        ,'Portugal 2020 CoMix (Verelst 2021)'     
-                        ,'Poland 2020 CoMix (Verelst 2021)'   
-                        ,'Finland 2021 CoMix (Verelst 2021)'                                                   
-                        ,'Greece 2021 CoMix (Verelst 2021)'                                                   
-                        ,'Lithuania 2021 CoMix (Verelst 2021)'                                                   
-                        ,'Slovenia 2021 CoMix (Verelst 2021)'   
-                        ,'Switzerland 2021 CoMix (Verelst 2021)',
-                        'Croatia 2021 CoMix (Verelst 2021)',
-                        'Estonia 2021 CoMix (Verelst 2021)',
-                        'Hungary 2021 CoMix (Verelst 2021)',
-                        'Netherlands 2020 CoMix (Verelst 2021)',
-                        'UK 2020 CoMix',
-                        'Slovakia 2021 CoMix (Verelst 2021)'
+                        'Belgium CoMix (Coletti 2020)'
+                        ,'Austria CoMix (Verelst 2021)'   
+                        ,'Denmark CoMix (Verelst 2021)'                           
+                        ,'Spain CoMix (Verelst 2021)'   
+                        ,'France CoMix (Verelst 2021)'   
+                        ,'Italy CoMix (Tizzani 2023)'     
+                        ,'Portugal CoMix (Verelst 2021)'     
+                        ,'Poland CoMix (Verelst 2021)'   
+                        ,'Finland CoMix (Verelst 2021)'                                                   
+                        ,'Greece CoMix (Verelst 2021)'                                                   
+                        ,'Lithuania CoMix (Verelst 2021)'                                                   
+                        ,'Slovenia CoMix (Verelst 2021)'   
+                        ,'Switzerland CoMix (Verelst 2021)',
+                        'Croatia CoMix (Verelst 2021)',
+                        'Estonia CoMix (Verelst 2021)',
+                        'Hungary CoMix (Verelst 2021)',
+                        'Netherlands CoMix (Backer 2023)',
+                        'UK CoMix (Gimma 2022)',
+                        'Slovakia CoMix (Verelst 2021)'
                        )
 #Austria","Denmark","Spain","France","Italy","Portugal","Poland
 # fix for Belgium polymod
@@ -344,6 +344,20 @@ data_description['Belgium 2020 CoMix (Coletti 2020)'] <- 'Coletti et al. (2020) 
 
 # add info for CoMix-EU
 data_description[opt_country[grepl('(Verelst 2021)',opt_country)]] <- 'Verelst et al. (2021) SOCRATES-CoMix: A platform for timely and open-source contact mixing data during and in between COVID-19 surges and interventions in over 20 European countries. BMC Medicine 19(1):254.'
+
+# add info for CoMix-UK
+data_description[opt_country[grepl('UK CoMix',opt_country)]] <- 'Gimma et al. (2022) Changes in social contacts in England during the COVID-19 pandemic between March 2020 and March 2021 as measured by the CoMix survey: A repeated cross-sectional study. PLOS Medicine 19(3): e1003907.'
+
+# add info for CoMix-NL
+data_description[opt_country[grepl('Netherlands CoMix',opt_country)]] <- 'Backer et al (2022): Dynamics of non-household contacts during the COVID-19 pandemic in 2020 and 2021 in the Netherlands.Scientific Reports 13:5166'
+
+# add info for CoMix-IT
+data_description[opt_country[grepl('Italy CoMix',opt_country)]] <- 'Tizzani et al. (2023). Impact of tiered measures on social contact and mixing patterns of in Italy during the second wave of COVID-19. BMC Public Health 23, 906.'
+
+# add info for CoMix-IT
+data_description[opt_country[grepl('Norway CoMix',opt_country)]] <- 'Veneti et al. (2024) Social contact patterns during the early COVID-19 pandemic in Norway: insights from a panel study, April to September 2020. BMC Public Health 24, 1438.'
+
+
 
 # reformat to table
 data_description <- data.frame('Name' = names(data_description),

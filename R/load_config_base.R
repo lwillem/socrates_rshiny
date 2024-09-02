@@ -106,7 +106,7 @@ opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),
                         'Estonia 2021 CoMix (Verelst 2021)',
                         'Hungary 2021 CoMix (Verelst 2021)',
                         'Netherlands 2020 CoMix (Verelst 2021)',
-                        #'UK 2020 CoMix',
+                        'UK 2020 CoMix',
                         'Slovakia 2021 CoMix (Verelst 2021)'
                        )
 #Austria","Denmark","Spain","France","Italy","Portugal","Poland
@@ -136,7 +136,7 @@ opt_country_admin <- data.frame(name = opt_country,
                                             'estonia2021_comix',
                                             'hungary2021_comix',
                                             'netherlands2020_comix',
-                                            #'uk2020_comix',
+                                            'uk2020_comix',
                                             'slovakia2021_comix'
                                              ),
                                 country =  c(polymod_countries, 'Peru','Zimbabwe','France',
@@ -160,7 +160,7 @@ opt_country_admin <- data.frame(name = opt_country,
                                              'Estonia',
                                              'Hungary',
                                              'Netherlands',
-                                             #'United Kingdom',
+                                             'United Kingdom',
                                              'Slovakia'
                                              ),
                                 stringsAsFactors = FALSE)

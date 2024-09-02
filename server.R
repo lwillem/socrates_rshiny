@@ -280,15 +280,20 @@ shinyServer(function(input, output, session) {
     
     # plot relative incidence
     output$plot_relative_incidence <- renderPlot({
-      bplt <- barplot(out$relative_incidence,
-              xlab="Age group",
-              ylab="Relative incidence",
-              ylim=c(0,1),
-              cex.names =  0.8)
-      text(x = bplt,
-           y = out$relative_incidence,
-           labels = round(out$relative_incidence,digits=2),
-           pos=3)
+      if("relative_incidence" %in% names(out)){
+        bplt <- barplot(out$relative_incidence,
+                        xlab="Age group",
+                        ylab="Relative incidence",
+                        ylim=c(0,1),
+                        cex.names =  0.8)
+        text(x = bplt,
+             y = out$relative_incidence,
+             labels = round(out$relative_incidence,digits=2),
+             pos=3)
+      } else {
+        get_dummy_plot_for_ui("Relative incidence results not available, see $notes")
+      }
+      
     })
    
     # add NGA input parameter table
@@ -326,7 +331,7 @@ shinyServer(function(input, output, session) {
     
     # plot NGM
     output$plot_NGM <- renderPlot({
-      if(length(out$NGA)>1){
+      if("NGA" %in% names(out)){
         plot_NGM(NGM = out$NGA$NGM)
       } else {
         get_dummy_plot_for_ui("NGA results not available")
@@ -335,7 +340,7 @@ shinyServer(function(input, output, session) {
     
     # plot elas
     output$plot_ELAS <- renderPlot({
-      if(length(out$NGA)>1){
+      if("NGA" %in% names(out)){
         plot_NGA_elas(Rs_=out$NGA$Rs,eigens=out$NGA$eigens,agegroups=out$NGA$agegroups)
       } else {
           get_dummy_plot_for_ui("NGA results not available")
@@ -344,7 +349,7 @@ shinyServer(function(input, output, session) {
     
     # plot RI w.r.t a
     output$plot_RI_a <- renderPlot({
-      if(length(out$NGA)>1){
+      if("NGA" %in% names(out)){
         # plot_G_a(out$NGA$RI_a,bool=out$NGA$bool_complex) 
         plot_NGA_RI(out$NGA,bool_susceptibility=TRUE)
       } else {
@@ -354,7 +359,7 @@ shinyServer(function(input, output, session) {
     
     # plot RI w.r.t h
     output$plot_RI_h <- renderPlot({
-      if(length(out$NGA)>1){
+      if("NGA" %in% names(out)){
         plot_NGA_RI(out$NGA,bool_susceptibility=FALSE)
         #plot_G_h(out$NGA$RI_h,bool=out$NGA$bool_complex) 
       } else {

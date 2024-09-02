@@ -165,9 +165,7 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
       # sensitivity and elasticity
       if(bool_NGA_analysis){
         fct_out$NGA=run_NGA(M=mij,a=qs,h=qi,q=q,p=p,nr_gen=nr_gen)
-      } else{
-        fct_out$NGA <- NA
-      }
+      } 
     } else {
       relative_incidence <- rep(NA,nrow(mij))
       warning("NGA analysis is not possible because age groups do not match")

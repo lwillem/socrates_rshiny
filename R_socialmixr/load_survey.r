@@ -83,6 +83,12 @@ load_survey <- function(files, ...) {
       for (file in merge_files) {
         contact_data[[file]] <-
           contact_data[[file]][, ..merge_id := seq_len(.N)]
+        if("X" %in% names(contact_data[[file]])){
+          contact_data[[file]] <- contact_data[[file]][, !("X" %in% names(contact_data[[file]])), with = FALSE] # exclude potential row.names
+          warning(
+            "Column 'X' has been removed from '", file, "' to avoid potential issues with row names. Please avoid using this column name if it contains relevant data."
+          )
+        }
         common_id <- intersect(colnames(contact_data[[file]]), colnames(main_surveys[[type]]))
         merged <- tryCatch({
           merge(

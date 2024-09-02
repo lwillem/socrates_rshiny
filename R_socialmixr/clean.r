@@ -37,6 +37,16 @@ clean.survey <- function(x, country.column = "country", participant.age.column =
     x$participants[, paste(country.column) := factor(converted_countries)]
   }
 
+  ## fix for age ranges specified as "[.,.)"
+  if (nrow(x$participants) > 0 &&
+      participant.age.column %in% colnames(x$participants) &&
+      !is.numeric(x$participants[, get(participant.age.column)]) &&
+      any(grepl('\\[',x$participants[, get(participant.age.column)]))) {
+    x$participants <- x$participants[,paste(participant.age.column) := sub(",", "-", get(participant.age.column), fixed = TRUE)]
+    x$participants <- x$participants[,paste(participant.age.column) := sub("[", "", get(participant.age.column), fixed = TRUE)]
+    x$participants <- x$participants[,paste(participant.age.column) := sub(")", "", get(participant.age.column), fixed = TRUE)]
+  }
+  
   if (nrow(x$participants) > 0 &&
     participant.age.column %in% colnames(x$participants) &&
     !is.numeric(x$participants[, get(participant.age.column)])) {

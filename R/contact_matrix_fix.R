@@ -13,8 +13,6 @@ library(XML)
 library(curl)
 library(wpp2019)
 library(countrycode)
-library(lubridate)
-
 
 # load adapted socialmixr::contact_matrix function
 source('R_socialmixr/check.r')

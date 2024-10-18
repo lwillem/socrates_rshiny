@@ -194,7 +194,8 @@ shinyServer(function(input, output, session) {
  
   ## Update results ####
   observe({
-
+    disable("inputPanel")  # Disable the input
+    
     progress <- Progress$new(session, min=1, max=15)
     on.exit(progress$close())
     
@@ -361,6 +362,9 @@ shinyServer(function(input, output, session) {
       out[!names(out) %in% list_exclude]
     })
     
+    # Re-enable the inputs after all results are (re)generated and displayed
+    enable("inputPanel")
+    
     # download matrix
     output$download_matrix <- downloadHandler(
       filename = function(file) {
@@ -368,11 +372,19 @@ shinyServer(function(input, output, session) {
       },
       content = function(file) {
         
+        # Disable inputs while the matrix is being generated for download
+        disable("inputPanel")
+
+        # Assuming `out$matrix` is available in your server logic
         cnt_matrix           <- unlist(out$matrix)
         colnames(cnt_matrix) <- paste0('contact_',colnames(cnt_matrix))
         cnt_matrix           <- cbind(age_group=row.names(out$matrix),cnt_matrix)
         
+        # Write the matrix to a CSV file
         write.table(cnt_matrix, file,sep=',',row.names=F)
+        
+        # Re-enable inputs after the download is ready
+        enable("inputPanel")
       }
     )
     
@@ -382,6 +394,9 @@ shinyServer(function(input, output, session) {
         paste0(format(Sys.time(),'%Y%m%d%H%M%S'),"_social_contact_analysis.RData")
       },
       content = function(file) {
+        # Disable inputs while the matrix is being generated for download
+        disable("inputPanel")
+        
           download_contact_matrices(country      = input$country,
                                     daytype      = input$daytype,
                                     touch        = input$touch,
@@ -400,6 +415,10 @@ shinyServer(function(input, output, session) {
                                     delta_p_text            = delta_p_text,
                                     nrgen_text              = nrgen_text,
                                     filename                = file)
+          
+          # Re-enable inputs after the download is ready
+          enable("inputPanel")
+          
       }
     )
     

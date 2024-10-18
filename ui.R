@@ -21,7 +21,10 @@ shinyUI(pageWithSidebar(
   
   # Sidebar with controls
   sidebarPanel(
- 
+    useShinyjs(),  # Initialize shinyjs
+    
+    tags$div(id = "inputPanel",  # Wrap inputs in a div for easy targeting
+
     if(bool_is_comix_ui){
       uiOutput("socrates_website_data")
     },
@@ -131,11 +134,12 @@ shinyUI(pageWithSidebar(
     },
     helpText('SOCRATES',version_id)
     
+    ), # end "inputPanel" tag to disable/enable the user inputs when calculations are ongoing
   ),
   
   mainPanel(
     
-    # allways show matrix with contact rates
+    # always show matrix with contact rates
     plotOutput('plot_cnt_matrix',width = "80%", height = "300px"),
     
     # use tabs
@@ -240,5 +244,5 @@ shinyUI(pageWithSidebar(
                 tabPanel("Updates",
                          includeMarkdown("doc/doc_updates.md"))
         )
-  )
+  ) # end main panel
 ))

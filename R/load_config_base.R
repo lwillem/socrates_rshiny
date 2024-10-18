@@ -24,6 +24,8 @@ library(tidyverse) #
 library(ggthemes)  #
 library(ggpubr)    #
 
+library(shinyjs)       # For disabling/enabling inputs
+
 # temporary to use the get_survey script outside the SocialMixr package
 library(httr)
 library(jsonlite)

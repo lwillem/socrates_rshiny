@@ -57,13 +57,20 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # if matrix contains NA's => reciprocity is not possible ==>> add warning
   if(any(is.na(cnt_matrix_ui$matrix)) &
      opt_matrix_features[[1]]  %in% cnt_matrix_features){
-    fct_out$notes <- "Contact matrix contains missing data, so it is not possible to generate a symmetric matrix (cfr. reciprocity)."
+    fct_out$notes <- "Generation of a symmetric matrix is not possible because contact matrix contains NA (cfr. reciprocity)."
   }
 
+  # if there is a contact matrix but data sparseness forced to join age groups ==>> add warning
+  if(!is.null(nrow(cnt_matrix_ui$matrix)) && (num_age_groups != nrow(cnt_matrix_ui$matrix) || 
+                                             num_age_groups != nrow(cnt_matrix_ui$matrix))){
+    fct_out$notes <- c(fct_out$notes,"The oldest age groups are merged to prevent fatal errors due to data sparseness.")  
+    fct_out$notes <- c(fct_out$notes,"Relative incidence cannot be calculated with merged age groups.")  
+  } 
+  
   # reciprocity has also effect on the analysis by gender
   if(gender %in% unlist(opt_gender[3:4]) &
      opt_matrix_features[[1]]  %in% cnt_matrix_features){
-    fct_out$notes <- "Gender-specific data selection accounts for reciprocity, so Male-Female == Female-Male."
+    fct_out$notes <- c(fct_out$notes,"Gender-specific data selection accounts for reciprocity, so Male-Female == Female-Male.")
   }
   
   # include physical distancing?

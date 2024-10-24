@@ -358,8 +358,14 @@ shinyServer(function(input, output, session) {
     # print results
     output$social_contact_analysis <- renderPrint({
       # exclude results with separate tab
-      list_exclude <- c('weights','participants','participants.weights','meta_data')
-      out[!names(out) %in% list_exclude]
+      list_exclude <- c('weights','participants','participants.weights','meta_data','notes')
+      print(out[!names(out) %in% list_exclude])
+      
+      if("notes" %in% names(out)){
+        cat("Notes:",fill = TRUE)
+        for(sel_note in out$notes)
+          cat('-',sel_note,fill = TRUE)
+      }
     })
     
     # Re-enable the inputs after all results are (re)generated and displayed

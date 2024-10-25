@@ -23,7 +23,7 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
     useShinyjs(),  # Initialize shinyjs
     
-    tags$div(id = "inputPanel",  # Wrap inputs in a div for easy targeting
+    tags$div(id = "inputPanel_survey",  # Wrap inputs in a div for easy targeting
 
     if(bool_is_comix_ui){
       uiOutput("socrates_website_data")
@@ -40,11 +40,14 @@ shinyUI(pageWithSidebar(
     
     # # waves (dynamic, only if wave info is present)
     uiOutput(outputId = 'dynamicWaveInput'),
+    ), # end "inputPanel_survey" tag to disable/enable the user inputs when calculations are ongoing
     
     textInput(inputId="age_breaks_text",
               label="Age breaks (comma delimited)",
               value=opt_age_breaks),
    
+    tags$div(id = "inputPanel_general",  # Wrap inputs in a div for easy targeting
+             
     #by default 'all contacts' to prevent warnings/errors, can be extended in "server" script. 
     selectInput("daytype", "Type of day",
                 opt_day_type[1]),
@@ -134,7 +137,7 @@ shinyUI(pageWithSidebar(
     },
     helpText('SOCRATES',version_id)
     
-    ), # end "inputPanel" tag to disable/enable the user inputs when calculations are ongoing
+    ), # end "inputPanel_general" tag to disable/enable the user inputs when calculations are ongoing
   ),
   
   mainPanel(

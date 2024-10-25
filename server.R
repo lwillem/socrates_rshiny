@@ -194,7 +194,9 @@ shinyServer(function(input, output, session) {
  
   ## Update results ####
   observe({
-    disable("inputPanel")  # Disable the input
+    disable("inputPanel_country")  # Disable survey input
+    disable("inputPanel_general")  # Disable general input
+    # note: excluded the age breaks to improve user experience
     
     progress <- Progress$new(session, min=1, max=15)
     on.exit(progress$close())
@@ -359,7 +361,7 @@ shinyServer(function(input, output, session) {
     output$social_contact_analysis <- renderPrint({
       
       if("notes" %in% names(out)){
-        print_notes(notes_vector = out$notes,txt_width = 70)
+        print_notes(notes_vector = out$notes, txt_width = 70)
       }
       
       # exclude results with separate tab
@@ -371,12 +373,13 @@ shinyServer(function(input, output, session) {
     # print notes
     output$print_notes <- renderPrint({
       if("notes" %in% names(out)){
-        print_notes(notes_vector = out$notes,txt_width = 70)
+        print_notes(notes_vector = out$notes, txt_width = 70)
        }
     })
     
     # Re-enable the inputs after all results are (re)generated and displayed
-    enable("inputPanel")
+    enable("inputPanel_survey")
+    enable("inputPanel_general")
     
     # download matrix
     output$download_matrix <- downloadHandler(

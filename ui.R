@@ -161,8 +161,6 @@ shinyUI(pageWithSidebar(
                 tabPanel("Contact rates", 
                          plotOutput('plot_mean_number_contacts',width = "80%", height = "300px")),
                 tabPanel("Transmission dynamics",
-                           #helpText('In this section, the next-generation analysis is presented. It includes the next-generation matrix (NGM), the respective sum of columns (k.j) and rows (ki.), the calculation of the reproduction number (R), and the cumulative elasticity for each age group. The relative impact (RI) is shown in the final two figures.'),
-                           #hr(),
                            helpText(HTML("In the context of a susceptible-infectious-removed (SIR) model with a discrete age structure, 
                                     the transmission process is described by an <em>n</em> × <em>n</em> next-generation matrix <em>K</em>, where <em>n</em> represents the number of age classes. 
                                     Each entry of this matrix (<em>k<sub>ij</sub></em>) corresponds to the average number of infections caused by an individual in age group <em>j</em> 
@@ -196,7 +194,7 @@ shinyUI(pageWithSidebar(
                            condition = "input.sel_transmission == 'sensitivity'",
                            tags$h3("Next generation matrix"),
                            helpText('The next generation matrix represents the average number of infections in age group i caused by an individual in group j during their infectious period, given proportionality factor q.'),
-                           plotOutput('plot_NGM',width = "80%", height = "300px"),
+                           plotOutput('plot_next_gen_matrix',width = "80%", height = "300px"),
                            hr(),
                            tags$h3("Sensitivity and elasticity"),
                            helpText(HTML("Matrix <em>K</em> can be used to relate the total number of infections between two consecutive generations. 
@@ -207,11 +205,6 @@ shinyUI(pageWithSidebar(
                                          represents the relative contribution of each age group to the overall reproduction number (<em>R</em>)")
                            ),
                            plotOutput('plot_ELAS',width = "100%", height = "300px"),
-                           # helpText('Figure 2: Transmission indicators. Indicator "kj." corresponds to the sum of columns of the NGM and can be interpreted as the average number of infections caused by an 
-                           #          individual in age group j during their infectious period. "ki." corresponds to the per-generation total number of infections in age group i caused by a single individual 
-                           #          of each age group. Elasticities can be interpreted as the relative contribution of an age group towards overall reproduction number (R), which is presented with the dashed line.'),
-                           #helpText('Figure 2: Transmission indicators <em>k<sub>j.</sub></em>, <em>k<sub>.i</sub></em> and the reproduction number R. Elasticity can be interpreted as the relative contribution of an age group towards overall reproduction number (R), which is presented with the dashed line.'),
-                           #helpText(HTML('Transmission indicators <em>k<sub>j.</sub></em>, <em>k<sub>.i</sub></em> and the reproduction number (<em>R</em>). Elasticity represents the relative contribution of each age group to the overall reproduction number (<em>R</em>), which is indicated by the dashed line.')),
                            hr(),
                            tags$h3("Relative impact"),
                            helpText(HTML("Changes in susceptibility or infectivity due to factors such as vaccination programs, non-pharmaceutical interventions, or the depletion of susceptibles will lead to 

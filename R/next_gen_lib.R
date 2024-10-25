@@ -3,7 +3,7 @@
 # 
 # => TO CONDUCT THE NEXT-GENERATION APPROACH ANALYSIS
 #
-# Copyright 2024, Caetano et al. (in revision)
+# Copyright 2024, Caetano et al.
 #___________________________________________________________________________
 # ref: Diekmann and Britton 2013 chapter 7
 # ref: Franco et al, Plos Comput Biol, 2022
@@ -45,6 +45,14 @@ run_NGA <- function(M,a,h,q,p,nr_gen){
   names(Rs_$Rs)=agegroups 
   Rs_$elas_kj=colSums(elas)
   
+  age_analysis.df=data.frame(agegroups,
+                             as.numeric(Rs_$Rs),
+                             as.numeric(Rs_$Rr),
+                             as.numeric(Rs_$elas_kj))
+  colnames(age_analysis.df)=c("agegroup","k.j","ki.","elasticity")
+  age_analysis.df <- age_analysis.df %>% 
+                      select(c("agegroup","k.j","ki.","elasticity"))
+  
   if (bool_complex==FALSE) {  # compute only sensitivities to w and RI if the eigenvalues are all real
     da=all_da(q = q,M = M,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t a
     dh=all_dh(q = q,M = M,a = a,h = h,s = sensi)  # sensitivity and elasticity of Ro w.r.t h
@@ -57,7 +65,7 @@ run_NGA <- function(M,a,h,q,p,nr_gen){
                            l=nr_gen,
                            da=da,
                            eigens=eigens,
-                           agegroup=agegroups,
+                           agegroups=agegroups,
                            q=q,
                            a=a,
                            M=M,
@@ -68,45 +76,30 @@ run_NGA <- function(M,a,h,q,p,nr_gen){
                            l=nr_gen,
                            dh=dh,
                            eigens=eigens,
-                           agegroup=agegroups,
+                           agegroups=agegroups,
                            q=q,
                            a=a,
                            M=M,
                            h=h,
                            dwn=dwn)
     
-    NGA=list(agegroups=agegroups,
-             sus=a,
-             inf=h,
-             q=q,
-             p=p,
-             nr_gen=nr_gen,
-             NGM=NGM,
-             eigens=eigens,
-             sensi=sensi,
-             elas=elas,
-             Rs=Rs_,
-             bool_complex=bool_complex,
-             da=da,
-             dh=dh,
-             dwn=dwn,
-             dwa=dwa,
-             dwh=dwh,
-             RI_a=all.Gda,
-             RI_h=all.Gdh)
+    R_t = max(eigens$eigens$values)
+  
   } else {
-    NGA=list(agegroups=agegroups,
-             sus=a,
-             inf=h,
-             q=q,
-             NGM=NGM,
-             eigens=eigens,
-             sensi=sensi,
-             elas=elas,
-             Rs=Rs_,
-             bool_complex=bool_complex)
+    R_t = NA
+    all.Gda = NA
+    all.Gdh = NA
   } # end if-else clause on complex eigen values
   
+  # compile output list
+  NGA=list(next_gen_matrix = NGM,
+           elasticity_tbl = age_analysis.df,
+           R_t = R_t,
+           bool_complex=bool_complex,
+           RI_a = all.Gda,
+           RI_h = all.Gdh) 
+  
+  # return
   return(NGA)
 }
 
@@ -468,25 +461,34 @@ G.ratio_da=function(pos,delta_a1,l,da,eigens,q,a,M,h,dwn){
   return(G_ratio)
 }
 
-all_G_ratio_da=function(delta_a1,l,da,eigens,agegroup,q,a,M,h,dwn){
+all_G_ratio_da=function(delta_a1,l,da,eigens,agegroups,q,a,M,h,dwn){
   
-  
+  # define age groups
   pos=seq(1,nrow(eigens$eigens$w))
   
+  # help function
   G_aux=function(x,y){
     aux=G.ratio_da(pos=x,delta_a1=y,l,da,eigens,q=q,a=a,M=M,h=h,dwn=dwn)
     return(aux)
   }
   
+  # get results
   G.ratio.da=map2(1:nrow(eigens$eigens$w),delta_a1,G_aux)
   names(G.ratio.da)=c(paste0("a_",as.character(pos)))
-  # 
+   
+  # reformat and add age of infectee
   G.ratio.da=as.data.frame(G.ratio.da)
-  G.ratio.da$agegroup=agegroup
-  # 
+  G.ratio.da$age.infectee=agegroups
+   
+  # reshape into long table
   G.ratio.da %>%
-    pivot_longer(-agegroup)->G.ratio.da
+    pivot_longer(-age.infectee)->G.ratio.da
   
+  # add age.infector
+  G.ratio.da <- G.ratio.da %>%
+                  mutate(name = agegroups[as.numeric(sub('a_','',name))]) %>%
+                  rename(age.infector =  name)
+                  
   return(G.ratio.da)
 }
 
@@ -506,24 +508,34 @@ G.ratio_dh=function(pos,delta_h1,l,dh,eigens,q,a,M,h,dwn){
   return(G_ratio)
 }
 
-all_G_ratio_dh=function(delta_h1,l,dh,eigens,agegroup,q,a,M,h,dwn){
+all_G_ratio_dh=function(delta_h1,l,dh,eigens,agegroups,q,a,M,h,dwn){
   
   
+  # define age groups
   pos=seq(1,nrow(eigens$eigens$w))
   
+  # help function
   G_aux=function(x,y){
     aux=G.ratio_dh(pos=x,delta_h1=y,l,dh,eigens,q=q,a=a,M=M,h=h,dwn=dwn)
     return(aux)
   }
   
+  # get results
   G.ratio.dh=map2(1:nrow(eigens$eigens$w),delta_h1,G_aux)
   names(G.ratio.dh)=c(paste0("h_",as.character(pos)))
-  # 
+  
+  # reformat and add age of infectee 
   G.ratio.dh=as.data.frame(G.ratio.dh)
-  G.ratio.dh$agegroup=agegroup
-  # 
+  G.ratio.dh$age.infectee=agegroups
+
+  # reshape into long table
   G.ratio.dh %>%
-    pivot_longer(-agegroup)->G.ratio.dh
+    pivot_longer(-age.infectee)->G.ratio.dh
+
+  # add age.infector
+  G.ratio.dh <- G.ratio.dh %>%
+    mutate(name = agegroups[as.numeric(sub('h_','',name))]) %>%
+    rename(age.infector =  name)
   
   return(G.ratio.dh)
 }

@@ -319,10 +319,10 @@ shinyServer(function(input, output, session) {
       columnDefs = list(list(width = '50%', targets = 0))
     ))
     
-    # plot NGM
-    output$plot_NGM <- renderPlot({
+    # plot next_gen_matrix
+    output$plot_next_gen_matrix <- renderPlot({
       if("NGA" %in% names(out)){
-        plot_NGM(NGM = out$NGA$NGM)
+        plot_next_gen_matrix(next_gen_matrix = out$NGA$next_gen_matrix)
       } else {
         get_dummy_plot_for_ui("NGA results not available")
       }
@@ -331,7 +331,8 @@ shinyServer(function(input, output, session) {
     # plot elas
     output$plot_ELAS <- renderPlot({
       if("NGA" %in% names(out)){
-        plot_NGA_elas(Rs_=out$NGA$Rs,eigens=out$NGA$eigens,agegroups=out$NGA$agegroups)
+        plot_NGA_elas(R_t = out$NGA$R_t,
+                      elasticity_tbl = out$NGA$elasticity_tbl)
       } else {
           get_dummy_plot_for_ui("NGA results not available")
         }
@@ -340,8 +341,10 @@ shinyServer(function(input, output, session) {
     # plot RI w.r.t a
     output$plot_RI_a <- renderPlot({
       if("NGA" %in% names(out)){
-        # plot_G_a(out$NGA$RI_a,bool=out$NGA$bool_complex) 
-        plot_NGA_RI(out$NGA,bool_susceptibility=TRUE)
+        plot_NGA_RI(NGA = out$NGA,
+                    delta_p = out$meta_data$value[grepl('delta p',out$meta_data$parameter)], 
+                    rn_gen = out$meta_data$value[grepl('nr generations',out$meta_data$parameter)],
+                    bool_susceptibility = TRUE)
       } else {
           get_dummy_plot_for_ui("NGA results not available")
         }
@@ -350,8 +353,10 @@ shinyServer(function(input, output, session) {
     # plot RI w.r.t h
     output$plot_RI_h <- renderPlot({
       if("NGA" %in% names(out)){
-        plot_NGA_RI(out$NGA,bool_susceptibility=FALSE)
-        #plot_G_h(out$NGA$RI_h,bool=out$NGA$bool_complex) 
+        plot_NGA_RI(NGA = out$NGA,
+                    delta_p = out$meta_data$value[grepl('delta p',out$meta_data$parameter)], 
+                    rn_gen = out$meta_data$value[grepl('nr generations',out$meta_data$parameter)],
+                    bool_susceptibility = FALSE)
       } else {
           get_dummy_plot_for_ui("NGA results not available")
         }

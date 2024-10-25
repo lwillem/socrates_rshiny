@@ -36,17 +36,26 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   if(is.na(age_susceptibility_text) || age_susceptibility_text == '1'){ age_susceptibility_text <- paste(rep(1,num_age_groups),collapse=',') }
   if(is.na(age_infectiousness_text) || age_infectiousness_text == '1'){ age_infectiousness_text <- paste(rep(1,num_age_groups),collapse=',') }
 
-  # get social contact matrix using all features, without interventions
-  cnt_matrix_ui <- get_contact_matrix(country,
-                                      daytype,
-                                      touch,
-                                      duration,
-                                      gender,
-                                      cnt_location,
-                                      cnt_matrix_features,
-                                      age_breaks_text,
-                                      weight_threshold = weight_threshold,
-                                      wave)
+  # Use withCallingHandlers to capture warnings
+  warnings_list <- list()
+  withCallingHandlers(
+    {
+      # get social contact matrix using all features, without interventions
+      cnt_matrix_ui <- get_contact_matrix(country,
+                                          daytype,
+                                          touch,
+                                          duration,
+                                          gender,
+                                          cnt_location,
+                                          cnt_matrix_features,
+                                          age_breaks_text,
+                                          weight_threshold = weight_threshold,
+                                          wave)
+    },
+    warning = function(w) {
+      warnings_list <<- c(warnings_list, conditionMessage(w)) # Append warning to the list
+    }
+  )
   
   # CLI
   fct_out <- cnt_matrix_ui
@@ -54,10 +63,16 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   # create option to add notes
   fct_out$notes <- NULL
   
+  # add warnings (except the linear estimation of age groups)
+  warnings_list <- unlist(warnings_list[!grepl('Linearly estimating age group',warnings_list)])
+  if(length(warnings_list) > 0){
+    fct_out$notes <- warnings_list    
+  }
+
   # if matrix contains NA's => reciprocity is not possible ==>> add warning
   if(any(is.na(cnt_matrix_ui$matrix)) &
      opt_matrix_features[[1]]  %in% cnt_matrix_features){
-    fct_out$notes <- "Generation of a symmetric matrix is not possible because contact matrix contains NA (cfr. reciprocity)."
+    fct_out$notes <- c(fct_out$notes,"Generation of a symmetric matrix is not possible because contact matrix contains NA (cfr. reciprocity).")
   }
 
   # if there is a contact matrix but data sparseness forced to join age groups ==>> add warning
@@ -724,3 +739,11 @@ get_dummy_plot_for_ui <- function(warning_message){
     text(1,0,warning_message)    
 }
 
+# print notes to terminal
+print_notes <- function(notes_vector,txt_width){
+  cat("$notes:",fill = TRUE)
+  for(i_note in 1:length(notes_vector)){
+    cat(paste0('[',i_note,'] ',paste(strwrap(notes_vector[i_note], width = txt_width), collapse = "\n")),fill = TRUE)
+  }
+    cat(fill = TRUE)
+}

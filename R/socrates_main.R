@@ -3,12 +3,11 @@
 # 
 # => LOAD AND SELECT SOCIAL CONTACT SURVEY DATA
 #
-#  Copyright 2022, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 # load packages and help functions
 source('R/download_matrices.R')
-source('R/load_config_comix.R')
 source('R/load_config_base.R')
 source('R/contact_matrix_fix.R')
 source('R/plot_mean_number_contacts.R')

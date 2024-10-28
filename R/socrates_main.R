@@ -361,13 +361,10 @@ get_survey_object <- function(country,
   sel_dataset <- opt_country_admin[opt_country_admin$name == country,]
   
   # get original data
-  survey_data <- readRDS(sel_dataset$dataset)
+  survey_data <- db_survey_data[[country]]
   data_part   <- survey_data$participants
   data_cnt    <- survey_data$contacts
   
-  # include wave id notation  
-  data_part <- add_wave_id(data_part)
-
   # option to select country-specific participant and contact data
   if(nchar(sel_dataset$country)>0){
     bool_country <- (tolower(data_part$country) == tolower(sel_dataset$country))

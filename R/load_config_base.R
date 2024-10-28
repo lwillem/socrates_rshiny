@@ -220,20 +220,36 @@ opt_country <- sort(opt_country)
 
 # waves (survey specific options)
 opt_waves <- 'All'
+
+# initiate survey database(s) ####
+db_survey_data <- list() 
+
+# load data and store in list (with wave info) ####
+opt_waves <- 'All'
 opt_country_admin$opt_wave <- opt_waves
 for(i_country in 1:nrow(opt_country_admin)){
+  
+  # load data
+  sel_survey <- opt_country_admin$dataset[i_country]
+  data_survey <- readRDS(sel_survey)
+  
   if(opt_country_admin$has_waves[i_country]){
-    data_part <- readRDS(opt_country_admin$dataset[i_country])$participants
-    data_part <- add_wave_id(data_part)
     
-    # default sort does not work with 1, 10, 2, ...
-    country_waves    <- unique(data_part$wave)
+    # add wave_id
+    data_survey$participants <- add_wave_id(data_survey$participants)
+    
+    # sort wave id's (default sort does not work with 1, 10, 2, ...)
+    country_waves    <- unique(data_survey$participants$wave)
     country_waves_id <- unlist(lapply(country_waves,strsplit,':'))[seq(1,length(country_waves)*2,2)]
     
     # add sorted list to opt_country_admin
     opt_country_admin$opt_wave[i_country] <- list(c(opt_waves,country_waves[order(as.numeric(country_waves_id))]))  
   }
+  # store survey data in list
+  survey_name <- opt_country_admin$name[i_country]
+  db_survey_data[[survey_name]] <- data_survey
 }
+
 
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)

@@ -23,7 +23,6 @@ library(shiny)
 library(tidyverse) #
 library(ggthemes)  #
 library(ggpubr)    #
-
 library(shinyjs)       # For disabling/enabling inputs
 
 # temporary to use the get_survey script outside the SocialMixr package
@@ -47,6 +46,12 @@ source('R/plot_next_gen.R')
 #__________________________#
 ##  UI PANEL OPTIONS    ####
 #__________________________#
+
+# UserInterface title
+ui_title <- 'Social Contact Rates (SOCRATES) Data Tool'
+
+# boolean for selectInput "duration"
+bool_selectInput_duration <- "true"
 
 # set default age breaks (string)
 opt_age_breaks <- "0,18,60"
@@ -211,8 +216,6 @@ opt_country_admin$dataset <- paste0('data/survey_',opt_country_admin$dataset,'.r
 
 # exclude some datasets (TEMP)
 opt_country <- opt_country[!grepl('van Hoek',opt_country)]
-#opt_country <- opt_country[!grepl('Beraud',opt_country)]
-#opt_country <- opt_country[!grepl('Zimbabwe',opt_country)]
 opt_country <- opt_country[!grepl('China',opt_country)]
 
 # reformat and sort opt_country
@@ -220,6 +223,30 @@ opt_country <- sort(opt_country)
 
 # waves (survey specific options)
 opt_waves <- 'All'
+
+#__________________________#
+##  CoMiX    OPTIONS    ####
+#__________________________#
+if('bool_is_comix_ui' %in% ls() &&
+   !is.na(bool_is_comix_ui)){
+  
+  # select countries
+  opt_country_admin <- opt_country_admin[opt_country_admin$bool_comix == bool_is_comix_ui,]
+
+  # update opt_country
+  opt_country <- opt_country[opt_country %in% opt_country_admin$name]
+  
+  # UserInterface title
+  if(bool_is_comix_ui){
+    ui_title <- "SOCRATES CoMix"
+    bool_selectInput_duration <- "false"
+  }
+}
+
+
+#__________________________#
+##  Survey database     ####
+#__________________________#
 
 # initiate survey database(s) ####
 db_survey_data <- list() 
@@ -295,11 +322,7 @@ url_doc_weights <- a("More info is provided here.", href="https://github.com/lwi
 # number of digits to round
 format_num_digits <- 2
 
-# UserInterface title
-ui_title <- 'Social Contact Rates (SOCRATES) Data Tool'
 
-# boolean for selectInput "duration"
-bool_selectInput_duration <- "true"
 
 #__________________________#
 ##  AGE RANGE           ####
@@ -339,7 +362,7 @@ opt_country_admin$reference <- get_reference(opt_country_admin$name)
 data_description <- list()
 
 # add info
-data_description['POLYMOD countries: Italy, Germany, Luxembourg, The Netherlands, Poland, The United Kingdom, Finland, Belgium (Mossong 2008)'] <- 'Mossong et al. (2008) Social Contacts and Mixing Patterns Relevant to the Spread of Infectious Diseases. PLOS Medicine 5(3): e74.'
+data_description[opt_country[grepl('POLYMOD',opt_country)]] <- 'Mossong et al. (2008) Social Contacts and Mixing Patterns Relevant to the Spread of Infectious Diseases. PLOS Medicine 5(3): e74.'
 data_description[opt_country[grepl('Peru',opt_country)]] <- 'Grijalva et al. (2015) A Household-Based Study of Contact Networks Relevant for the Spread of Infectious Diseases in the Highlands of Peru. PLoS One 10(3).'
 data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- 'Melegaro et al. (2017) Social Contact Structures and Time Use Patterns in the Manicaland Province of Zimbabwe. PLoS One 12(1).'
 data_description[opt_country[grepl('France',opt_country)]] <- 'Béraud et al. (2015) The French Connection: The First Large Population-Based Contact Survey in France Relevant for the Spread of Infectious Diseases. PLoS One 10(7).'

@@ -18,9 +18,12 @@
 # clear workspace
 rm(list=ls())
 
+# specify ALL data (both CoMix and non-CoMix)
+# note: or use TRUE/FALSE to select the (non-)CoMix data
+bool_is_comix_ui <- NA
+
 # load functions and options
 source('R/socrates_main.R')
-source('R/load_config_base.R') # re-load settings (without CoMix-based selection)
 
 # use the UI defined lists
 opt_country
@@ -161,6 +164,7 @@ plot_cnt_matrix(matrix_out$matrix)
 ################################################################### #
 
 # run the principal function 
+for(i in 1:20)
 socrates_out <- run_social_contact_analysis(country,
                                             daytype,
                                             touch,

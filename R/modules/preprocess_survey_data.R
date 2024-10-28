@@ -235,6 +235,22 @@ i_file <- 8
     #       survey_clean$participants$wave)
   }
   
+  if(grepl('zambia_south_africa',files_survey[i_file])){
+    table(survey_clean$participants$sday_id,
+                 survey_clean$participants$country)
+    # Some surveys were registered with the date 13/12/1091, which appears to be erroneous.
+    # Assuming the weekday (Saturday) is correct, the correct date should likely be 12, with 13 as a typo for the month 3 (March).
+    # February 2011 data from Zambia seems to consistently span at least two consecutive days, and there is no data for the 11th or 13th
+    # SOCRATES focuses on the day of the week and does not conduct longitudinal analysis, so as long as the date falls within the overall min-max date range, there is no issue.
+    survey_clean$participants <- survey_clean$participants %>% 
+                                    mutate(
+                                      day = if_else(sday_id == 19011213, 12, day),
+                                      month = if_else(sday_id == 19011213, 3, month),
+                                      year = if_else(sday_id == 19011213, 2011, year),
+                                      sday_id = if_else(sday_id == 19011213, 20110302, sday_id)
+                                    )
+  }
+  
   # store
   saveRDS(survey_clean,gsub(output_dir,new_data_dir,files_survey[i_file]))
   

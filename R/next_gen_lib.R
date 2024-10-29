@@ -3,11 +3,15 @@
 # 
 # => TO CONDUCT THE NEXT-GENERATION APPROACH ANALYSIS
 #
-# Copyright 2024, Caetano et al.
+# Copyright 2024, Caetano, Willem et al.
 #___________________________________________________________________________
 # ref: Diekmann and Britton 2013 chapter 7
 # ref: Franco et al, Plos Comput Biol, 2022
 
+# help function to standardize the relative incidence
+standardize_RI <- function(vec) {
+  return(vec/sum(vec))
+}
 
 # Run the next generation approach based on an age-structured SIR model
 #

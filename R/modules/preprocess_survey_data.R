@@ -5,9 +5,8 @@
 # 
 # Retrieving data from ZENODO is time consuming, so we make a local copy
 #
-#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
-#TODO: add missing columns etc...
 
 # clear workspace
 rm(list=ls())
@@ -20,7 +19,7 @@ library(data.table)
 source('R/contact_matrix_fix.R')
 
 # specify output directory
-output_dir <- 'data5'
+output_dir <- 'data2'
 
 # RETRIEVE FROM ZENODO ----
 
@@ -102,25 +101,26 @@ for(i in 1:nrow(survey_meta_data)){
     files       <- download_survey(survey_meta_data$url[i])
     files       <- files[grepl('comix_2',files) | grepl('json',files)]
     survey_data <- load_survey(files)
-  } else{
+  } else if(survey_meta_data$country[i] == "zimbabwe"){
+    files       <- download_survey(survey_meta_data$url[i])
+  
+    # two sday records for 1 participant is causing issues in the merge, hence select the first one.
+    # this will cause a warning to match time_use_common for the second studyday, but that is OK for now
+    zimbabwe_sday <- read.csv(files[grepl('sday',files)])
+    zimbabwe_sday <- zimbabwe_sday[zimbabwe_sday$studyDay == 1,]
+    zimbabwe_sday <- write.csv(zimbabwe_sday,files[grepl('sday',files)],row.names = FALSE)
+    
+    survey_data <- load_survey(files)
+    
+    # select contacts from first survey day
+    survey_data$contacts         <- survey_data$contacts[survey_data$contacts$studyDay == 1,]
+    
+  } else {
     # load data
     survey_data <- get_survey(survey_meta_data$url[i])
   }
     
-  names(survey_data$participants)
-  table(survey_data$participants$part_age)
-  dim(survey_data$participants)
-  
-  if(survey_meta_data$country[i] == 'zimbabwe'){
-
-    table(survey_data$contacts$studyDay)
-    dim(survey_data$participants)
-    
-    # select first survey day
-    survey_data$contacts         <- survey_data$contacts[survey_data$contacts$studyDay == 1,]
-  }
-  
-  syear <- min(substr(survey_data$contacts$sday_id,0,4),
+   syear <- min(substr(survey_data$contacts$sday_id,0,4),
                substr(survey_data$participants$sday_id,0,4),na.rm=T)
   if(is.na(syear)){
     syear <- year(survey_meta_data$date_added[i])
@@ -218,10 +218,10 @@ i_file <- 8
   if(grepl('belgium2010_household',files_survey[i_file])){
     survey_clean$participants$country <- 'Belgium'
   }
+  
   # Zimbabwe 2013 study
   if(grepl('survey_zimbabwe2013',files_survey[i_file])){
     survey_clean$participants$country <- 'Zimbabwe'
-    survey_clean$participants$dayofweek <- NA
   }
   
   if(grepl('uk2020_comix',files_survey[i_file])){

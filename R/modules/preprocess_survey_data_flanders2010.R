@@ -5,9 +5,8 @@
 # 
 # Retrieving data from ZENODO is time consuming, so we make a local copy
 #
-#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
-#TODO: add missing columns etc...
 
 # clear workspace
 rm(list=ls())
@@ -38,9 +37,9 @@ meta_data <- meta_data[[2]]
 meta_data <- unlist(strsplit(meta_data,'\n'))
 meta_data <- meta_data[grepl('VERSION',meta_data) | grepl('UPDATE',meta_data)]
 reference <- list(author = 'Hoang, V.T. and Coletti, P. and Kifle, Y.W., Van Kerckhove, K. and Vercruyse, S. and Willem, L. and Beutels, P. and Hens, N.',
-                  year   = '2019',
-                  title  = 'The Flemish social contact survey',
-                  journal = 'TBA',
+                  year   = '2021',
+                  title  = 'Close contact infection dynamics over time: insights from a second large-scale social contact survey in Flanders, Belgium, in 2010-2011',
+                  journal = 'BMC Infectious Diseases',
                   bibtype = 'Article',
                   note_dataset        = tolower(paste('SURVEY DATA',paste(meta_data,collapse=' with '))),
                   note_survey_object  = tolower(paste('SURVEY OBJECT GENERATED ON',Sys.time())))
@@ -98,7 +97,7 @@ survey_flanders2010 <- survey(participants = db_participants,
                               reference    = reference)
 
 # store survey object
-saveRDS(survey_flanders2010, file=paste0('data/survey_belgium2010.rds'))
+saveRDS(survey_flanders2010, file=paste0('data2_clean/survey_belgium2010.rds'))
 
-cite(survey_flanders2010)
-
+get_citation(survey_flanders2010)
+get_citation(polymod)

@@ -620,9 +620,6 @@ compare_contact_matrices <- function(mija,mijb,
   return(out)
 }
 
-# help function to standardize the relative incidence
-standardize_RI<-function(vec){return(vec/sum(vec))}
-
 # convert character string with age-specific values into (positive) numeric values
 parse_age_values <- function(age_values_text,bool_unique = TRUE){
   

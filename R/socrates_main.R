@@ -63,17 +63,12 @@ run_social_contact_analysis <- function(country,daytype,touch,duration,gender,
   fct_out$notes <- NULL
   
   # add warnings (except the linear estimation of age groups)
+  # if matrix contains NA's => reciprocity is not possible ==>> warning is given by contact_matrix()
   warnings_list <- unlist(warnings_list[!grepl('Linearly estimating age group',warnings_list)])
   if(length(warnings_list) > 0){
     fct_out$notes <- warnings_list    
   }
-
-  # if matrix contains NA's => reciprocity is not possible ==>> add warning
-  if(any(is.na(cnt_matrix_ui$matrix)) &
-     opt_matrix_features[[1]]  %in% cnt_matrix_features){
-    fct_out$notes <- c(fct_out$notes,"Generation of a symmetric matrix is not possible because contact matrix contains NA (cfr. reciprocity).")
-  }
-
+ 
   # if there is a contact matrix but data sparseness forced to join age groups ==>> add warning
   if(!is.null(nrow(cnt_matrix_ui$matrix)) && (num_age_groups != nrow(cnt_matrix_ui$matrix) || 
                                              num_age_groups != nrow(cnt_matrix_ui$matrix))){

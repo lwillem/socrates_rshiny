@@ -709,7 +709,7 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
             } else if (na.present)
             {
                 warning("'symmetric=TRUE' does not work with missing data; ",
-                        "will not make matrix symmetric\n",
+                        "will not make matrix symmetric.\n",
                         warning.suggestion)
             } else
             {

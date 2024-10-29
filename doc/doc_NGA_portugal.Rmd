@@ -1,0 +1,98 @@
+---
+title: "Next-Generation Analysis: case study for Portugal"
+author: "Caetano, Willem et al"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+This report presents the results of the paper by Caetano et al. (2024), titled "Identifying the Main Drivers of Transmission in the Early Phase of the COVID-19 Pandemic in Portugal."
+
+```{r setup, include=TRUE, echo=TRUE}
+
+# load packages
+suppressPackageStartupMessages(
+library(tidyverse)) # collection of R packages designed for data science
+library(ggthemes)   # Some extra themes, geoms, and scales for 'ggplot2'
+library(ggpubr)     # 'ggplot2' Based Publication Ready Plots
+library(socialmixr) # to analyse and plot social contact data
+
+# load use-defined functions
+source('../R/next_gen_lib.R')
+source('../R/plot_next_gen.R')
+
+```
+
+Load social contact data for Portugal based on Prem et al (2021, Plos Comput Biol).
+```{r}
+
+mij <- readRDS(file = '../data/CM_Portugal_Prem2021.rds')
+```
+
+```{r, fig.width=6, fig.height=4}
+# plot matrix
+matrix_plot(mij)
+
+```
+\newpage
+Run next-generation analysis
+```{r}
+  # parameters
+  qi      = c(0.545,0.555,0.590,0.700,0.760,0.900,0.990,0.990)
+  qs      = c(0.069,0.081,0.223,0.221,0.264,0.353,0.439,0.703)
+  q       = 1
+  delta_p = 0.10
+  nr_gen  = 3
+
+ # calculate relative incidence
+ next_generation_matrix    = NGM_SIR(q=q,a=qs,M=t(mij),h=qi)
+ relative_incidence        = standardize_RI(eigen(next_generation_matrix)$vectors[,1])
+
+```
+
+Plot relative incidence:
+```{r, fig.width=6, fig.height=4}
+# relative incidence
+barplot(relative_incidence,
+                xlab="Age group",
+                ylab="Relative incidence",
+                ylim=c(0,1),
+                cex.names =  0.8) -> bplt
+text(x = bplt,
+     y = relative_incidence,
+     labels = round(relative_incidence,digits=2),
+     pos=3)
+
+```
+
+\newpage
+Run the full next generation analysis according to Ceatano et al (2024).
+```{r, fig.height=4}
+
+ # run full next-generation analysis
+ NGA = run_NGA(M=mij,a=qs,h=qi,q=q,p=delta_p,nr_gen=nr_gen)
+
+# plot next-generation matrix
+plot_next_gen_matrix(next_gen_matrix = NGA$next_gen_matrix)
+
+# plot elasticity
+plot_NGA_elas(R_t = NGA$R_t,
+              elasticity_tbl = NGA$elasticity_tbl)
+
+```
+\newpage
+```{r , fig.height=3.5}
+# plot relative incidence with regards to susceptibility
+plot_NGA_RI(NGA = NGA,
+            delta_p = delta_p, 
+            rn_gen = nr_gen,
+            bool_susceptibility = TRUE)
+
+# plot relative incidence with regards to infectiousness
+plot_NGA_RI(NGA = NGA,
+            delta_p = delta_p, 
+            rn_gen = nr_gen,
+            bool_susceptibility = FALSE)
+```
+

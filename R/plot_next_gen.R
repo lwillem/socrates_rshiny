@@ -13,7 +13,7 @@ plot_next_gen_matrix = function(next_gen_matrix){
     geom_raster(aes(fill=value)) +
     geom_text(aes(label=round(value,2)))+
     scale_fill_gradient(low="grey90", high="red") +
-    labs(title="",x="Infector",y="Infectee",fill="Infections") +
+    labs(title="",x="Age infector (year)",y="Age infectee  (year)",fill="Infections") +
     theme_bw(base_size = 20) + theme(axis.text.x=element_text(angle=45, vjust=0.6),
                                      axis.text.y=element_text(),
                                      plot.title=element_text(),legend.position = "right")
@@ -35,8 +35,8 @@ plot_NGA_elas = function(R_t,elasticity_tbl){
   p=ggplot()+
     geom_bar(data=elasticity_tbl,aes(x=agegroup,y=value,fill=name),stat = "identity",position = "dodge")+
     geom_hline(yintercept=R_t,linetype="dashed")+
-    annotate("text", x = 0.5, y = R_t+R_t*0.15, label = "R",size=7)+
-    labs(title="",x="Age group",fill="",y="")+
+    annotate("text", x = 0.75, y = R_t+R_t*0.1, label = "R",size=7)+
+    labs(title="",x="Age group (year)",fill="",y="")+
     scale_y_continuous(name=paste0("k.j, ki. and R"),breaks=scales::pretty_breaks(n=8),expand=c(0,0),limits=c(0,aux),
                        sec.axis = sec_axis( trans=~./(aux), name="Elasticity"))+
     scale_fill_economist()+
@@ -73,7 +73,7 @@ plot_NGA_RI = function(NGA, delta_p, rn_gen, bool_susceptibility=TRUE){
       geom_text(aes(label=round(value,3))) +
       scale_fill_gradient2(limits=c(min(G.ratio.da$value),max(G.ratio.da$value)),midpoint = 1, low = "blue", mid = "white",
                            high = "red", space = "Lab") +
-      labs(title=plot_title,x="Age infector",y="Age infectee",fill="Relative\nImpact") +
+      labs(title=plot_title,x="Age infector (year)",y="Age infectee (year)",fill="Relative\nImpact") +
       theme_bw(base_size=16) + theme(axis.text.x=element_text(size=16, angle=45, vjust=0.6),
                                      axis.text.y=element_text(size=16),
                                      plot.title=element_text(size=16))

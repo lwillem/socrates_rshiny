@@ -3,7 +3,7 @@
 # 
 # => R-SHINY USER INTERFACE
 #
-#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 # # FYI: To run SOCRATES via Github (latest version!)
 # library('shiny')

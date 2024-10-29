@@ -3,7 +3,7 @@
 # 
 # => PLOT THE AVERAGE NUMBER OF SOCIAL CONTACTS BY AGE
 #
-#  Copyright 2022, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 

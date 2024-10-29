@@ -3,7 +3,7 @@
 # 
 # => MAIN SCRIPT FOR THE R-SHINY SERVER
 #
-#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 # load all functions and packages

@@ -4,7 +4,7 @@
 # A. Run SOCRATES functions via R(studio)
 # B. Run a remote SOCRATES UI
 #
-#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 ################################################################### #

@@ -3,7 +3,7 @@
 # 
 # => PLOT SOCIAL CONTACT MATRICES
 #
-#  Copyright 2024, SIMID
+#  Copyright 2024, Caetano, Willem et al.
 #___________________________________________________________________________
 
 plot_next_gen_matrix = function(next_gen_matrix){

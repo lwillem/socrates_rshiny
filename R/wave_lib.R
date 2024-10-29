@@ -3,7 +3,7 @@
 # 
 # => TO LOAD WAVE LABELS ETC
 #
-#  Copyright 2021, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 

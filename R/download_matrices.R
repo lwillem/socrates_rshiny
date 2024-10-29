@@ -3,7 +3,7 @@
 # 
 # => DOWNLOAD LOCATION SPECIFIC MATRICES: AVERAGE AND PER CAPITA 
 #
-#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 

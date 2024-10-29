@@ -3,7 +3,7 @@
 # 
 # => ADAPTED contact_matrix() function
 #
-#  Copyright 2020, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
+#  Copyright 2024, SIMID, UNIVERSITY OF ANTWERP & HASSELT UNIVERSITY
 #___________________________________________________________________________
 
 # temporary to use get_survey outside the SocialMixr package

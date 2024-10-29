@@ -265,7 +265,6 @@ i_file <- 8
 # COMIX ----
 # check comix waves and additional datasets
 
-
 # files <- dir('data4',full.names = TRUE)
 files <- dir(new_data_dir,full.names = TRUE)
 comix_multi <- readRDS(files[grepl('comix_multi',files)])
@@ -374,11 +373,12 @@ saveRDS(comix_country_update,gsub('_comix','_comix_incl48',files[grepl('belgium2
 
 #TODO: update other comix countries with data from comix_update and/or comix_multi
 
-# compare updated datasets
-if(0==1){
+
+# Optional: compare updated datasets ####
+if(0==1){ # not executed by default
   
   files_orig <- dir('data',pattern = 'rds',full.names = T)
-  files_new <- dir('data5_clean',pattern = 'rds',full.names = T)
+  files_new <- dir('data2_clean',pattern = 'rds',full.names = T)
   
   # remove redundant version of belgium2020 comix
   files_new <- files_new[!grepl('belgium2020_comix.rds',files_new)]
@@ -426,16 +426,17 @@ if(0==1){
     survey_new  <- readRDS(db_new$name[i_file])
     survey_orig <- readRDS(db_new$name_orig[i_file])
   
-    
     db_new$dim_part[i_file] <- all(dim(survey_new[[1]]) == dim(survey_orig[[1]]))
     db_new$dim_cnt[i_file] <- all(dim(survey_new[[2]]) == dim(survey_orig[[2]]))
     db_new$len_ref[i_file] <- length(survey_new[[3]]) == length(survey_orig[[3]]) && 
                                         paste(unlist(survey_new[[3]]),collapse=' ') == paste(unlist(survey_orig[[3]]),collapse=' ')
     
+    # fix for 'UK'
+    survey_orig$participants$country <- gsub('UK','United Kingdom',survey_orig$participants$country)
     
     age_breaks <- c(0,18,40)  
-    suppressMessages(suppressWarnings(cnt_mat_orig <- contact_matrix(survey_orig,age.limits = age_breaks)))
-    suppressMessages(suppressWarnings(cnt_mat_new  <- contact_matrix(survey_new,age.limits = age_breaks)))
+    suppressMessages(suppressWarnings(cnt_mat_orig <- contact_matrix(survey_orig,age.limits = age_breaks,symmetric = TRUE)))
+    suppressMessages(suppressWarnings(cnt_mat_new  <- contact_matrix(survey_new,age.limits = age_breaks,symmetric = TRUE)))
     
     if(any(cnt_mat_orig$matrix != cnt_mat_new$matrix)){
       cnt_mat_orig$matrix - cnt_mat_new$matrix
@@ -445,7 +446,6 @@ if(0==1){
       cnt_mat_orig$participants != cnt_mat_new$participants
       print('PARTICIPANT DATA IS DIFFERENT')
     }
-    
     
     if(length(survey_new$participants$part_id) == length(survey_orig$participants$part_id)){
       db_new$part_id[i_file]    <- sum((survey_new$participants$part_id != survey_orig$participants$part_id))
@@ -459,7 +459,6 @@ if(0==1){
       db_new$cnt_age_exactNA[i_file] <- sum(is.na(survey_new$contacts$cnt_age_exact) != is.na(survey_orig$contacts$cnt_age_exact),na.rm=T)
     }
     
-    
     db_new$bool_wave[i_file] <- 'wave' %in% names(survey_new$participants)
     db_new$bool_panel[i_file] <- 'panel' %in% names(survey_new$participants)
     db_new$bool_panel_wave[i_file] <- 'wave_wrt_panel' %in% names(survey_new$participants)
@@ -471,211 +470,5 @@ if(0==1){
   db_new[!db_new$is_comix & !db_new$is_update,-1]
   db_new[db_new$is_update,-1]
   db_new[db_new$bool_wave,-1]
-  
-  
-}
-
-
-
-if(0==1){
-  
-  zenodo_all <- dir('data_zenodo_all/',full.names = TRUE,pattern = 'participant_extra')
-  
-  zenodo_all
-  
-  i <- 20
-  for(i in 1:length(zenodo_all)){
-    
-   pdata <- read.csv(zenodo_all[i])
-    
-   dim(pdata)
-   names(pdata)
-   if(!is.numeric(pdata$part_age)){
-     print(paste(zenodo_all[i],
-             #pdata$part_age[1]),
-             pdata$country[1]))
-   }
-  }
-  
-  
-  ##### COMIX BE
-  #files <- dir('data_zenodo_all/',pattern='comix_2',full.names = TRUE)
-  #files <- dir('7331926_comix2/',pattern='CoMix_2',full.names = TRUE)
-  files <- dir('7331926_comix2/',pattern='CoMix_2',full.names = TRUE)
-  #files <- dir('data2/pl_comix_6362879/',pattern='',full.names = TRUE)
-  files
-  survey <- load_survey(files)
-  survey$reference
-  dim(survey$participants)
-  dim(survey$contacts)
-  names(survey$participants)
-  names(survey$contacts)
-  
-  table(survey$participants$country,survey$participants$wave)
-  
-  survey$contacts[part_id == 1,]
-  
-  pdata     <- read.csv(files[grepl('participant_common',files)])
-  pextra    <- read.csv(files[grepl('participant_extra',files)])
-  hh_common <- read.csv(files[grepl('hh_common',files)])
-  sday <- read.csv(files[grepl('sday',files)])
-    
-  dim(pdata)
-  dim(pextra)
-  dim(hh_common)
-  dim(sday)
-  
-  table(pdata$part_id %in% pextra$part_id)
-  
-  names(pdata)
-  names(hh_common)
-  head(pdata)
-  head(pextra)
-  head(hh_common)
-  
-  table(pdata$hh_id %in% hh_common$hh_id)
-  table(hh_common$hh_id %in% pdata$hh_id)
-  
-  xx <- merge(pdata,hh_common)
-  dim(xx)  
-}
-
-
-if(0==1){
- 
-  # UK DATA
-  data_uk <- readRDS(dir('data',pattern = 'uk2020_comix',full.names = T))
-
-  names(data_uk$participants)
-  names(data_uk$contacts)
-  contact_matrix(data_uk, age.limits = c(0,18,60))  
-     
-  
-}
-if(0==1){
-  
-  # check contact matrix based on original and new data
-  
-  # load filenames
-  files_orig <- dir('data',pattern = 'rds',full.names = T)
-  files_new <- dir('data5_clean',pattern = 'rds',full.names = T)
-  
-  rds_filename <- 'survey_austria2020_comix'
-  rds_filename <- 'survey_denmark2020_comix'
-  rds_filename <- 'survey_poland2020_comix'
-  
-  survey_orig <- readRDS(files_orig[grepl(rds_filename,files_orig)])  
-  survey_new  <- readRDS(files_new[grepl(rds_filename,files_new)])  
-
-
-  age_breaks <- c(0,18,40)  
-  age_breaks <- c(0)  
-  
-  cnt_mat_orig <- contact_matrix(survey_orig,age.limits = age_breaks)
-  cnt_mat_new  <- contact_matrix(survey_new,age.limits = age_breaks)
-
-  cnt_mat_orig$matrix - cnt_mat_new$matrix
-  
-  cnt_mat_orig$participants == cnt_mat_new$participants
-
-  
-  names(survey_new$contacts)
-  
-  survey_orig_edit <- survey_orig
-  survey_orig_edit$contacts <- survey_orig$contacts[,.SD, .SDcols = names(survey_new$contacts)]
-  survey_orig_edit$participants <- survey_orig$participants[,.SD, .SDcols = names(survey_new$participants)]
-  
-  dim(survey_orig_edit$contacts)
-  dim(survey_new$contacts)
-
-  xx <- survey_orig_edit$contacts != survey_new$contacts
-  colSums(xx,na.rm = T)    
-  
-  yy <- is.na(survey_orig_edit$contacts) != is.na(survey_new$contacts)
-  colSums(yy)    
- 
-  survey_orig_edit$contacts$part_id[1:10]
-  survey_new$contacts$part_id[1:10]
- 
-  # PART
-  dim(survey_orig_edit$participants)
-  dim(survey_new$participants)
-  
-  xx <- survey_orig_edit$participants != survey_new$participants
-  colSums(xx,na.rm = T)    
-  
-  yy <- is.na(survey_orig_edit$contacts) != is.na(survey_new$contacts)
-  colSums(yy)    
-  
-  sum(table(table(survey_new$contacts$part_id)))
-  sum(table(table(survey_orig$contacts$part_id)))
-  
-  xx <- table(survey_orig$contacts$part_id,useNA = 'ifany')
-  length(xx)  
-  mean(xx)  
-  
-  yy <- table(survey_new$contacts$part_id,useNA = 'ifany')
-  length(yy)  
-  mean(yy)  
-  
-  dim(survey_new$participants)
-  dim(survey_orig$participants)
-  
-  table(survey_new$participants$wave)
-  table(survey_orig$participants$wave_wrt_panel)
-  
-  names(survey_orig$participants$wave_wrt_panel)
-  head(survey_orig$participants$wave_wrt_panel)
-  
-  survey_orig_edit$participants[survey_orig_edit$participants$part_id == '10471407',]
-  survey_orig_edit$participants[survey_orig_edit$participants$part_id == '10471401',]
-  survey_orig_edit$contacts[survey_orig_edit$contacts$part_id == '10471407',]
-  survey_orig_edit$contacts[survey_orig_edit$contacts$part_id == '10471401',]
-  
-  survey_new$participants[survey_new$participants$part_id == '10471407',]
-  survey_new$participants[survey_new$participants$part_id == '10471401',]
-  survey_new$contacts[survey_new$contacts$part_id == '10471407',]
-  survey_new$contacts[survey_new$contacts$part_id == '10471401',]
-}
-
-if(0==1){
-  
-  # poland and portugal
-  
-  # load filenames
-  files_orig <- dir('data',pattern = 'rds',full.names = T)
-  files_new <- dir('data5_clean',pattern = 'rds',full.names = T)
-  
-  
-  rds_filename <- 'survey_poland2020_comix'
-  poland_orig <- readRDS(files_orig[grepl(rds_filename,files_orig)])  
-  poland_new  <- readRDS(files_new[grepl(rds_filename,files_new)])  
-  unlist(lapply(poland_orig,dim))
-  unlist(lapply(poland_new,dim))
-  
-  
-  rds_filename <- 'survey_portugal2020_comix'
-  portugal_orig <- readRDS(files_orig[grepl(rds_filename,files_orig)])  
-  portugal_new  <- readRDS(files_new[grepl(rds_filename,files_new)])  
-  unlist(lapply(portugal_orig,dim))
-  unlist(lapply(portugal_new,dim))
-
-  # participants per wave
-  table(poland_new$participants$wave)
-  table(poland_orig$participants$wave_wrt_panel)
-    
-  # participants per wave
-  table(portugal_new$participants$wave)
-  table(portugal_orig$participants$wave_wrt_panel)
-  table(portugal_orig$participants$wave_wrt_panel)
-
-  table(sort(portugal_orig$participants$sday_id))
-  table(sort(portugal_new$participants$sday_id))
-  
-  table(portugal_new$participants$wave,
-        portugal_new$participants$sday_id)  
-
-  table(portugal_new$participants$wave,
-        portugal_new$participants$panel)  
   
 }

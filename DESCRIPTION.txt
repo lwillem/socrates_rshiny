@@ -1,12 +1,12 @@
-Version: 1.55.32
+Version: 1.56.00
 Title: Social Contact RATES (SOCRATES)
 Description: This project aims to explore and analyse social contact rates and patterns, relevant for the transmission of infectious diseases such as SARS-CoV-2, influenza and RSV.
 Maintainer: Lander Willem <lander.willem@uantwerpen.be>
 Contributor: Constantino Pereira Caetano 
 License: CC BY 4.0
-PreviousCommit: 94506832f8 (#234) [2024-10-29 12:33:52]
+PreviousCommit: 9007a0a1a9 (#237) [2024-10-29 13:58:18]
 SessionInfo1: R version 4.3.1 (2023-06-16)
 SessionInfo2: macOS Ventura 13.4
-TestLoop: COMPLETE [2024-10-29 13:40:06.339264]
-TestValue: PASS [2024-10-29 13:38:42.647172]
+TestLoop: COMPLETE [2024-10-29 14:10:22.105143]
+TestValue: PASS [2024-10-29 14:11:59.994535]
 

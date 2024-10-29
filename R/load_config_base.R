@@ -325,7 +325,7 @@ url_socrates_comix <- a("SOCRATES CoMix", href="http://socialcontactdata.org/soc
 url_doc_weights <- a("More info is provided here.", href="https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_weights.pdf",target="_blank")
 
 # data doc url
-url_doc_data <- a("More info on the data curation is provided here.", href="https://github.com/lwillem/socrates_rshiny/blob/dev/doc/doc_data_updates.md",target="_blank")
+url_doc_data <- a("More info on the data curation is provided here.", href="https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_data_updates.md",target="_blank")
 
 # number of digits to round
 format_num_digits <- 2

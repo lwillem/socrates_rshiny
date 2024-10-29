@@ -120,6 +120,7 @@ for(i in 1:nrow(survey_meta_data)){
     survey_data <- get_survey(survey_meta_data$url[i])
   }
     
+  # get survey year for rds file name
    syear <- min(substr(survey_data$contacts$sday_id,0,4),
                substr(survey_data$participants$sday_id,0,4),na.rm=T)
   if(is.na(syear)){
@@ -127,7 +128,7 @@ for(i in 1:nrow(survey_meta_data)){
   }
   
   if(survey_meta_data$country[i] == 'zambia_south_africa'){ syear = 2011 }
-  if(survey_meta_data$country[i] == 'polymod'){ syear = 2008 }
+  if(survey_meta_data$country[i] == 'polymod'){ syear = 2008 } # use the year of the publication
   if(survey_meta_data$country[i] == 'zimbabwe'){ syear = 2013 }
   
   # save as .rds file
@@ -225,6 +226,10 @@ i_file <- 8
   }
   
   if(grepl('uk2020_comix',files_survey[i_file])){
+    survey_clean$participants$country <- 'United Kingdom'
+  }
+  
+  if(grepl('uk2018',files_survey[i_file])){
     survey_clean$participants$country <- 'United Kingdom'
   }
   

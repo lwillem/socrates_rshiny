@@ -321,11 +321,11 @@ url_socrates <- a("SOCRATES initiative", href="http://socialcontactdata.org/socr
 # socrates comix url
 url_socrates_comix <- a("SOCRATES CoMix", href="http://socialcontactdata.org/socrates-comix/",target="_blank")
 
-# SPC doc url
-url_doc_spc <- a("is provided here.", href="https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_spc_france.md",target="_blank")
-
 # weights doc url
 url_doc_weights <- a("More info is provided here.", href="https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_weights.pdf",target="_blank")
+
+# data doc url
+url_doc_data <- a("More info on the data curation is provided here.", href="https://github.com/lwillem/socrates_rshiny/blob/dev/doc/doc_data_updates.md",target="_blank")
 
 # number of digits to round
 format_num_digits <- 2
@@ -370,7 +370,7 @@ opt_country_admin$reference <- get_reference(opt_country_admin$name)
 data_description <- list()
 
 # add info
-data_description[opt_country[grepl('POLYMOD',opt_country)]] <- 'Mossong et al. (2008) Social Contacts and Mixing Patterns Relevant to the Spread of Infectious Diseases. PLOS Medicine 5(3): e74.'
+data_description[opt_country[grepl('Mossong',opt_country)]] <- 'Mossong et al. (2008) Social Contacts and Mixing Patterns Relevant to the Spread of Infectious Diseases. PLOS Medicine 5(3): e74.'
 data_description[opt_country[grepl('Peru',opt_country)]] <- 'Grijalva et al. (2015) A Household-Based Study of Contact Networks Relevant for the Spread of Infectious Diseases in the Highlands of Peru. PLoS One 10(3).'
 data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- 'Melegaro et al. (2017) Social Contact Structures and Time Use Patterns in the Manicaland Province of Zimbabwe. PLoS One 12(1).'
 data_description[opt_country[grepl('France',opt_country)]] <- 'Béraud et al. (2015) The French Connection: The First Large Population-Based Contact Survey in France Relevant for the Spread of Infectious Diseases. PLoS One 10(7).'
@@ -382,8 +382,9 @@ data_description[opt_country[grepl('Russia',opt_country)]] <- 'Litvinova et al. 
 # add info for Zimbabwe
 data_description[opt_country[grepl('Zimbabwe',opt_country)]] <- paste(data_description[opt_country[grepl('Zimbabwe',opt_country)]],'We selected one diary per participant.')
 
-# add info for France
-data_description[opt_country[grepl('France 2015',opt_country)]] <- paste(data_description[opt_country[grepl('France',opt_country)]],'This dataset contains supplementary professional contacts (SPC) and we selected one diary per participant.')
+# add info for France* (Beraud)
+data_description[opt_country[grepl('France\\*',opt_country)]] <- paste(data_description[opt_country[grepl('France\\*',opt_country)]],
+                                                                       'This dataset contains supplementary professional contacts (SPC) and we selected one diary per participant. <a href="https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_spc_france.md" target="_blank">More info on the SPC is provided here.</a>')
 
 # add info for Belgium2010
 data_description[opt_country[grepl('Belgium 2010\\*',opt_country)]] <- 'Van Hoang et al. (2020). Close contact infection dynamics over time: insights from a second large-scale social contact survey in Flanders, Belgium, in 2010-2011. BMC Infectious Diseases 21: 274. This dataset contains supplementary professional contacts (SPC) and whether a contact is a household member.'
@@ -410,7 +411,6 @@ data_description[opt_country[grepl('Norway CoMix',opt_country)]] <- 'Veneti et a
 # add info for CoMix-Switzerland
 data_description[opt_country[grepl('Switzerland CoMix',opt_country)]] <- 'Reichmuth et al. (2024) Social contacts in Switzerland during the COVID-19 pandemic: Insights from the CoMix study. Epidemics 47, 100771.'
 
-
 # reformat to table
 data_description <- data.frame('Name' = names(data_description),
                                'Description' = unlist(data_description))
@@ -419,7 +419,7 @@ data_description <- data.frame('Name' = names(data_description),
 data_description <- data_description[order(as.character(data_description$Name)),]
 
 # start with POLYMOD
-d_order <- c(grep('POLYMOD',data_description$Name),which(!grepl('POLYMOD',data_description$Name)))
+d_order <- c(grep('Mossong',data_description$Name),which(!grepl('Mossong',data_description$Name)))
 data_description <- data_description[d_order,]
 
 # make data table

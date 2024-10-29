@@ -1,8 +1,3 @@
----
-output:
-  html_document: default
----
-
 ## Data Pre-processing for SOCRATES
 
 **Latest data retrieval from ZENODO on October 28, 2024.**

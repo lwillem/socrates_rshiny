@@ -49,7 +49,7 @@ plot_NGA_elas = function(R_t,elasticity_tbl){
   return(p)
 }
 
-plot_NGA_RI = function(NGA, delta_p, rn_gen, bool_susceptibility=TRUE){
+plot_NGA_RI = function(NGA, delta_p, rn_gen, bool_susceptibility=TRUE, round_digits = 3){
 
   if (!NGA$bool_complex) {
     
@@ -70,7 +70,7 @@ plot_NGA_RI = function(NGA, delta_p, rn_gen, bool_susceptibility=TRUE){
     # plot
     p=ggplot(G.ratio.da, aes(x = age.infector, y = age.infectee)) +
       geom_tile(aes(fill=value)) +
-      geom_text(aes(label=round(value,3))) +
+      geom_text(aes(label=round(value,round_digits))) +
       scale_fill_gradient2(limits=c(min(G.ratio.da$value),max(G.ratio.da$value)),midpoint = 1, low = "blue", mid = "white",
                            high = "red", space = "Lab") +
       labs(title=plot_title,x="Age infector (year)",y="Age infectee (year)",fill="Relative\nImpact") +

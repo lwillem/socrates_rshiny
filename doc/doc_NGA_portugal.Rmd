@@ -42,9 +42,12 @@ Run next-generation analysis
   qi      = c(0.545,0.555,0.590,0.700,0.760,0.900,0.990,0.990)
   qs      = c(0.069,0.081,0.223,0.221,0.264,0.353,0.439,0.703)
   q       = 1
-  delta_p = 0.10
+  delta_p = -0.10
   nr_gen  = 3
 
+  # set CM into SOCRATES format
+  mij <- t(mij)
+  
  # calculate relative incidence
  next_generation_matrix    = NGM_SIR(q=q,a=qs,M=t(mij),h=qi)
  relative_incidence        = standardize_RI(eigen(next_generation_matrix)$vectors[,1])
@@ -57,11 +60,11 @@ Plot relative incidence:
 barplot(relative_incidence,
                 xlab="Age group",
                 ylab="Relative incidence",
-                ylim=c(0,1),
+                ylim=c(0,0.3),
                 cex.names =  0.8) -> bplt
 text(x = bplt,
      y = relative_incidence,
-     labels = round(relative_incidence,digits=2),
+     labels = round(relative_incidence,digits=3),
      pos=3)
 
 ```
@@ -70,8 +73,8 @@ text(x = bplt,
 Run the full next generation analysis according to Ceatano et al (2024).
 ```{r, fig.height=4}
 
- # run full next-generation analysis
- NGA = run_NGA(M=mij,a=qs,h=qi,q=q,p=delta_p,nr_gen=nr_gen)
+# run full next-generation analysis
+NGA = run_NGA(M=mij,a=qs,h=qi,q=q,p=delta_p,nr_gen=nr_gen)
 
 # plot next-generation matrix
 plot_next_gen_matrix(next_gen_matrix = NGA$next_gen_matrix)
@@ -87,12 +90,14 @@ plot_NGA_elas(R_t = NGA$R_t,
 plot_NGA_RI(NGA = NGA,
             delta_p = delta_p, 
             rn_gen = nr_gen,
-            bool_susceptibility = TRUE)
+            bool_susceptibility = TRUE,
+            round_digits = 2)
 
 # plot relative incidence with regards to infectiousness
 plot_NGA_RI(NGA = NGA,
             delta_p = delta_p, 
             rn_gen = nr_gen,
-            bool_susceptibility = FALSE)
+            bool_susceptibility = FALSE,
+            round_digits = 2)
 ```
 

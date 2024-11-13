@@ -1,15 +1,15 @@
 ---
-title: "Next-Generation Analysis: case study for Portugal"
+title: "Next-Generation Analysis (NGA): case study for Portugal"
 author: "Caetano, Willem et al"
 date: "`r Sys.Date()`"
 output:
-  html_document: default
   pdf_document: default
 ---
 
-This report presents the results of the paper by Caetano et al. (2024), titled "Identifying the Main Drivers of Transmission in the Early Phase of the COVID-19 Pandemic in Portugal."
 
-```{r setup, include=TRUE, echo=TRUE}
+```{r setup, include=FALSE, echo=FALSE}
+
+# HIDDEN SETUP
 
 # load packages
 suppressPackageStartupMessages(
@@ -22,21 +22,71 @@ library(socialmixr) # to analyse and plot social contact data
 source('../R/next_gen_lib.R')
 source('../R/plot_next_gen.R')
 
+# load data
+mij <- readRDS(file = '../data/CM_Portugal_Prem2021.rds')
+
+# set contact matrix into SOCRATES format
+mij <- t(mij)
 ```
+
+<!--# Abstract-->
+This report presents the results of the paper by Caetano et al. (2024), titled "Identifying the Main Drivers of Transmission in the Early Phase of the COVID-19 Pandemic in Portugal" in which we analysed how age-specific contact patterns, susceptibility, and infectivity, affect the basic reproduction number \( R_0 \) while considering transmission heterogeneity. To understand each age group’s impact on overall transmission, we calculated sensitivity measures associated with \( R_0 \). Additionally, we introduced a novel indicator designed to estimate the expected change in new infections following public health interventions. This methodology offers valuable tools for strategizing the distribution of mitigation measures during infectious disease outbreaks. Its adaptability enables easy integration of population-specific data, supporting comparative evaluations of epidemic control strategies across various countries. All code is open-source, but please ensure you cite Caetano et al. (2024) when building upon this work.
+
+In this document, we demonstrated the methodology through an analysis of COVID-19 transmission dynamics in Portugal during March 2020, as published in Caetano et al. (2024). The results highlighted that individuals aged 30–59 played the most significant role in driving transmission. Furthermore, by evaluating the effects of changes in susceptibility and infectivity, we found that reducing susceptibility by 10% in the 30–39 age group led to a 17% decrease in incidence in this group after three generations, along with an indirect reduction of 4–6% in other age groups. 
+
+
+# Load code 
+
+If the `curl` package is not installed yet, you can do so by
+```{r results = "hide", eval=FALSE}
+install.packages(curl) # install the curl library (to easily download files from GitHub)
+```
+
+Please load the functions we prepared on the SOCRATES GitHub repository. 
+```{r eval= FALSE}
+# load package 'curl'
+library('curl')
+
+# download R files with NGA functions
+curl_download("https://github.com/lwillem/socrates_rshiny/blob/master/R/next_gen_lib.R", 
+              destfile = "next_gen_lib.R")
+curl_download("https://github.com/lwillem/socrates_rshiny/blob/master/R/plot_next_gen.R", 
+              destfile = "plot_next_gen.R")
+
+# load the functions
+source('next_gen_lib.R')
+source('plot_next_gen.R')
+```
+
+\newpage
+# Load data
 
 Load social contact data for Portugal based on Prem et al (2021, Plos Comput Biol).
-```{r}
+```{r eval=FALSE}
+
+# download rds file with social contact data
+curl_download("https://github.com/lwillem/socrates_rshiny/blob/master/data/CM_Portugal_Prem2021.rds", 
+              destfile = "CM_Portugal_Prem2021.rds")
 
 mij <- readRDS(file = '../data/CM_Portugal_Prem2021.rds')
+
+# set contact matrix into SOCRATES format
+mij <- t(mij)
 ```
+
+
+# Explore social contact data
 
 ```{r, fig.width=6, fig.height=4}
 # plot matrix
 matrix_plot(mij)
 
 ```
+
+
+
 \newpage
-Run next-generation analysis
+# Run next-generation analysis
 ```{r}
   # parameters
   qi      = c(0.545,0.555,0.590,0.700,0.760,0.900,0.990,0.990)
@@ -45,20 +95,21 @@ Run next-generation analysis
   delta_p = -0.10
   nr_gen  = 3
 
-  # set CM into SOCRATES format
-  mij <- t(mij)
-  
  # calculate relative incidence
  next_generation_matrix    = NGM_SIR(q=q,a=qs,M=t(mij),h=qi)
  relative_incidence        = standardize_RI(eigen(next_generation_matrix)$vectors[,1])
+ names(relative_incidence) = colnames(mij)
+ 
+ # run full next-generation analysis according to Ceatano et al (2024).
+ NGA = run_NGA(M=mij,a=qs,h=qi,q=q,p=delta_p,nr_gen=nr_gen)
 
 ```
 
-Plot relative incidence:
+# Plot relative incidence
 ```{r, fig.width=6, fig.height=4}
 # relative incidence
 barplot(relative_incidence,
-                xlab="Age group",
+                xlab="Age group (year)",
                 ylab="Relative incidence",
                 ylim=c(0,0.3),
                 cex.names =  0.8) -> bplt
@@ -70,34 +121,33 @@ text(x = bplt,
 ```
 
 \newpage
-Run the full next generation analysis according to Ceatano et al (2024).
 ```{r, fig.height=4}
-
-# run full next-generation analysis
-NGA = run_NGA(M=mij,a=qs,h=qi,q=q,p=delta_p,nr_gen=nr_gen)
 
 # plot next-generation matrix
 plot_next_gen_matrix(next_gen_matrix = NGA$next_gen_matrix)
 
+```
+
+\vspace{0.5cm}
+
+```{r , fig.height=3.5}
 # plot elasticity
-plot_NGA_elas(R_t = NGA$R_t,
-              elasticity_tbl = NGA$elasticity_tbl)
+plot_NGA_elas(R_t = NGA$R_t, elasticity_tbl = NGA$elasticity_tbl)
 
 ```
 \newpage
 ```{r , fig.height=3.5}
 # plot relative incidence with regards to susceptibility
-plot_NGA_RI(NGA = NGA,
-            delta_p = delta_p, 
-            rn_gen = nr_gen,
-            bool_susceptibility = TRUE,
-            round_digits = 2)
+plot_NGA_RI(NGA = NGA, delta_p = delta_p, rn_gen = nr_gen,
+            bool_susceptibility = TRUE, round_digits = 2)
+
+```
+
+\vspace{0.5cm}
+```{r , fig.height=3.5}
 
 # plot relative incidence with regards to infectiousness
-plot_NGA_RI(NGA = NGA,
-            delta_p = delta_p, 
-            rn_gen = nr_gen,
-            bool_susceptibility = FALSE,
-            round_digits = 2)
+plot_NGA_RI(NGA = NGA, delta_p = delta_p, rn_gen = nr_gen, 
+            bool_susceptibility = FALSE, round_digits = 2)
 ```
 

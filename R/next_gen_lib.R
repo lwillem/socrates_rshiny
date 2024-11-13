@@ -20,8 +20,8 @@ standardize_RI <- function(vec) {
 #   a   age-stratified q-susceptibility, 
 #   h   age-stratified q-infectivity  
 #   q   proportionality factor
-#   p
-#   nr_gen
+#   p        projected difference in terms of q-susceptibility and q-infectivity
+#   nr_gen   projected time horizon in terms of number of generations
 #
 # OUTPUT: next generation matrix (see Diekmann and Britton 2013 chapter 7)
 run_NGA <- function(M,a,h,q,p,nr_gen){

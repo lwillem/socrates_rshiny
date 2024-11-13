@@ -14,7 +14,7 @@ plot_next_gen_matrix = function(next_gen_matrix){
     geom_text(aes(label=round(value,2)))+
     scale_fill_gradient(low="grey90", high="red") +
     labs(title="",x="Age infector (year)",y="Age infectee  (year)",fill="Infections") +
-    theme_bw(base_size = 20) + theme(axis.text.x=element_text(angle=45, vjust=0.6),
+    theme_bw(base_size = 16) + theme(axis.text.x=element_text(angle=45, vjust=0.6),
                                      axis.text.y=element_text(),
                                      plot.title=element_text(),legend.position = "right")
   
@@ -40,7 +40,7 @@ plot_NGA_elas = function(R_t,elasticity_tbl){
     scale_y_continuous(name=paste0("k.j, ki. and R"),breaks=scales::pretty_breaks(n=8),expand=c(0,0),limits=c(0,aux),
                        sec.axis = sec_axis( trans=~./(aux), name="Elasticity"))+
     scale_fill_economist()+
-    theme_bw(base_size = 20) + theme(axis.text.x=element_text(angle=45, vjust=0.6),
+    theme_bw(base_size = 16) + theme(axis.text.x=element_text(angle=45, vjust=0.6),
                                      axis.text.y=element_text(),
                                      axis.title.x = element_text(margin = margin(t = 15)),  # Increase space between x-label and axis
                                      plot.title=element_text(),

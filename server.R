@@ -282,7 +282,7 @@ shinyServer(function(input, output, session) {
     output$plot_relative_incidence <- renderPlot({
       if("relative_incidence" %in% names(out)){
         bplt <- barplot(out$relative_incidence,
-                        xlab="Age group",
+                        xlab="Age group (year)",
                         ylab="Relative incidence",
                         ylim=c(0,1),
                         cex.names =  0.8)

@@ -36,16 +36,16 @@ plot_NGA_elas = function(R_t,elasticity_tbl){
   
   p=ggplot()+
     geom_bar(data=elasticity_tbl,aes(x=agegroup,y=value,fill=name),stat = "identity",position = "dodge")+
-    geom_hline(yintercept=R_t,linetype="dashed")+
-    annotate("text", x = 0.75, y = R_t+R_t*0.1, label = "R",size=7)+
-    labs(title="",x="Age group (year)",fill="",y="")+
-    scale_y_continuous(name=paste0("k\u2022j, ki\u2022 and R"),breaks=scales::pretty_breaks(n=8),expand=c(0,0),limits=c(0,aux),
+    # geom_hline(yintercept=R_t,linetype="dashed")+
+    # annotate("text", x = 0.75, y = R_t+R_t*0.1, label = "R",size=7)+
+    labs(title=paste("R = ", round(R_t,3)), x = "Age group (year)", fill = "", y= "")+
+    scale_y_continuous(name=paste0("k\u2022j and ki\u2022"),breaks=scales::pretty_breaks(n=8),expand=c(0,0),limits=c(0,aux),
                        sec.axis = sec_axis( trans=~./(aux), name="Elasticity"))+
     scale_fill_economist()+
     theme_bw(base_size = 16) + theme(axis.text.x=element_text(angle=45, vjust=0.6),
                                      axis.text.y=element_text(),
                                      axis.title.x = element_text(margin = margin(t = 15)),  # Increase space between x-label and axis
-                                     plot.title=element_text(),
+                                     plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
                                      legend.position = "right") 
 
   return(p)

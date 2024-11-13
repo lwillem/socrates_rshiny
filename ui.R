@@ -199,8 +199,8 @@ shinyUI(pageWithSidebar(
                            tags$h3("Sensitivity and elasticity"),
                            helpText(HTML("Matrix <em>K</em> can be used to relate the total number of infections between two consecutive generations. 
                                           Aggregating the columns or rows provides information on the average number of infections per generation either 
-                                          caused by age group <em>j</em> (denoted as <em>k<sub>j.</sub></em>) or acquired in age group <em>i</em> 
-                                          (denoted as <em>k<sub>.i</sub></em>). Additionally, the dominant eigenvalue of matrix <em>K</em> can be 
+                                          caused by age group <em>j</em> (denoted as <em>k<sub>&bull;j</sub></em>) or acquired in age group <em>i</em> 
+                                          (denoted as <em>k<sub>i&bull;</sub></em>). Additionally, the dominant eigenvalue of matrix <em>K</em> can be 
                                           interpreted as the reproduction number <em>R</em>, which is indicated by the dashed line. Elasticity 
                                          represents the relative contribution of each age group to the overall reproduction number (<em>R</em>)")
                            ),

@@ -30,14 +30,16 @@ plot_NGA_elas = function(R_t,elasticity_tbl){
   elasticity_tbl$elasticity=elasticity_tbl$elasticity*aux #rescale to fit the figure
   
   elasticity_tbl %>% pivot_longer(-agegroup)->elasticity_tbl
-  elasticity_tbl$name <- factor(elasticity_tbl$name, levels=c("k.j","ki.","elasticity"))
+  
+  elasticity_tbl$name <- gsub('\\.','\u2022j',elasticity_tbl$name) # to make the dot more visible
+  elasticity_tbl$name <- factor(elasticity_tbl$name, levels=c("k\u2022j","ki\u2022","elasticity"))
   
   p=ggplot()+
     geom_bar(data=elasticity_tbl,aes(x=agegroup,y=value,fill=name),stat = "identity",position = "dodge")+
     geom_hline(yintercept=R_t,linetype="dashed")+
     annotate("text", x = 0.75, y = R_t+R_t*0.1, label = "R",size=7)+
     labs(title="",x="Age group (year)",fill="",y="")+
-    scale_y_continuous(name=paste0("k.j, ki. and R"),breaks=scales::pretty_breaks(n=8),expand=c(0,0),limits=c(0,aux),
+    scale_y_continuous(name=paste0("k\u2022j, ki\u2022 and R"),breaks=scales::pretty_breaks(n=8),expand=c(0,0),limits=c(0,aux),
                        sec.axis = sec_axis( trans=~./(aux), name="Elasticity"))+
     scale_fill_economist()+
     theme_bw(base_size = 16) + theme(axis.text.x=element_text(angle=45, vjust=0.6),

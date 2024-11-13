@@ -369,8 +369,15 @@ shinyServer(function(input, output, session) {
         print_notes(notes_vector = out$notes, txt_width = 70)
       }
       
+      if("NGA" %in% names(out)){
+        for(i in 1:length(out$NGA)){
+          out[names(out$NGA)[i]] <- out$NGA[i]
+        }
+      }
+      
       # exclude results with separate tab
-      list_exclude <- c('weights','participants','participants.weights','meta_data','notes')
+      list_exclude <- c('weights','participants','participants.weights','meta_data','notes',
+                        'NGA','bool_complex','RI_a','RI_h')
       print(out[!names(out) %in% list_exclude])
       
     })

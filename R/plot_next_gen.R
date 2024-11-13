@@ -31,7 +31,7 @@ plot_NGA_elas = function(R_t,elasticity_tbl){
   
   elasticity_tbl %>% pivot_longer(-agegroup)->elasticity_tbl
   
-  elasticity_tbl$name <- gsub('\\.','\u2022j',elasticity_tbl$name) # to make the dot more visible
+  elasticity_tbl$name <- gsub('\\.','\u2022',elasticity_tbl$name) # to make the dot more visible
   elasticity_tbl$name <- factor(elasticity_tbl$name, levels=c("k\u2022j","ki\u2022","elasticity"))
   
   p=ggplot()+

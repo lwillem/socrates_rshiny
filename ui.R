@@ -180,7 +180,9 @@ shinyUI(pageWithSidebar(
                                     <li>The proportionality factor <em>q</em> accounts for the infectious period and other factors affecting transmission.</li>
                                     <li><em>A</em> and <em>H</em> are diagonal matrices containing entries related to the susceptibility and infectivity for each age group, respectively.</li>
                                     <li><em>M</em><sup>⊺</sup> represents the transposed contact matrix.</li>
-                                    </ul>")
+                                    </ul>
+                                         
+                                    The code to derive the results below <a href='https://github.com/lwillem/socrates_rshiny/blob/master/doc/doc_NGA_portugal.pdf'>is explained here</a>, but please ensure you cite Caetano et al. (2024) “Identifying the Main Drivers of Transmission in the Early Phase of the COVID-19 Pandemic in Portugal” when building upon this open-source work.")
                            ), 
                            hr(),
                            tags$h3("Relative incidence"),

@@ -9,6 +9,7 @@ SOCRATES is developed as part of a social contact data sharing initiative and as
 
 [Willem L, Van Hoang T, Funk S, Coletti P, Beutels P, Hens N. SOCRATES: an online tool leveraging a social contact data sharing initiative to assess mitigation strategies for COVID-19. BMC Res Notes 13, 293 (2020).](https://doi.org/10.1186/s13104-020-05136-9)
 
+Please contact either the first or last author of this publication with any comments, suggestions, or remarks regarding the SOCRATES tools or methods.
 
 ## Major platform updates
 

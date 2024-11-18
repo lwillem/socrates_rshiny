@@ -256,22 +256,53 @@ if('bool_is_comix_ui' %in% ls() &&
 ##  Survey database     ####
 #__________________________#
 
-# initiate survey database(s) ####
-db_survey_data <- list() 
+# survey_name <- sel_dataset$name;bool_has_waves <- sel_dataset$has_waves
+load_survey_data <- function(survey_name,bool_has_waves,bool_add_to_db = TRUE){
+  
+  # check if survey database exists, if not, create global variable
+  if(!exists("db_survey_data")){
+    db_survey_data <<- list() 
+  }
+  
+  # if in db_survey_data, return
+  if(survey_name %in% names(db_survey_data)){
+    
+    return(db_survey_data[[survey_name]])
+  
+  } else { # load from disk
+
+    # load data
+    sel_survey  <- opt_country_admin$dataset[opt_country_admin$name == survey_name]
+    data_survey <- readRDS(sel_survey)
+    
+    if(bool_has_waves){
+      # add wave_id
+      data_survey$participants <- add_wave_id(data_survey$participants)
+    }
+    
+    # option to store survey data in database
+    if(bool_add_to_db){
+      db_survey_data[[survey_name]] <<- data_survey      
+    }
+
+    # return data 
+    return(data_survey)
+  }
+}
+
+# initiate survey database ####
 
 # load data and store in list (with wave info) ####
 opt_waves <- 'All'
 opt_country_admin$opt_wave <- opt_waves
 for(i_country in 1:nrow(opt_country_admin)){
   
-  # load data
-  sel_survey <- opt_country_admin$dataset[i_country]
-  data_survey <- readRDS(sel_survey)
-  
+  # load data (and keep only the first one in the global database)
+  data_survey <- load_survey_data(survey_name    = opt_country_admin$name[i_country],
+                                  bool_has_waves = opt_country_admin$has_waves[i_country],
+                                  bool_add_to_db = (i_country == 1))
+
   if(opt_country_admin$has_waves[i_country]){
-    
-    # add wave_id
-    data_survey$participants <- add_wave_id(data_survey$participants)
     
     # sort wave id's (default sort does not work with 1, 10, 2, ...)
     country_waves    <- unique(data_survey$participants$wave)
@@ -280,9 +311,6 @@ for(i_country in 1:nrow(opt_country_admin)){
     # add sorted list to opt_country_admin
     opt_country_admin$opt_wave[i_country] <- list(c(opt_waves,country_waves[order(as.numeric(country_waves_id))]))  
   }
-  # store survey data in list
-  survey_name <- opt_country_admin$name[i_country]
-  db_survey_data[[survey_name]] <- data_survey
 }
 
 

@@ -355,7 +355,7 @@ get_survey_object <- function(country,
   sel_dataset <- opt_country_admin[opt_country_admin$name == country,]
   
   # get original data
-  survey_data <- db_survey_data[[country]]
+  survey_data <- load_survey_data(sel_dataset$name,sel_dataset$has_waves)
   data_part   <- survey_data$participants
   data_cnt    <- survey_data$contacts
   

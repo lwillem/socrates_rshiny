@@ -8,6 +8,7 @@
 
 # load packages and help functions
 source('R/download_matrices.R')
+source('R/load_country_admin.R')
 source('R/load_config_base.R')
 source('R/contact_matrix_fix.R')
 source('R/plot_mean_number_contacts.R')
@@ -337,6 +338,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   matrix_out
 }
 
+
 ## GET SURVEY DATA ####
 get_survey_object <- function(country,
                               daytype,
@@ -355,7 +357,7 @@ get_survey_object <- function(country,
   sel_dataset <- opt_country_admin[opt_country_admin$name == country,]
   
   # get original data
-  survey_data <- load_survey_data(sel_dataset$name,sel_dataset$has_waves)
+  survey_data <- load_survey_data(sel_dataset$dataset,sel_dataset$has_waves)
   data_part   <- survey_data$participants
   data_cnt    <- survey_data$contacts
   

@@ -39,7 +39,7 @@ shinyUI(pageWithSidebar(
                 selectize = ),
     
     # # waves (dynamic, only if wave info is present)
-    uiOutput(outputId = 'dynamicWaveInput'),
+    uiOutput(outputId = 'dynamicWaveInput')
     ), # end "inputPanel_survey" tag to disable/enable the user inputs when calculations are ongoing
     
     textInput(inputId="age_breaks_text",

@@ -60,8 +60,43 @@ load_survey_data <- function(survey_dataset,
     # load data
     data_survey <- readRDS(survey_dataset)
     
+    # adjust location data: account for missing and multiple locations 
+    if(nrow(data_survey$contacts)>0){
+      # set data.table to data.frame
+      data_cnt_tmp <- data.frame(data_survey$contacts)
+      
+      # select all location-specific columns
+      cnt_location_colnames <- c(paste0('cnt_',tolower(opt_location)))
+      data_cnt_tmp <- data_cnt_tmp[,cnt_location_colnames]
+      # dim(data_cnt_tmp)
+      
+      # replace value 'NA' for a location to 'false' (=not-present)
+      data_cnt_tmp[is.na(data_cnt_tmp)] <- 0
+      
+      # add missing location to "other"
+      # note: missing could also be "other locations than specified in opt_location"
+      cnt_loc_missing <- rowSums(data_cnt_tmp,na.rm=T) == 0
+      data_cnt_tmp$cnt_otherplace  <- as.numeric(data_cnt_tmp$cnt_otherplace | cnt_loc_missing)
+      
+      # 1. calculate cumulative sum (from left to right)
+      tmp_loc_cumsum <- t(apply(data_cnt_tmp,1,cumsum))
+      
+      # 2. set locations with cumulative sum >1 (== not unique and not the "main location") to 0
+      data_cnt_tmp[tmp_loc_cumsum>1] <- 0
+      
+      # 3. copy adjusted location data back
+      data_survey$contacts[,cnt_location_colnames] <- data_cnt_tmp
+    }
+    
+    # add date
+    data_survey$participants[, date_str := paste0(year, '-', month, '-', day)]
+    data_survey$participants[, date := as.Date(date_str, format = "%Y-%m-%d")]
+    
+    # make sure country is all lower case
+    data_survey$participants$country <- tolower(data_survey$participants$country)
+    
+    # optional: add wave_id
     if(bool_has_waves){
-      # add wave_id
       data_survey$participants <- add_wave_id(data_survey$participants)
     }
     

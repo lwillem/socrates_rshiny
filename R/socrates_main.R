@@ -321,17 +321,15 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   }
   
   # ## add date
-  dates_str <- paste0(survey_object$participants$year,'-',
-                      survey_object$participants$month,'-',
-                      survey_object$participants$day)
+  dates_str <- survey_object$participants$date_str
   dates_str <- dates_str[!grepl('NA',dates_str)]
   
   if(length(dates_str)==0){
     dates_all <- unique(survey_object$participants$year)
     matrix_out$survey_period <- paste(c('Survey period: ', paste(dates_all, collapse=', ')),collapse=' ')
   } else{
-    dates_all <- as.Date(dates_str)
-    matrix_out$survey_period <- paste(c('From', paste(range(dates_all), collapse=' to ')),collapse=' ')
+    dates_all <- range(survey_object$participants$date,na.rm = TRUE)
+    matrix_out$survey_period <- paste(c('From', paste(dates_all, collapse=' to ')),collapse=' ')
   }
   
   # return
@@ -363,8 +361,7 @@ get_survey_object <- function(country,
   
   # option to select country-specific participant and contact data
   if(nchar(sel_dataset$country)>0){
-    bool_country <- (tolower(data_part$country) == tolower(sel_dataset$country))
-    data_part    <- data_part[bool_country,]
+    data_part    <- data_part[country == tolower(sel_dataset$country),]
     data_cnt     <- data_cnt[data_cnt$part_id %in% data_part$part_id,]
   }
   
@@ -484,34 +481,6 @@ get_survey_object <- function(country,
     }
   }
   
-  #__________________________________________________________________________
-  # adjust location data: missing and multiple locations ####
-  if(nrow(data_cnt)>0){
-    # set data.table to data.frame
-    data_cnt_tmp <- data.frame(data_cnt)
-    
-    # select all location-specific columns
-    cnt_location_colnames <- c(paste0('cnt_',tolower(opt_location)))
-    data_cnt_tmp <- data_cnt_tmp[,cnt_location_colnames]
-    dim(data_cnt_tmp)
-    
-    # replace value 'NA' for a location to 'false' (=not-present)
-    data_cnt_tmp[is.na(data_cnt_tmp)] <- 0
-    
-    # add missing location to "other"
-    # note: missing could also be "other locations than specified in opt_location"
-    cnt_loc_missing <- rowSums(data_cnt_tmp,na.rm=T) == 0
-    data_cnt_tmp$cnt_otherplace  <- as.numeric(data_cnt_tmp$cnt_otherplace | cnt_loc_missing)
-
-    # 1. calculate cumulative sum (from left to right)
-    tmp_loc_cumsum <- t(apply(data_cnt_tmp,1,cumsum))
-    
-    # 2. set locations with cummulative sum >1 (== not unique and not the "main location") to 0
-    data_cnt_tmp[tmp_loc_cumsum>1] <- 0
-    
-    # 3. copy adjusted location data back
-    data_cnt[,cnt_location_colnames] <- data_cnt_tmp
-  }
 
   #__________________________________________________________________________
   

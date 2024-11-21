@@ -23,10 +23,13 @@ add_wave_id <- function(data_part){
     data_part[,panel := NA]
   }
   
+  #if(!'date' %in% names(data_part)){ # uncomment to optimize (current issue for BE COMIX) #TODO
+    data_part[,sday_id := gsub('\\.','',as.character(sday_id))]
+    data_part[,date := as.Date(sday_id,format="%Y%m%d")]
+  #}
+    
   # get wave data
-  db_wave <- data_part[,c('part_id','wave_wrt_panel','panel','sday_id')]
-  db_wave[,sday_id := gsub('\\.','',as.character(sday_id))] 
-  db_wave[,date := as.Date(sday_id,format="%Y%m%d")]  
+  db_wave <- data_part[,c('part_id','wave_wrt_panel','panel','date')]
   db_wave[,panel_wave := paste0(panel,wave_wrt_panel)]
   db_wave[,date_start := min(date),by=panel_wave]
   if(all(is.na(data_part$panel))){

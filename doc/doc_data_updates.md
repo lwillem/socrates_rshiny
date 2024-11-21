@@ -24,7 +24,7 @@
 
 - **Belgian CoMix Data**: Merged data from `belgium2020_comix`, `comix_multi`, and `comix_update` to compile all 48 survey waves. Resolved age-range inconsistencies (see commit on the check function). Standardized panel notation: instances of "Panel B" and "Panel BC" on the same dates were merged to "Panel BC" for consistency across waves. Renamed `part_age_min` and `part_age_max` to `part_age_est_min` and `part_age_est_max`, respectively.
 
-- **UK CoMix Data**: Included UK CoMix data after updating the `load_survey` function to address `row.names` in column `X`. Added the `country` variable to the UK CoMix survey.
+- **UK CoMix Data**: Included UK CoMix data after updating the `load_survey` function to address `row.names` in column `X`. Added the `country` variable to the UK CoMix survey and updated the year notation to use the full year format, changing 20, 21 and 22 to 2020, 2021 and 2022 respectively.
 
 ### Automated Data Selection/Standardization
 - If `location` is not a standard category (i.e., "home", "work", "school", "transport", "leisure", "otherplace"), it is set to "otherplace".

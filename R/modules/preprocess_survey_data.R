@@ -227,6 +227,7 @@ i_file <- 8
   
   if(grepl('uk2020_comix',files_survey[i_file])){
     survey_clean$participants$country <- 'United Kingdom'
+    survey_clean$participants$year <- survey_clean$participants$year + 2000 # notation: 20, 21, 22
   }
   
   if(grepl('uk2018',files_survey[i_file])){

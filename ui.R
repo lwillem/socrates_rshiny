@@ -23,8 +23,6 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
     useShinyjs(),  # Initialize shinyjs
     
-    tags$div(id = "inputPanel_survey",  # Wrap inputs in a div for easy targeting
-
     if(bool_is_comix_ui){
       uiOutput("socrates_website_data")
     },
@@ -33,13 +31,17 @@ shinyUI(pageWithSidebar(
       hr()
     },
     
+    tags$div(id = "inputPanel_survey",  # Wrap inputs in a div for easy targeting
+             
     selectInput(inputId = "country", 
                 label = "Country",
-                choices = opt_country,
-                selectize = ),
+                choices = opt_country),
     
-    # # waves (dynamic, only if wave info is present)
-    uiOutput(outputId = 'dynamicWaveInput')
+    # by default 'all' to prevent warnings/errors, can be extended in "server" script. 
+    selectInput(inputId = "wave_panel", 
+                label = "Survey panel/wave (optional)",
+                choices = opt_waves[1])
+    
     ), # end "inputPanel_survey" tag to disable/enable the user inputs when calculations are ongoing
     
     textInput(inputId="age_breaks_text",

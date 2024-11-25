@@ -21,28 +21,7 @@ shinyServer(function(input, output, session) {
   ## list to store reactive values
   values <- reactiveValues()
 
-  # The dynamic input definition
-  output$dynamicWaveInput <- renderUI({
-    
-    # This input exists if the `country` survey contains wave info
-    if (opt_country_admin$has_waves[opt_country_admin$name == input$country]) {
-      selectInput(inputId = 'wave_dynamic',
-                  label   = 'Wave: start [panel]',
-                  choices = opt_waves)
-    } else {
-      return(NULL)
-    }
-  })
   
-  ## this bit fixes the issue
-  ## force the dynamic dynamicWaveInput to reset if the country survey has no waves
-  observe({
-    if(opt_country_admin$has_waves[opt_country_admin$name == input$country]) {
-      values$w_dynamic <- input$wave_dynamic
-    } else {
-      values$w_dynamic <- opt_waves[[1]]
-    }
-  })
   
   
   # Setup ####
@@ -92,10 +71,17 @@ shinyServer(function(input, output, session) {
       updateSliderInput(session, "cnt_reduction_leisure", value = 0)
       updateSliderInput(session, "cnt_reduction_otherplace", value = 0)
     }
-      
+    
+    # select country admin row
+    flag_country <- input$country == opt_country_admin$name
+    
+    # Update 'opt_waves' list, by default 'all' to prevent warnings/errors
+    # Options can be extended based on data availability
+    opt_waves <<- unlist(opt_country_admin$opt_wave[flag_country])
+    updateSelectInput(session,"wave_panel", choices = opt_waves, selected = input$wavetype)
+
     # Update 'daytype' input, by default 'all contacts' to prevent warnings/errors  
     # Options can be extended based on data availability
-    flag_country <- input$country == opt_country_admin$name
     if(opt_country_admin$has_holiday_data[flag_country]){
       updateSelectInput(session,"daytype", choices = opt_day_type, selected = input$daytype)
     } else if(opt_country_admin$has_dayofweek_data[flag_country]) {
@@ -122,13 +108,6 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session,"touch", choices = opt_touch[1], selected = opt_touch[1])
     }
     
-    # update wave  options
-    opt_waves <- unlist(opt_country_admin$opt_wave[flag_country])
-    if(opt_country_admin$has_waves[flag_country]){
-      updateSelectInput(session,"wave_dynamic", choices = opt_waves, selected = input$wave_dynamic)
-    } else {
-      updateSelectInput(session,"wave_dynamic", choices = opt_waves[1], selected = opt_waves[1])
-    }
     
     #update transmission sliders, if the age groups have changed
     if(bool_update$age_breaks_text  != input$age_breaks_text ||
@@ -224,9 +203,9 @@ shinyServer(function(input, output, session) {
     age_susceptibility_text    <- parse_input_list(input,'s_susceptibility',max_dept=num_age_groups)
     age_infectiousness_text    <- parse_input_list(input,'s_infectiousness',max_dept=num_age_groups)
 
-    q_text <- parse_input_list(input,'s_q')
+    q_text       <- parse_input_list(input,'s_q')
     delta_p_text <- parse_input_list(input,'s_p')
-    nrgen_text <- parse_input_list(input,'s_nrgen')
+    nrgen_text   <- parse_input_list(input,'s_nrgen')
     
     # combine contact reductions
     cnt_reduction <- data.frame(Home       = input$cnt_reduction_home/100,
@@ -236,8 +215,9 @@ shinyServer(function(input, output, session) {
                                 Leisure    = input$cnt_reduction_leisure/100,
                                 Otherplace = input$cnt_reduction_otherplace/100)
 
-    # fix for wave
-    if(is.null(values$w_dynamic)) values$w_dynamic <- opt_waves[[1]]
+    # Note on wave_panel: If input$wave_panel is not aligned, no selection is made. This approach is 
+    # preferred over dynamically resetting the input value, as the latter would require multiple identical 
+    # calculations. TODO: Explore a more defensive programming approach to prevent redundant calculations.
     
     # run social contact analysis
     out <- run_social_contact_analysis(country      = input$country,
@@ -250,7 +230,7 @@ shinyServer(function(input, output, session) {
                                        age_breaks_text      = input$age_breaks_text,
                                        weight_threshold     = weight_threshold,
                                        cnt_reduction           = cnt_reduction,
-                                       wave                    = values$w_dynamic,
+                                       wave                    = input$wave_panel,
                                        age_susceptibility_text = age_susceptibility_text,
                                        age_infectiousness_text = age_infectiousness_text,
                                        bool_NGA_analysis       = bool_NGA_analysis,
@@ -435,7 +415,7 @@ shinyServer(function(input, output, session) {
                                     age_breaks_text     = input$age_breaks_text,
                                     weight_threshold     = weight_threshold,
                                     cnt_reduction           = cnt_reduction,
-                                    wave                    = values$w_dynamic,
+                                    wave                    = input$wave_panel, 
                                     age_susceptibility_text = age_susceptibility_text,
                                     age_infectiousness_text = age_infectiousness_text,
                                     bool_NGA_analysis       = bool_NGA_analysis,

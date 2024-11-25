@@ -98,7 +98,7 @@ opt_country_admin <- get_country_admin()
 opt_country <- opt_country_admin$name
 
 # waves (survey specific options)
-opt_waves <- 'All'
+opt_waves <<- 'All'
 
 #__________________________#
 ##  CoMiX    OPTIONS    ####

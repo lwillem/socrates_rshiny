@@ -21,9 +21,6 @@ shinyServer(function(input, output, session) {
   ## list to store reactive values
   values <- reactiveValues()
 
-  
-  
-  
   # Setup ####
   # create memory variable for the transmission param sliders
   bool_update <- reactiveValues(age_breaks_text = '',
@@ -173,7 +170,8 @@ shinyServer(function(input, output, session) {
  
   ## Update results ####
   observe({
-    disable("inputPanel_country")  # Disable survey input
+    
+    disable("inputPanel_survey")   # Disable survey selection input
     disable("inputPanel_general")  # Disable general input
     # note: excluded the age breaks to improve user experience
     
@@ -381,7 +379,8 @@ shinyServer(function(input, output, session) {
       content = function(file) {
         
         # Disable inputs while the matrix is being generated for download
-        disable("inputPanel")
+        disable("inputPanel_survey")
+        disable("inputPanel_general")
 
         # Assuming `out$matrix` is available in your server logic
         cnt_matrix           <- unlist(out$matrix)
@@ -392,7 +391,8 @@ shinyServer(function(input, output, session) {
         write.table(cnt_matrix, file,sep=',',row.names=F)
         
         # Re-enable inputs after the download is ready
-        enable("inputPanel")
+        enable("inputPanel_survey")
+        enable("inputPanel_general")
       }
     )
     
@@ -403,7 +403,8 @@ shinyServer(function(input, output, session) {
       },
       content = function(file) {
         # Disable inputs while the matrix is being generated for download
-        disable("inputPanel")
+        disable("inputPanel_survey")
+        disable("inputPanel_general")
         
           download_contact_matrices(country      = input$country,
                                     daytype      = input$daytype,
@@ -425,8 +426,8 @@ shinyServer(function(input, output, session) {
                                     filename                = file)
           
           # Re-enable inputs after the download is ready
-          enable("inputPanel")
-          
+          enable("inputPanel_survey")
+          enable("inputPanel_general")
       }
     )
     

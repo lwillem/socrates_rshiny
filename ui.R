@@ -130,6 +130,9 @@ shinyUI(pageWithSidebar(
     helpText('DOWNLOAD'),
     downloadButton('download_matrix',"Download matrix (.csv)", style = "width:99%;"),
     downloadButton('download_all',"Download results (.RData)",style = "width:99%;"),
+
+    
+    ), # end "inputPanel_general" tag to disable/enable the user inputs when calculations are ongoing
     
     # add version and link to project website
     headerPanel(""),
@@ -138,8 +141,7 @@ shinyUI(pageWithSidebar(
       uiOutput("socrates_website_comix")
     },
     helpText('SOCRATES',version_id)
-    
-    ), # end "inputPanel_general" tag to disable/enable the user inputs when calculations are ongoing
+
   ),
   
   mainPanel(

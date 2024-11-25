@@ -31,6 +31,7 @@ opt_day_type
 opt_touch
 opt_duration
 opt_gender
+opt_waves
 
 # aggregate the input parameters in a list
 input <- list(age_breaks_num = c(0,18,60),
@@ -47,7 +48,7 @@ input <- list(age_breaks_num = c(0,18,60),
                 q_text            = 1,
                 delta_p_text      = 0.1,
                 nrgen_text        = 3,
-                wave = 3,
+                wave = opt_waves[1],
                 cnt_reduction = data.frame(Transport=0,Leisure=0,Otherplace=0) # no reductions for this example
   )
   

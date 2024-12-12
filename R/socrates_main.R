@@ -470,16 +470,19 @@ get_survey_object <- function(country,
     }
   }
   
-  ## select wave (optional) ----
-  if(wave != opt_waves[[1]]){
-    if(!is.null(data_part$wave) & wave %in% data_part$wave){
+  # select wave (optional) ----
+  if(!wave %in% opt_waves){
+    wave <- opt_waves[[1]]
+    print(paste('set wave:',wave))
+  }
+  if(!is.null(data_part$wave) & wave %in% data_part$wave){
       bool_part_wave <- data_part$wave == wave
       data_part <- data_part[bool_part_wave,]
       
       bool_cnt_wave <- data_cnt$part_id %in%  data_part$part_id
       data_cnt      <- data_cnt[bool_cnt_wave,]
-    }
   }
+
   
 
   #__________________________________________________________________________

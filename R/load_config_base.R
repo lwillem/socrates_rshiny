@@ -93,12 +93,15 @@ opt_matrix_features   <- c("Reciprocal","Weigh by age","Weigh by week/weekend",
 
 # get country details 
 opt_country_admin <- get_country_admin()
- 
+
+# remove 'all' for Comix
+# for(i in 1:length(opt_country_admin$opt_wave)){
+for(i in which(opt_country_admin$bool_comix)){
+  opt_country_admin$opt_wave[[i]] <- opt_country_admin$opt_wave[[i]][!opt_country_admin$opt_wave[[i]] %in% 'All']
+}
+
 # # get country names
 opt_country <- opt_country_admin$name
-
-# waves (survey specific options)
-opt_waves <<- 'All'
 
 #__________________________#
 ##  CoMiX    OPTIONS    ####
@@ -118,6 +121,9 @@ if('bool_is_comix_ui' %in% ls() &&
     bool_selectInput_duration <- "false"
   }
 }
+
+# waves (survey specific options)
+opt_waves <<- opt_country_admin$opt_wave[[1]]
 
 # make named lists
 names(opt_gender)   <- unlist(opt_gender)

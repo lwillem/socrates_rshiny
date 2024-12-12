@@ -75,7 +75,15 @@ shinyServer(function(input, output, session) {
     # Update 'opt_waves' list, by default 'all' to prevent warnings/errors
     # Options can be extended based on data availability
     opt_waves <<- unlist(opt_country_admin$opt_wave[flag_country])
-    updateSelectInput(session,"wave_panel", choices = opt_waves, selected = input$wavetype)
+
+    # check if the selected wave_panel is part of opt_waves
+    if(input$wave_panel %in% opt_waves){
+      wave_selected <- input$wave_panel      
+    } else{ # if not, use dummy
+       wave_selected <- opt_waves[1]
+    }
+
+    updateSelectInput(session,"wave_panel", choices = opt_waves, selected = wave_selected)
 
     # Update 'daytype' input, by default 'all contacts' to prevent warnings/errors  
     # Options can be extended based on data availability

@@ -49,6 +49,7 @@ input <- list(age_breaks_num = c(0,18,60),
                 delta_p_text      = 0.1,
                 nrgen_text        = 3,
                 wave = opt_waves[1],
+                missing.contact.age = "remove",
                 cnt_reduction = data.frame(Transport=0,Leisure=0,Otherplace=0) # no reductions for this example
   )
   
@@ -61,6 +62,7 @@ input$age_infectiousness_text = input$age_susceptibility_text
 
 # attach all attributes from the input list, so you can use their names directly
 attach(input,warn.conflicts = F)
+
 
 ## 1. GET SURVEY OBJECT AND CREATE CONTACT MATRICES (manually) ----
 ################################################################### #
@@ -165,7 +167,7 @@ plot_cnt_matrix(matrix_out$matrix)
 ################################################################### #
 
 # run the principal function 
-for(i in 1:20)
+#for(i in 1:20) # for profiling
 socrates_out <- run_social_contact_analysis(country,
                                             daytype,
                                             touch,
@@ -193,7 +195,6 @@ socrates_out$relative_incidence
 
 socrates_out$NGA$NGM
 socrates_out$NGA$eigen$eigens$w[,"dominant"]
-#plot_stable_distribution(list=socrates_out)
 
 ################################################################### #
 # B. Run a remote SOCRATES UI  ----

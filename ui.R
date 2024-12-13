@@ -213,15 +213,20 @@ shinyUI(pageWithSidebar(
                            plotOutput('plot_ELAS',width = "100%", height = "300px"),
                            hr(),
                            tags$h3("Relative impact"),
-                           helpText(HTML("Changes in susceptibility or infectivity due to factors such as vaccination programs, non-pharmaceutical interventions, or the depletion of susceptibles will lead to 
-                                         perturbations in the elements of matrix <em>K</em>, and consequently, in the basic reproduction number (<em>R<sub>0</sub></em>) and relative incidence. The ratio of 
-                                         <em>K<sup>update</sup></em> to <em>K<sup>baseline</sup></em> can be interpreted as an approximation of the relative change in the number of infections in the 
-                                         <em>m</em><sup>th</sup> generation, given a proportional perturbation (<em>p</em>) in susceptibility or infectivity, assuming no other perturbations to <em>K</em> occurred up to the 
-                                         <em>m</em><sup>th</sup> generation.")
+                           helpText(HTML("Changes in susceptibility or infectivity due to factors such as vaccination programs, non-pharmaceutical 
+                                         interventions, or the depletion of susceptibles will result in perturbations in the elements of the matrix 
+                                         <em>K</em>. This, in turn, affects the basic reproduction number (<em>R<sub>0</sub></em>) and relative incidence. 
+                                         The relative impact, denoted as <em>RI<sub>j</sub></em>, can be understood as an approximation of the relative 
+                                         number of infections in age group <em>j</em> during the <em>m</em><sup>th</sup> generation following the 
+                                         implementation of an intervention that proportionally perturbs susceptibility or infectivity by a factor <em>p</em>, 
+                                         as compared to no intervention. This assumes that no additional perturbations to <em>K</em> occur up to the 
+                                         <em>m</em><sup>th</sup> generation. It is important to note that the relative impact serves as a projection of the 
+                                         relative effect of the assumed intervention, with the unaltered <em>K</em> used as the counterfactual reference.")
                            ),
                            plotOutput('plot_RI_a',width = "80%", height = "300px"),
                            #helpText('The relative number of cases in each age group after the projection time (m) considered, given a proportional perturbation (p) to the susceptibility of the infectee. The comparator is the scenario without any change in susceptibility.'),
                            #hr(),
+                           div(style = "margin-bottom: 50px;"),  # Add space (20px) between elements
                            plotOutput('plot_RI_h',width = "80%", height = "300px")#,
                            #helpText('The relative number of cases in each age group after the projection time (m) considered, given a proportional perturbation (p) to the infectivity of the infector. The comparator is the scenario without any change in infectivity.')
                            # tags$h3("Parameter summary 2:"),

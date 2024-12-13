@@ -4,10 +4,15 @@ author: "Caetano, Willem et al"
 date: "`r Sys.Date()`"
 output:
   pdf_document: default
+encoding: UTF-8
 ---
 
 
 ```{r setup, include=FALSE, echo=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, dev = 'CairoPNG')
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+knitr::opts_chunk$set(warning = FALSE)
 
 # HIDDEN SETUP
 
@@ -17,6 +22,8 @@ library(tidyverse)) # collection of R packages designed for data science
 library(ggthemes)   # Some extra themes, geoms, and scales for 'ggplot2'
 library(ggpubr)     # 'ggplot2' Based Publication Ready Plots
 library(socialmixr) # to analyse and plot social contact data
+library(Cairo)      # for the k.j and ki.j notation in pdf
+library(magick)
 
 # load use-defined functions
 source('../R/next_gen_lib.R')

@@ -20,7 +20,7 @@
 
 - **Major Update of CoMix Datasets**: The latest ZENODO version resolved an issue with `part_id` in the contact data, which previously listed only the `part_id` of the last wave a participant joined. While average rates may not change significantly, wave-specific values show considerable variation.
 
-- **Correction of Poland and Portugal CoMix Data**: Fixed a previous issue in SOCRATES where data for Poland and Portugal was switched, referencing descriptions from Verelst et al. (2021) for validation. The current labels in the ZENODO data is correct.
+- **Correction of Poland and Portugal CoMix Data**: Fixed a previous issue in SOCRATES where data for Poland and Portugal was switched, referencing descriptions from Verelst et al. (2021) for validation. The current labels in the ZENODO data are correct.
 
 - **Belgian CoMix Data**: Merged data from `belgium2020_comix`, `comix_multi`, and `comix_update` to compile all 48 survey waves. Resolved age-range inconsistencies (see commit on the check function). Standardized panel notation: instances of "Panel B" and "Panel BC" on the same dates were merged to "Panel BC" for consistency across waves. Renamed `part_age_min` and `part_age_max` to `part_age_est_min` and `part_age_est_max`, respectively.
 

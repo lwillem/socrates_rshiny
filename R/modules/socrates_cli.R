@@ -35,7 +35,7 @@ opt_waves
 
 # aggregate the input parameters in a list
 input <- list(age_breaks_num = c(0,18,60),
-                country     = opt_country[1],
+                country     = opt_country[2],
                 daytype     = opt_day_type[1],
                 touch       = opt_touch[[1]],
                 duration    = opt_duration[[1]],
@@ -178,7 +178,7 @@ socrates_out <- run_social_contact_analysis(country,
                                             age_breaks_text = age_breaks_text,
                                             weight_threshold = weight_threshold,
                                             cnt_reduction = cnt_reduction,
-                                            wave = wave,
+                                            wave = 10,
                                             age_susceptibility_text = NA,
                                             age_infectiousness_text = NA,
                                             bool_NGA_analysis=TRUE,
@@ -193,8 +193,11 @@ plot_cnt_matrix(socrates_out$matrix)
 
 socrates_out$relative_incidence
 
-socrates_out$NGA$NGM
-socrates_out$NGA$eigen$eigens$w[,"dominant"]
+socrates_out$NGA
+plot_next_gen_matrix(socrates_out$NGA$next_gen_matrix)
+plot_NGA_elas(socrates_out$NGA$R_t,socrates_out$NGA$elasticity_tbl)
+plot_NGA_RI(socrates_out$NGA,delta_p_text,rn_gen = nrgen_text,bool_susceptibility = TRUE,round_digits = 3)
+
 
 ################################################################### #
 # B. Run a remote SOCRATES UI  ----

@@ -66,11 +66,15 @@ plot_NGA_RI = function(NGA, delta_p, rn_gen, bool_susceptibility=TRUE, round_dig
     # make sure delta_p is numeric
     delta_p <- as.numeric(delta_p)
     
+    # adjust y labels
+    G.ratio.da$age.infectee <- paste('RI on',G.ratio.da$age.infectee)
+    
     # plot title
     #plot_title <- paste0('Given a ',abs(round(delta_p*100)),'% ',ifelse(delta_p<0,'reduction','increase'), ' to q-',tolower(output_tag),' (m=',rn_gen,')')
-    plot_title <- ''
-    x_title   <- paste0('Age group with ',abs(round(delta_p*100)),'% ',ifelse(delta_p<0,'reduced','increased'), ' q-',tolower(output_tag), ' (year)')
-    y_title   <- paste0('Age group infectee (year)')
+    plot_title <- paste0('m = ',rn_gen)
+    x_title   <- paste0('Age group (year) with ',abs(round(delta_p*100)),'% ',ifelse(delta_p<0,'reduction','increase'), ' in q-',tolower(output_tag))
+    y_title   <- ''#paste0('Age group infectee (year)')
+    
     
     # plot
     p=ggplot(G.ratio.da, aes(x = age.infector, y = age.infectee)) +
@@ -78,10 +82,10 @@ plot_NGA_RI = function(NGA, delta_p, rn_gen, bool_susceptibility=TRUE, round_dig
       geom_text(aes(label=round(value,round_digits))) +
       scale_fill_gradient2(limits=c(min(G.ratio.da$value),max(G.ratio.da$value)),midpoint = 1, low = "blue", mid = "white",
                            high = "red", space = "Lab") +
-      labs(title=plot_title,x=x_title, y=y_title, fill=paste0("Relative\nImpact (m=",rn_gen,")")) +
+      labs(title=plot_title,x=x_title, y=y_title, fill=paste0("Relative\nImpact (RI)")) +
       theme_bw(base_size=16) + theme(axis.text.x=element_text(size=16, angle=45, vjust=0.6),
                                      axis.text.y=element_text(size=16),
-                                     plot.title=element_text(size=16))
+                                     plot.title=element_text(size=16,hjust=1))
   } else {
     p = "Error: complex eigenvalues found. The calculation of the RI does not yet account for complex eigenvalues."
   }

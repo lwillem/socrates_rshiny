@@ -196,7 +196,7 @@ socrates_out$relative_incidence
 socrates_out$NGA
 plot_next_gen_matrix(socrates_out$NGA$next_gen_matrix)
 plot_NGA_elas(socrates_out$NGA$R_t,socrates_out$NGA$elasticity_tbl)
-plot_NGA_RI(socrates_out$NGA,delta_p_text,rn_gen = nrgen_text,bool_susceptibility = TRUE,round_digits = 3)
+plot_NGA_RI(NGA = socrates_out$NGA,delta_p = delta_p_text,rn_gen = nrgen_text,bool_susceptibility = TRUE,round_digits = 3)
 
 
 ################################################################### #

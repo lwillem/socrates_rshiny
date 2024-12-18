@@ -227,7 +227,8 @@ shinyUI(pageWithSidebar(
                            #helpText('The relative number of cases in each age group after the projection time (m) considered, given a proportional perturbation (p) to the susceptibility of the infectee. The comparator is the scenario without any change in susceptibility.'),
                            #hr(),
                            div(style = "margin-bottom: 50px;"),  # Add space (20px) between elements
-                           plotOutput('plot_RI_h',width = "80%", height = "300px")#,
+                           plotOutput('plot_RI_h',width = "80%", height = "300px"),#,
+                           div(style = "margin-bottom: 20px;")  # Add space (20px) between elements
                            #helpText('The relative number of cases in each age group after the projection time (m) considered, given a proportional perturbation (p) to the infectivity of the infector. The comparator is the scenario without any change in infectivity.')
                            # tags$h3("Parameter summary 2:"),
                            # dataTableOutput('table_NGA_sens_parameters'),

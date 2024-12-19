@@ -298,7 +298,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
                                weigh.dayofweek = bool_weigh_dayofweek,
                                weight.threshold      = weight_threshold,
                                estimated.contact.age = ifelse(bool_age_range,'sample','mean'),
-                               missing.contact.age   = ifelse(bool_age_missing,'remove','ignore'),
+                               missing.contact.age   = ifelse(bool_age_missing,'remove','sample'),
                                return.part.weights   = TRUE)
   
   # make sure the row names are included

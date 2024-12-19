@@ -557,7 +557,10 @@ compare_contact_matrices <- function(mija,mijb,
   if(any(is.na(mija))|any(is.na(mijb))){
     warning('Social contact matrix contains NA... no comparison possible!')
     out <- list(notes='Social contact matrix contains NA... no comparison possible!')
-  } else{
+  } else if (is.complex(eigen(mija)$values) | is.complex(eigen(mijb)$values)){
+    warning('Social contact matrix has a complex eigenvalue, making it impossible to estimate the R0 ratio, relative incidence, or conduct the NGA')
+    out <- list(notes='Social contact matrix has a complex eigenvalue, making it impossible to estimate the R0 ratio, relative incidence, or conduct the NGA')
+  } else {
     R0_ratio      <- max(eigen(mija)$values)/max(eigen(mijb)$values)
     
     # relative incidence 

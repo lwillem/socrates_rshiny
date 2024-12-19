@@ -42,6 +42,10 @@ run_NGA <- function(M,a,h,q,p,nr_gen){
   eigens=eigen_(NGM)                                  # compute its eigenvalues
   bool_complex=is.complex(eigens$eigens$values)
   
+  if(bool_complex){
+    return(NA)
+  }
+  
   sensi=sens(eigens)                            # compute R sensitivities towards Kij
   elas=elasti(sensi)                            # compute R elasticities towards Kij
   

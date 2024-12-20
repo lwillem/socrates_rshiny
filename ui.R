@@ -90,8 +90,8 @@ shinyUI(pageWithSidebar(
                                               selected = opt_location))
                         ),
                 tabPanel("Options", 
-                         checkboxInput("bool_age_range", "Age range: sample at random",value = TRUE),
-                         checkboxInput("bool_age_missing", "Missing contact age: remove participant",value = FALSE),
+                         checkboxInput("bool_age_range", "Contact age range: sample at random from the given range (else: mean)",value = TRUE),
+                         checkboxInput("bool_age_missing", "Missing contact age: sample from the contacts of participants of the same age group (else: remove participant)",value = TRUE),
                          checkboxInput("bool_matrix_limit", "Specify the max for the contact matrix color scale?",value = FALSE),
                          conditionalPanel(condition = "input.bool_matrix_limit == true",
                                           numericInput(inputId="ui_scale_max",

@@ -257,7 +257,7 @@ get_contact_matrix <- function(country,daytype,touch,duration,gender,
   bool_weigh_age       <- opt_matrix_features[[2]]  %in% cnt_matrix_features
   bool_weigh_dayofweek <- opt_matrix_features[[3]]  %in% cnt_matrix_features
   bool_age_range       <- opt_matrix_features[[4]]  %in% cnt_matrix_features
-  bool_age_missing     <- !opt_matrix_features[[5]]  %in% cnt_matrix_features
+  bool_age_missing     <- opt_matrix_features[[5]]  %in% cnt_matrix_features
   bool_suppl_professional_cnt <- opt_matrix_features[[6]]  %in% cnt_matrix_features
   bool_hhmatrix_selection    <- opt_matrix_features[[7]]  %in% cnt_matrix_features
   
@@ -347,7 +347,6 @@ get_survey_object <- function(country,
                               bool_reciprocal,
                               bool_suppl_professional_cnt,
                               bool_hhmatrix_selection,
-                              missing.contact.age = "remove",  # adopted from socialmixr package
                               wave,
                               quiet = FALSE){
   

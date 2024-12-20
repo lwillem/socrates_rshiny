@@ -195,7 +195,7 @@ shinyServer(function(input, output, session) {
                         input$bool_weigh_age,
                         input$bool_weigh_week,
                         input$bool_age_range,
-                        !input$bool_age_missing,
+                        input$bool_age_missing,
                         input$bool_spc,
                         input$bool_hhmember_selection)
 

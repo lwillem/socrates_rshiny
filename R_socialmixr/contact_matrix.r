@@ -281,9 +281,12 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
         }
     } # end sample age
 
+    # remove contact ages below the age.limits (once)
+    survey$contacts <- survey$contacts[is.na(get(columns[["contact.age"]])) |
+                                           get(columns[["contact.age"]]) >= min(age.limits),]
+    
     if (missing.contact.age == "remove" &&
-        nrow(survey$contacts[is.na(get(columns[["contact.age"]])) |
-                             get(columns[["contact.age"]]) < min(age.limits)]) > 0)
+        nrow(survey$contacts[is.na(get(columns[["contact.age"]]))]) > 0)
     {
         if (!quiet && n == 1 && !missing.contact.age.set)
         {
@@ -291,23 +294,20 @@ contact_matrix <- function(survey, countries=c(), survey.pop, age.limits, filter
                     "To change this behaviour, set the 'missing.contact.age' option")
         }
         missing.age.id <-
-            survey$contacts[is.na(get(columns[["contact.age"]])) |
-                            get(columns[["contact.age"]]) < min(age.limits),
+            survey$contacts[is.na(get(columns[["contact.age"]])),
                             get(columns[["id"]])]
         survey$participants <- survey$participants[!(get(columns[["id"]]) %in% missing.age.id)]
     }
     
     if (missing.contact.age == "ignore" &&
-        nrow(survey$contacts[is.na(get(columns[["contact.age"]])) |
-                             get(columns[["contact.age"]]) < min(age.limits)]) > 0)
+        nrow(survey$contacts[is.na(get(columns[["contact.age"]]))]) > 0)
     {
         if (!quiet && n == 1 && !missing.contact.age.set)
         {
             message("Ignore contacts without age information. ",
                     "To change this behaviour, set the 'missing.contact.age' option")
         }
-        survey$contacts <- survey$contacts[!is.na(get(columns[["contact.age"]])) &
-                                            get(columns[["contact.age"]]) >= min(age.limits),]
+        survey$contacts <- survey$contacts[!is.na(get(columns[["contact.age"]])),]
     }
     
     # adjust age.group.brakes to the lower and upper ages in the survey

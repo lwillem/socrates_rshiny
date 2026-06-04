@@ -126,7 +126,8 @@ get_country_admin <- function(country_admin_file_name = 'data/opt_country_admin.
   #__________________________#
   
   # get polymod countries
-  polymod_countries <- suppressMessages(survey_countries(polymod))
+  polymod_countries <- as.character(unique(polymod[["participants"]][["country"]]))
+  
   
   # add other dataset (and reference)
   opt_country       <- c(paste(polymod_countries,'(Mossong 2008)'),

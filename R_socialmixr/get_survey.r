@@ -16,7 +16,7 @@ get_survey <- function(survey, ...) {
     new_survey <- survey
   } else {
     if (is.character(survey)) {
-      files <- download_survey(survey)
+      files <- contactsurveys::download_survey(survey)
       new_survey <- load_survey(files)
     } else {
       stop("'survey' must be an 'survey' object or character")

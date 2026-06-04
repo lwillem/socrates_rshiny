@@ -98,11 +98,11 @@ for(i in 1:nrow(survey_meta_data)){
 
   # manual download and selection for "comix 2.0"
   if(survey_meta_data$country[i] == "comix_multi"){
-    files       <- download_survey(survey_meta_data$url[i])
+    files       <- contactsurveys::download_survey(survey_meta_data$url[i])
     files       <- files[grepl('comix_2',files) | grepl('json',files)]
     survey_data <- load_survey(files)
   } else if(survey_meta_data$country[i] == "zimbabwe"){
-    files       <- download_survey(survey_meta_data$url[i])
+    files       <- contactsurveys::download_survey(survey_meta_data$url[i])
   
     # two sday records for 1 participant is causing issues in the merge, hence select the first one.
     # this will cause a warning to match time_use_common for the second studyday, but that is OK for now

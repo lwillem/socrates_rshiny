@@ -194,7 +194,7 @@ shinyUI(pageWithSidebar(
                          plotOutput('plot_relative_incidence',width = "80%", height = "300px"),
                          hr(),
                          #tags$h3("Parameter summary"),
-                         dataTableOutput('table_NGA_parameters'),
+                         DTOutput('table_NGA_parameters'),
                          hr(),
                          conditionalPanel(
                            condition = "input.sel_transmission == 'sensitivity'",
@@ -231,7 +231,7 @@ shinyUI(pageWithSidebar(
                            div(style = "margin-bottom: 20px;")  # Add space (20px) between elements
                            #helpText('The relative number of cases in each age group after the projection time (m) considered, given a proportional perturbation (p) to the infectivity of the infector. The comparator is the scenario without any change in infectivity.')
                            # tags$h3("Parameter summary 2:"),
-                           # dataTableOutput('table_NGA_sens_parameters'),
+                           # DTOutput('table_NGA_sens_parameters'),
                            ),
                          conditionalPanel(
                            condition = "input.sel_transmission != 'sensitivity'",
@@ -241,13 +241,13 @@ shinyUI(pageWithSidebar(
                          #),
                 tabPanel("Participants", 
                          helpText('Brief summary of participant data:'),
-                         dataTableOutput('table_participants')),
+                         DTOutput('table_participants')),
                 tabPanel("Weights",     
                          uiOutput("project_website_weights"),
-                         dataTableOutput('table_weights')),
+                         DTOutput('table_weights')),
                 tabPanel("Data sets",
                          uiOutput("project_website_data"),
-                         div(dataTableOutput("social_contact_data")), style = "font-size:80%"),
+                         div(DTOutput("social_contact_data")), style = "font-size:80%"),
                 tabPanel("About CoMix",
                         includeMarkdown("doc/doc_comix.md")),
                 tabPanel("Updates",

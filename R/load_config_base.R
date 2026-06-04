@@ -23,8 +23,10 @@ if(!'bool_is_comix_ui' %in% ls()) {
 
 # Explicit loading of the packages (fix for www.shinyapps.io)
 library('socialmixr')
+library('contactsurveys')
 library('countrycode')
 library('data.table')
+library('DT')
 library('markdown')
 library('wpp2015')
 library(shiny)

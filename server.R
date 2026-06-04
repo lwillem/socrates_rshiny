@@ -283,7 +283,7 @@ shinyServer(function(input, output, session) {
     })
    
     # add NGA input parameter table
-    output$table_NGA_parameters <- renderDataTable({
+    output$table_NGA_parameters <- DT::renderDT({
       sel_NGA_param <- out$meta_data$parameter %in% c('age groups','age specific susceptibility','age specific infectiousness',
                                                       'q factor','delta p', 'nr generations')
       out_NGA_param <- data.table(out$meta_data[sel_NGA_param,])
@@ -451,7 +451,7 @@ shinyServer(function(input, output, session) {
     })
     
     # add social contact data info
-    output$social_contact_data <- renderDataTable({
+    output$social_contact_data <- DT::renderDT({
     data_table_description
     },
     escape = FALSE,
@@ -467,7 +467,7 @@ shinyServer(function(input, output, session) {
                          ',url_doc_weights)
     })
     # add weights table
-    output$table_weights <- renderDataTable({
+    output$table_weights <- DT::renderDT({
       if(any(is.null(out$participants.weights))){
         data.table('No weights selected' = '')
       } else {
@@ -480,7 +480,7 @@ shinyServer(function(input, output, session) {
      ))
     
     # add weights table
-    output$table_participants <- renderDataTable({
+    output$table_participants <- DT::renderDT({
         out$participants
     },
     options = list(
